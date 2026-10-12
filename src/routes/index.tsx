@@ -9,7 +9,7 @@ import {
   type PointerEvent,
 } from "react";
 import { ArrowDown, ArrowRight } from "lucide-react";
-
+import { useInView } from "react-intersection-observer";
 import {
   motion,
   useMotionValue,
@@ -27,10 +27,10 @@ import spareparts from "@/assets/spareparts.png";
 import { IntroLoader } from "@/components/site/Loader";
 import { SERVICES } from "@/lib/site-data";
 
+
 const SunScene = lazy(() => import("@/components/three/SunScene"));
 
 export const Route = createFileRoute("/")({
-  ssr: false,
 
   head: () => ({
     meta: [
@@ -69,13 +69,10 @@ function Home() {
   const heroRef = useRef<HTMLElement>(null);
   const aboutRef = useRef<HTMLElement>(null);
 
-  useEffect(() => {
-    if ("scrollRestoration" in history) {
-      history.scrollRestoration = "manual";
-    }
-
-    window.scrollTo(0, 0);
-  }, []);
+  useLayoutEffect(() => {
+  window.history.scrollRestoration = "manual";
+  window.scrollTo(0, 0);
+}, []);
   /* =========================================================
      HERO SCROLL
   ========================================================= */
@@ -108,40 +105,150 @@ function Home() {
           HERO VIDEO
       ========================================================= */}
 
-      <section
-        ref={heroRef}
-        className="relative h-[100svh] min-h-[650px] w-full overflow-hidden bg-black"
+
+{/* CINEMATIC HERO */}
+{/* =========================================================
+    CINEMATIC HERO — TYPEWRITER ANIMATION
+========================================================= */}
+
+<section
+  ref={heroRef}
+  className="relative isolate h-[100svh] min-h-[600px] w-full overflow-hidden bg-[#07182d] text-white"
+>
+  {/* Background video */}
+  <motion.video
+    style={{ y: heroY }}
+    src="/media/intro.mp4"
+    autoPlay
+    muted
+    loop
+    playsInline
+    preload="metadata"
+    aria-hidden="true"
+    className="absolute inset-0 -z-20 h-[115%] w-full object-cover object-center"
+  />
+
+  {/* Cinematic overlays */}
+  <div className="absolute inset-0 -z-10 bg-gradient-to-r from-[#06152a]/90 via-[#07182d]/60 to-[#07182d]/15" />
+  <div className="absolute inset-0 -z-10 bg-gradient-to-t from-[#06152a]/80 via-transparent to-[#06152a]/20" />
+
+  {/* Hero content */}
+  <div className="mx-auto flex h-full max-w-[1440px] items-center px-6 pb-14 pt-24 sm:px-10 lg:px-16 translate-x-10 translate-y-10">
+    <motion.div
+      
+      initial={{ opacity: 0, y: 18 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.8, ease: "easeOut" }}
+      className="w-full max-w-6xl"
+    >
+      {/* Brand label */}
+      <motion.p
+        initial={{ opacity: 0, x: -8 }}
+        animate={{ opacity: 1, x: 0 }}
+        transition={{ duration: 3, delay: 1.5 }}
+        className="mb-5 text-xs font-semibold uppercase tracking-[0.22em] text-[#ff922e] sm:mb-7 sm:text-sm sm:tracking-[0.3em] translate-x-2 translate-y-5"
       >
-        <motion.video
-          style={{ y: heroY }}
-          src="/media/intro.mp4"
-          autoPlay
-          muted
-          loop
-          playsInline
-          className="absolute inset-0 h-full w-full object-cover object-center"
-        />
+        Mercury Energy Solutions
+      </motion.p>
 
-        <div className="relative mx-auto flex h-full max-w-[1440px] items-end px-5 pb-20 pt-28 lg:px-10 lg:pb-24">
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{
-              duration: 0.8,
-              delay: 0.2,
-            }}
-            className="max-w-4xl text-primary-foreground"
-          >
-            <p className="eyebrow text-accent"></p>
+      {/* Animated headline */}
+      <div
+        className="min-h-[2.15em] sm:min-h-[2.1em]"
+        aria-label="Built to perform. Engineered to last."
+      >
+        <h1 className="text-5xl font-semibold leading-[1.04] tracking-[-0.055em] sm:text-6xl md:text-7xl lg:text-[6.5rem]">
+          <TypewriterText
+            text="Built to perform"
+            delay={1500}
+            className="text-white"
+          />
+          <span className="text-[#f58220]">.</span>
 
-            <h1 className="mt-5 text-5xl font-semibold leading-[1.05] sm:text-7xl lg:text-[5.6rem]"></h1>
+          <br />
+          <TypewriterText
+            text="Engineered to last"
+            delay={2000}
+            className="text-white"
+          />
+          <span className="text-[#f58220]">.</span>
+        </h1>
+      </div>
 
-            <p className="mt-6 max-w-xl text-base leading-8 text-primary-foreground/75 sm:text-lg"></p>
-          </motion.div>
+      {/* Minimal Explore button */}
+      
 
-          <ArrowDown className="absolute bottom-8 right-8 size-6 animate-bounce text-primary-foreground/65" />
-        </div>
-      </section>
+{/* Animated Explore Button */}
+<motion.button
+  animate={{ x: 10, y: 24 }}
+  type="button"
+  onClick={() => {
+    document.getElementById("solutions")?.scrollIntoView({
+      behavior: "smooth",
+      block: "start",
+    });
+  }}
+  initial="rest"
+  whileHover="hover"
+  whileTap={{ scale: 0.94 }}
+  variants={{
+    rest: { width: 52 },
+    hover: { width: 135 },
+  }}
+  transition={{ duration: 0.35, ease: "easeInOut" }}
+  className="group flex h-12 items-center overflow-hidden rounded-full bg-[#f58220] text-white shadow-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/70"
+  aria-label="Explore solutions"
+>
+  {/* White animated arrow */}
+  <span className="flex h-12 w-[52px] shrink-0 items-center justify-center">
+    <motion.span
+  variants={{
+    rest: { rotate: 0, x: 0 },
+    hover: { rotate: 90, x: 6 },
+  }}
+  transition={{ duration: 0.3, ease: "easeInOut" }}
+  className="inline-flex"
+>
+  <ArrowRight size={23} strokeWidth={2.4} className="text-white" />
+</motion.span>
+  </span>
+
+  {/* Explore text appears on hover */}
+
+<motion.span
+  variants={{
+    rest: { opacity: 0, x: -10 },
+    hover: { opacity: 1, x: 0 },
+  }}
+  transition={{ duration: 0.22, delay: 0.06 }}
+  className="whitespace-nowrap pr-5 text-sm font-semibold text-white"
+>
+  Explore
+</motion.span>
+
+</motion.button>
+
+
+    </motion.div>
+  </div>
+
+  {/* Scroll indicator */}
+  <motion.div
+    initial={{ opacity: 0 }}
+    animate={{ opacity: 1 }}
+    transition={{ delay: 3, duration: 0.7 }}
+    className="absolute bottom-7 left-6 flex items-center gap-3 text-[10px] font-medium uppercase tracking-[0.24em] text-white/60 sm:left-10 lg:left-16"
+  >
+    <span className="flex h-8 w-5 items-start justify-center rounded-full border border-white/30 p-1">
+      <motion.span
+        animate={{ y: [0, 10, 0], opacity: [1, 0.35, 1] }}
+        transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
+        className="h-1.5 w-1 rounded-full bg-[#f58220]"
+      />
+    </span>
+    Scroll to explore
+  </motion.div>
+</section>
+
 
       {/* =========================================================
           ABOUT + INTERACTIVE 3D SUN
@@ -205,10 +312,11 @@ function ServicesParallax() {
   const viewportRef = useRef<HTMLDivElement>(null);
   const trackRef = useRef<HTMLDivElement>(null);
 
-  const [horizontalDistance, setHorizontalDistance] = useState(0);
+const [horizontalDistance, setHorizontalDistance] = useState(0);
 const [viewportHeight, setViewportHeight] = useState(
   typeof window !== "undefined" ? window.innerHeight : 800
 );
+const [measured, setMeasured] = useState(false);
 
   /*
    * Measure the real width of the horizontal track.
@@ -234,6 +342,7 @@ const [viewportHeight, setViewportHeight] = useState(
 
       setHorizontalDistance(distance);
       setViewportHeight(window.innerHeight);
+      setMeasured(true);
     };
 
     measure();
@@ -316,15 +425,15 @@ const [viewportHeight, setViewportHeight] = useState(
 
   return (
     <section
-      ref={sectionRef}
-      style={{
-        height:
-          sectionHeight > 0
-            ? `${sectionHeight}px`
-            : "500vh",
-      }}
-      className="relative h-[500vh] bg-[#061a34] text-white"
-    >
+  id="solutions"
+  ref={sectionRef}
+  style={{
+    height: measured
+      ? `${horizontalDistance + viewportHeight}px`
+      : "100vh",
+  }}
+  className="relative bg-[#061a34] text-white"
+>
       <div
         ref={viewportRef}
         className="
@@ -664,16 +773,132 @@ function ServiceParallaxCard({
   );
 }
 
+/* =========================================================
+   TYPEWRITER TEXT
+========================================================= */
+
+function TypewriterText({
+  text,
+  delay = 0,
+  className = "",
+}: {
+  text: string;
+  delay?: number;
+  className?: string;
+}) {
+  const [visibleText, setVisibleText] = useState("");
+
+  useEffect(() => {
+    let intervalId: ReturnType<typeof setInterval> | undefined;
+    let timeoutId: ReturnType<typeof setTimeout> | undefined;
+    let index = 0;
+
+    setVisibleText("");
+
+    timeoutId = setTimeout(() => {
+      intervalId = setInterval(() => {
+        index += 1;
+        setVisibleText(text.slice(0, index));
+
+        if (index >= text.length && intervalId) {
+          clearInterval(intervalId);
+        }
+      }, 55);
+    }, delay);
+
+    return () => {
+      if (timeoutId) clearTimeout(timeoutId);
+      if (intervalId) clearInterval(intervalId);
+    };
+  }, [text, delay]);
+
+  return (
+    <span className={className}>
+      {visibleText}
+      {visibleText.length < text.length && (
+        <span
+          aria-hidden="true"
+          className="ml-1 inline-block h-[0.78em] w-[2px] translate-y-[0.04em] animate-pulse bg-[#f58220]"
+        />
+      )}
+    </span>
+  );
+}
+
 
 /* =============================================================
    ABOUT TEXT
 ============================================================= */
+
 
 function AboutText({
   scrollProgress,
 }: {
   scrollProgress: ReturnType<typeof useScroll>["scrollYProgress"];
 }) {
+  const { ref: inViewRef, inView: isInView } = useInView({
+    threshold: 0.3,
+    triggerOnce: false,
+  });
+
+  const headlineText = "One Partner, Multiple Solutions";
+
+  const descriptionText =
+    "Mercury Energy Solutions delivers integrated engineering services, marine and industrial boiler solutions, biomass fuel, solar energy systems, and specialist spare parts — all under one roof.";
+
+  const [headline, setHeadline] = useState("");
+  const [description, setDescription] = useState("");
+
+  // Type the headline whenever the section enters the viewport.
+  useEffect(() => {
+    setHeadline("");
+    setDescription("");
+
+    if (!isInView) return;
+
+    let index = 0;
+    let timer: ReturnType<typeof setTimeout>;
+
+    const typeNext = () => {
+      index += 1;
+      setHeadline(headlineText.slice(0, index));
+
+      if (index < headlineText.length) {
+        timer = setTimeout(typeNext, 45);
+      }
+    };
+
+    timer = setTimeout(typeNext, 200);
+
+    return () => clearTimeout(timer);
+  }, [isInView]);
+
+  // Start typing the description after the headline finishes.
+  useEffect(() => {
+    setDescription("");
+
+    if (!isInView || headline.length !== headlineText.length) {
+      return;
+    }
+
+    let index = 0;
+    let timer: ReturnType<typeof setTimeout>;
+
+    const typeNext = () => {
+      index += 1;
+      setDescription(descriptionText.slice(0, index));
+
+      if (index < descriptionText.length) {
+        timer = setTimeout(typeNext, 16);
+      }
+    };
+
+    timer = setTimeout(typeNext, 300);
+
+    return () => clearTimeout(timer);
+  }, [isInView, headline]);
+
+  // Scroll-based movement and opacity.
   const x = useTransform(
     scrollProgress,
     [0, 0.35, 0.75, 1],
@@ -688,79 +913,64 @@ function AboutText({
 
   return (
     <motion.div
-      style={{
-        x,
-        opacity,
-      }}
-      className="
-        relative
-        z-20
-        max-w-2xl
-        lg:pr-8
-      "
+      ref={inViewRef}
+      style={{ x, opacity }}
+      className="relative z-20 max-w-2xl lg:pr-8 lg:translate-x-4"
     >
+      {/* Section label */}
       <p className="eyebrow text-accent">
         About Mercury
       </p>
 
+      {/* Animated headline with orange period */}
       <h2
-        className="
-          mt-4
-          text-4xl
-          font-semibold
-          leading-tight
-          sm:text-5xl
-          lg:text-6xl
-        "
+        className="mt-4 min-h-[2.4em] text-4xl font-semibold leading-tight sm:text-5xl lg:text-6xl"
+        aria-label={`${headlineText}.`}
       >
-        One engineering partner across conventional and renewable energy.
+        <span>{headline}</span>
+
+        {headline.length === headlineText.length && (
+          <span className="text-[#f58220]">.</span>
+        )}
+
+        {isInView && headline.length < headlineText.length && (
+          <span
+            aria-hidden="true"
+            className="ml-1 inline-block h-[0.8em] w-[2px] translate-y-[0.04em] animate-pulse bg-[#f58220]"
+          />
+        )}
       </h2>
 
+      {/* Animated description */}
       <p
-        className="
-          mt-8
-          max-w-xl
-          text-base
-          leading-8
-          text-primary-foreground/70
-          sm:text-lg
-        "
+        className="mt-8 min-h-[8em] max-w-xl text-base leading-8 text-primary-foreground/70 sm:text-lg"
+        aria-label={descriptionText}
       >
-        Mercury Energy Solutions brings technical services, fuel
-        solutions, solar systems and specialist component sourcing
-        into one focused portfolio for marine and industrial
-        operators.
+        {description}
+
+        {isInView &&
+          headline.length === headlineText.length &&
+          description.length < descriptionText.length && (
+            <span
+              aria-hidden="true"
+              className="ml-1 inline-block h-[0.8em] w-[2px] translate-y-[0.04em] animate-pulse bg-[#f58220]"
+            />
+          )}
       </p>
 
+      {/* About page link */}
       <Link
         to="/about"
-        className="
-          group
-          mt-8
-          inline-flex
-          items-center
-          gap-2
-          font-semibold
-          text-primary-foreground
-          transition-colors
-          duration-300
-          hover:text-accent
-        "
+        className="group mt-8 inline-flex items-center gap-2 font-semibold text-primary-foreground transition-colors duration-300 hover:text-accent"
       >
-        Know our approach
+        Discover our approach
 
-        <ArrowRight
-          className="
-            size-4
-            transition-transform
-            duration-300
-            group-hover:translate-x-2
-          "
-        />
+        <ArrowRight className="size-4 transition-transform duration-300 group-hover:translate-x-2" />
       </Link>
     </motion.div>
   );
 }
+
 
 /* =============================================================
    INTERACTIVE 3D SUN
@@ -961,8 +1171,8 @@ function InteractiveSun({
         w-full
         items-center
         justify-center
-        sm:h-[540px]
-        lg:h-[680px]
+        sm:h-[500px]
+        lg:h-[600px]
         will-change-transform
       "
       onPointerMove={handlePointerMove}

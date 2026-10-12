@@ -1,27 +1,42 @@
 import { useEffect, useState } from "react";
 
 export function IntroLoader() {
-const [visible, setVisible] = useState(true);
+  const [visible, setVisible] = useState(true);
 
-useEffect(() => {
-const timer = window.setTimeout(() => {
-setVisible(false);
-}, 5000);
-}, []);
+  useEffect(() => {
+    // Start every page load at the top.
+    window.scrollTo({
+      top: 0,
+      left: 0,
+      behavior: "instant",
+    });
 
-if (!visible) return null;
+    const timer = window.setTimeout(() => {
+      setVisible(false);
+    }, 1500);
 
-return ( <div className="pointer-events-none fixed inset-0 z-[100] flex items-center justify-center bg-transparent">
-<video
-src="/media/logo.webm"
-autoPlay
-loop
-muted
-playsInline
-preload="auto"
-aria-label="Mercury Energy Solutions loading"
-onError={() => setVisible(false)}
-className="h-40 w-40 object-contain sm:h-82 sm:w-82"
-/> </div>
-);
+    return () => window.clearTimeout(timer);
+  }, []);
+
+  if (!visible) return null;
+
+  return (
+    <div
+      className="fixed inset-0 z-[9999] flex h-[100svh] w-full items-center justify-center bg-[#07182d]"
+      aria-label="Loading Mercury Energy Solutions"
+      role="status"
+    >
+      <video
+        src="/media/logo.webm"
+        autoPlay
+        loop
+        muted
+        playsInline
+        preload="auto"
+        aria-label="Mercury Energy Solutions loading"
+        onError={() => setVisible(false)}
+        className="h-40 w-40 object-contain sm:h-80 sm:w-80"
+      />
+    </div>
+  );
 }

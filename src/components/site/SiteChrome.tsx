@@ -2,12 +2,15 @@ import { Link } from "@tanstack/react-router";
 import linkedinIcon from "@/assets/linkedin.png";
 import whatsappIcon from "@/assets/whatsapp.png";
 import {
+  ArrowRight,
   ChevronDown,
   Mail,
   MapPin,
   Menu,
   Phone,
 } from "lucide-react";
+import { useState } from "react";
+import { AnimatePresence, motion } from "motion/react";
 import logo from "@/assets/logo.png";
 import { Button } from "@/components/ui/button";
 import {
@@ -20,12 +23,36 @@ import {
 import { COMPANY, SERVICES } from "@/lib/site-data";
 
 const navClass =
-  "relative text-sm font-medium text-white transition-all duration-300 hover:text-primary after:absolute after:-bottom-2 after:left-0 after:h-[2px] after:w-0 after:bg-primary after:transition-all after:duration-300 hover:after:w-full";
+  "relative text-sm font-medium text-white transition-colors duration-300 hover:text-[#f58220] after:absolute after:-bottom-2 after:left-0 after:h-[2px] after:w-0 after:bg-[#f58220] after:transition-all after:duration-300 hover:after:w-full";
 
 export function Header() {
+  const [contactTransition, setContactTransition] = useState(false);
+  const [servicesOpen, setServicesOpen] = useState(false);
+  
   return (
-    <header className="fixed inset-x-0 top-0 z-40 bg-[#061a34]/10 backdrop-blur-xl">
-      <div className="mx-auto flex h-20 max-w-[1440px] items-center justify-between px-5 lg:px-10">
+    <header className="fixed inset-x-0 top-0 z-40 bg-[#06152a]/50 backdrop-blur-xl">
+      <AnimatePresence>
+  {contactTransition && (
+    <motion.div
+      key="contact-transition"
+      className="fixed inset-0 z-[9999] h-screen w-screen bg-[#f58220]"
+      initial={{
+        clipPath: "circle(0% at 90% 4%)",
+      }}
+      animate={{
+        clipPath: "circle(150% at 90% 4%)",
+      }}
+      transition={{
+        duration: 0.9,
+        ease: [0.65, 0, 0.35, 1],
+      }}
+      onAnimationComplete={() => {
+        window.location.assign("/contact");
+      }}
+    />
+  )}
+</AnimatePresence>
+      <div className="mx-auto flex h-20 max-w-[1440px] items-center justify-between px-5 lg:px-2">
         <Link
   to="/"
   aria-label="Mercury Energy Solutions home"
@@ -38,7 +65,7 @@ export function Header() {
     muted
     playsInline
     preload="auto"
-    className="-ml-3 h-20 w-20 -mr-3 object-contain sm:-ml-4 sm:h-50 sm:w-50 sm:-mr-13"
+    className="h-20 w-20 -mr-3 object-contain sm:h-40 sm:w-40 sm:-mr-11"
   />
 
   <span className="flex flex-col leading-none">
@@ -71,34 +98,80 @@ export function Header() {
             About us
           </Link>
 
-          <div className="group relative py-7">
-            <span
-              className={`${navClass} flex cursor-default items-center gap-1`}
-            >
-              Services
-              <ChevronDown className="size-4 transition-transform duration-300 group-hover:rotate-180" />
-            </span>
+{/* Minimal Animated Services Dropdown */}
+<div
+  className="group relative py-7"
+>
+  <button
+    type="button"
+    className={`${navClass} flex items-center gap-1.5`}
+  >
+    Services
+    <ChevronDown className="size-4 transition-transform duration-300 group-hover:rotate-180 group-hover:text-[#f58220]" />
+  </button>
 
-            <div className="invisible absolute left-1/2 top-full w-72 -translate-x-1/2 translate-y-2 bg-[#061a34]/70 p-2 opacity-0 shadow-2xl backdrop-blur-xl transition-all duration-300 group-hover:visible group-hover:translate-y-0 group-hover:opacity-100">
-              {SERVICES.map((s) => (
-                <Link
-                  key={s.href}
-                  to={s.href}
-                  className="group/item block rounded-md px-4 py-3 text-sm font-medium text-white/80 transition-all duration-200 hover:bg-white/10 hover:pl-5 hover:text-white"
-                >
-                  {s.title}
-                </Link>
-              ))}
-            </div>
-          </div>
+  <div
+    className="
+  invisible absolute left-1/2 top-full z-50
+  w-64 -translate-x-1/2 translate-y-2
+  rounded-xl
+  bg-[#061a34]/65 p-2
+  opacity-0 shadow-xl shadow-black/20 backdrop-blur-xl
+  transition-all duration-300 ease-out
+  group-hover:visible group-hover:translate-y-0 group-hover:opacity-100
+"
+  >
+    {SERVICES.map((s) => {
+  const Icon = s.icon;
+
+  return (
+    <Link
+      key={s.href}
+      to={s.href}
+      className="
+        group/item flex items-center gap-3
+        rounded-lg px-4 py-3
+        text-sm font-medium text-white/80
+        transition-all duration-200
+        hover:bg-white/[0.07]
+        hover:pl-5 hover:text-[#f58220]
+        active:scale-[0.98]
+      "
+    >
+      <Icon
+        className="
+          size-5 shrink-0
+          text-white/60
+          transition-colors duration-200
+          group-hover/item:text-[#f58220]
+        "
+        strokeWidth={1.7}
+      />
+
+      <span>{s.title}</span>
+    </Link>
+  );
+})}
+  </div>
+</div>
 
           <Button
-            asChild
-            size="lg"
-            className="transition-all duration-300 hover:-translate-y-1 hover:shadow-lg"
-          >
-            <Link to="/contact">Contact us</Link>
-          </Button>
+  asChild
+  size="lg"
+  className="group rounded-full bg-[#f58220] font-semibold text-white shadow-md transition-all duration-300 hover:-translate-y-1 hover:scale-106 hover:bg-[#e87512] hover:shadow-xl active:scale-95"
+>
+  <Link
+    to="/contact"
+    onClick={(event) => {
+      event.preventDefault();
+      if (!contactTransition) setContactTransition(true);
+    }}
+    className="flex items-center gap-2"
+  >
+    <span>Contact us</span>
+    <ArrowRight className="size-4 transition-transform duration-300 group-hover:translate-x-1" />
+  </Link>
+</Button>
         </nav>
 
         <Sheet>
@@ -343,7 +416,7 @@ export function WhatsAppButton() {
         justify-center
         transition-transform
         duration-300
-        hover:scale-110
+        hover:scale-150
       "
     >
       <img
