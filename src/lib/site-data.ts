@@ -14,15 +14,15 @@ export const COMPANY = {
   name: "Mercury Energy Solutions Private Limited",
   shortName: "Mercury Energy Solutions",
 
-  email: "bhimreddy@mercuryenergysolutions.com",
+  email: "enquiries@mercuryenergysolutions.com",
   phone: "+91 6366414655",
   phoneHref: "tel:+916366414655",
   whatsapp: "https://wa.me/916366414655",
   linkedin:
-    "https://www.linkedin.com/company/mercury-energy-solutions-private-limited/home/",
+    "https://www.linkedin.com/company/mercury-energy-solutions/home/",
 
   office:
-    "#141, Yashada Windsong, C Wing, Pune, Maharashtra - 412101, India",
+    "#141, Yashada Windsong, Pune, Maharashtra - 412101, India",
 
   registered:
     "1st Floor, Ghanshyam Complex, Gulbarga, Karnataka - 585103, India",

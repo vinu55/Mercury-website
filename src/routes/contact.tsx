@@ -1,3 +1,241 @@
-import { createFileRoute } from "@tanstack/react-router";import { Mail, MapPin, MessageCircle, Phone } from "lucide-react";import { PageHero } from "@/components/site/PageShell";import { EnquiryForm } from "@/components/site/EnquiryForm";import { COMPANY } from "@/lib/site-data";
-type ContactSearch={service?:string};export const Route=createFileRoute("/contact")({validateSearch:(s:Record<string,unknown>):ContactSearch=>typeof s["service"]==="string"?{service:s["service"]}:{},head:()=>({meta:[{title:"Contact | Mercury Energy Solutions"},{name:"description",content:"Contact Mercury Energy Solutions for marine boiler, land boiler, biomass, solar and spare parts enquiries."},{property:"og:title",content:"Contact Mercury Energy Solutions"},{property:"og:description",content:"Discuss your boiler, biomass, solar or spare parts requirement."},{property:"og:type",content:"website"},{name:"twitter:card",content:"summary_large_image"}]}),component:Contact});
-function Contact(){const {service}=Route.useSearch();return <main><PageHero eyebrow="Contact" title="Let’s discuss your requirement." description="Share your operating context, planned project or component requirement. Our team will review the details and respond."/><section className="py-20 lg:py-28"><div className="mx-auto grid max-w-[1440px] gap-14 px-5 lg:grid-cols-[.75fr_1.25fr] lg:px-10"><aside><p className="eyebrow text-accent">Direct contact</p><div className="mt-8 grid gap-7"><a href={`tel:${COMPANY.phoneHref}`} className="flex gap-4"><Phone className="mt-1 size-5 text-accent"/><div><p className="font-semibold">Phone</p><p className="mt-1 text-sm text-muted-foreground">{COMPANY.phone}</p></div></a><a href={`mailto:${COMPANY.email}`} className="flex gap-4"><Mail className="mt-1 size-5 shrink-0 text-accent"/><div><p className="font-semibold">Email</p><p className="mt-1 break-all text-sm text-muted-foreground">{COMPANY.email}</p></div></a><a href={COMPANY.whatsapp} target="_blank" rel="noreferrer" className="flex gap-4"><MessageCircle className="mt-1 size-5 text-accent"/><div><p className="font-semibold">WhatsApp</p><p className="mt-1 text-sm text-muted-foreground">Start a conversation</p></div></a><div className="flex gap-4"><MapPin className="mt-1 size-5 shrink-0 text-accent"/><div><p className="font-semibold">Office</p><p className="mt-1 text-sm leading-6 text-muted-foreground">{COMPANY.office}</p><p className="mt-4 font-semibold">Registered address</p><p className="mt-1 text-sm leading-6 text-muted-foreground">{COMPANY.registered}</p></div></div></div></aside><div><h2 className="mb-8 text-3xl font-semibold">Send an enquiry</h2><EnquiryForm initialService={service ?? ""}/></div></div></section></main>}
+
+import { createFileRoute } from "@tanstack/react-router";
+import {
+  Mail,
+  MapPin,
+  MessageCircle,
+  Phone,
+  ArrowUpRight,
+} from "lucide-react";
+import { motion } from "motion/react";
+import { PageHero } from "@/components/site/PageShell";
+import { EnquiryForm } from "@/components/site/EnquiryForm";
+import { COMPANY } from "@/lib/site-data";
+
+type ContactSearch = {
+  service?: string;
+};
+
+export const Route = createFileRoute("/contact")({
+  validateSearch: (search: Record<string, unknown>): ContactSearch =>
+    typeof search["service"] === "string"
+      ? { service: search["service"] }
+      : {},
+
+  head: () => ({
+    meta: [
+      { title: "Contact | Mercury Energy Solutions" },
+      {
+        name: "description",
+        content:
+          "Contact Mercury Energy Solutions for marine boiler, land boiler, biomass, solar and spare parts enquiries.",
+      },
+      {
+        property: "og:title",
+        content: "Contact Mercury Energy Solutions",
+      },
+      {
+        property: "og:description",
+        content:
+          "Discuss your boiler, biomass, solar or spare parts requirement.",
+      },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
+    ],
+  }),
+
+  component: Contact,
+});
+
+const contactItems = [
+  {
+    label: "Phone",
+    value: COMPANY.phone,
+    href: `tel:${COMPANY.phoneHref}`,
+    icon: Phone,
+    detail: "Speak directly with our team",
+  },
+  {
+    label: "Email",
+    value: COMPANY.email,
+    href: `mailto:${COMPANY.email}`,
+    icon: Mail,
+    detail: "Send us your project details",
+  },
+  {
+    label: "WhatsApp",
+    value: "Start a conversation",
+    href: COMPANY.whatsapp,
+    icon: MessageCircle,
+    detail: "Connect with us on WhatsApp",
+    external: true,
+  },
+];
+
+function Contact() {
+  const { service } = Route.useSearch();
+
+  const officeMapUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
+    COMPANY.office,
+  )}`;
+
+  return (
+    <main className="bg-white">
+
+      {/* CUSTOM HEADING WITH ORANGE FULL STOP */}
+      <section className="bg-[#061A34] px-5 py-20 sm:px-10 sm:py-28 lg:px-16 lg:py-32">
+  <div className="mx-auto max-w-[1280px]">
+    <motion.div
+      initial={{ opacity: 0, y: 18 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.6 }}
+    >
+      <p className="text-sm font-semibold uppercase tracking-[0.25em] text-[#F58220]">
+        Contact
+      </p>
+
+      <h1 className="mt-5 max-w-4xl text-4xl font-semibold leading-tight tracking-tight text-white sm:text-5xl lg:text-7xl">
+        Let’s build together<span className="text-[#F58220]">.</span>
+      </h1>
+    </motion.div>
+  </div>
+</section>
+
+      {/* CONTACT CONTENT */}
+      <section className="px-5 py-12 sm:px-10 sm:py-20 lg:px-16 lg:py-24">
+        <div className="mx-auto max-w-[1280px]">
+          <div className="grid gap-14 lg:grid-cols-[0.8fr_1.2fr] lg:gap-20">
+            {/* CONTACT INFORMATION */}
+            <motion.aside
+              initial={{ opacity: 0, y: 16 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, amount: 0.15 }}
+              transition={{ duration: 0.5 }}
+              className="flex min-w-0 flex-col"
+            >
+              <div className="border-b border-slate-200 pb-6">
+                <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[#F58220]">
+                  Get in touch
+                </p>
+
+                <h2 className="mt-3 text-2xl font-semibold tracking-tight text-[#061A34] sm:text-3xl">
+                  We’re here to help
+                  <span className="text-[#F58220]">.</span>
+                </h2>
+
+                <p className="mt-3 max-w-md text-sm leading-7 text-slate-600">
+                  Reach out to discuss your requirements, request technical
+                  information or explore a potential collaboration.
+                </p>
+              </div>
+
+              <div className="divide-y divide-slate-200">
+                {contactItems.map((item) => {
+                  const Icon = item.icon;
+
+                  return (
+                    <a
+                      key={item.label}
+                      href={item.href}
+                      target={item.external ? "_blank" : undefined}
+                      rel={item.external ? "noreferrer" : undefined}
+                      className="group flex min-w-0 items-start gap-4 py-5 transition-colors"
+                    >
+                      <span className="flex size-11 shrink-0 items-center justify-center rounded-xl bg-[#061A34]/[0.05] text-[#061A34] transition-colors duration-300 group-hover:bg-[#F58220]/10 group-hover:text-[#F58220]">
+                        <Icon size={19} strokeWidth={1.8} />
+                      </span>
+
+                      <span className="min-w-0 flex-1">
+                        <span className="flex items-center gap-2 font-semibold text-[#061A34]">
+                          {item.label}
+                          <ArrowUpRight
+                            size={15}
+                            className="shrink-0 text-slate-400 transition-all duration-300 group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:text-[#F58220]"
+                          />
+                        </span>
+
+                        <span className="mt-1 block break-words text-sm font-medium leading-6 text-slate-700">
+                          {item.value}
+                        </span>
+
+                        <span className="mt-1 block text-xs leading-5 text-slate-500">
+                          {item.detail}
+                        </span>
+                      </span>
+                    </a>
+                  );
+                })}
+
+                {/* OFFICE */}
+                <a
+                  href={officeMapUrl}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="group flex min-w-0 items-start gap-4 py-5 transition-colors"
+                >
+                  <span className="flex size-11 shrink-0 items-center justify-center rounded-xl bg-[#061A34]/[0.05] text-[#061A34] transition-colors duration-300 group-hover:bg-[#F58220]/10 group-hover:text-[#F58220]">
+                    <MapPin size={19} strokeWidth={1.8} />
+                  </span>
+
+                  <span className="min-w-0 flex-1">
+                    <span className="flex items-center gap-2 font-semibold text-[#061A34]">
+                      Our office
+                      <ArrowUpRight
+                        size={15}
+                        className="shrink-0 text-slate-400 transition-all duration-300 group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:text-[#F58220]"
+                      />
+                    </span>
+
+                    <span className="mt-1 block break-words text-sm leading-6 text-slate-700">
+                      {COMPANY.office}
+                    </span>
+
+                    <span className="mt-1 block text-xs leading-5 text-slate-500">
+                      View location on Google Maps
+                    </span>
+                  </span>
+                </a>
+              </div>
+            </motion.aside>
+
+            {/* ENQUIRY FORM */}
+            <motion.div
+              initial={{ opacity: 0, y: 16 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, amount: 0.15 }}
+              transition={{ duration: 0.5, delay: 0.1 }}
+              className="min-w-0"
+            >
+              <div className="mb-7">
+                <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[#F58220]">
+                  Project enquiry
+                </p>
+
+                <h2 className="mt-3 text-2xl font-semibold tracking-tight text-[#061A34] sm:text-3xl">
+                  Send an enquiry
+                  <span className="text-[#F58220]">.</span>
+                </h2>
+
+                <p className="mt-3 text-sm leading-7 text-slate-600">
+                  Share a few details below so we can better understand your
+                  needs and respond appropriately.
+                </p>
+              </div>
+
+              <div className="relative overflow-hidden rounded-2xl border border-slate-200 bg-white p-5 shadow-sm shadow-slate-900/[0.03] sm:p-8">
+              
+
+                <EnquiryForm initialService={service ?? ""} />
+              </div>
+
+              <p className="mt-4 text-xs leading-5 text-slate-500">
+                Please provide accurate contact details so our team can follow
+                up on your enquiry.
+              </p>
+            </motion.div>
+          </div>
+        </div>
+      </section>
+    </main>
+  );
+}

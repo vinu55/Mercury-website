@@ -10,13 +10,14 @@ import {
   Scripts,
 } from "@tanstack/react-router";
 import { useLayoutEffect, type ReactNode } from "react";
-
+import { useEffect } from "react";
 import appCss from "../styles.css?url";
 import {
   Header,
   Footer,
   WhatsAppButton,
 } from "@/components/site/SiteChrome";
+
 
 export const Route = createRootRouteWithContext<{
   queryClient: QueryClient;
@@ -38,7 +39,7 @@ export const Route = createRootRouteWithContext<{
       {
         rel: "icon",
         type: "image/png",
-        href: "/favicon.png",
+        href: "/mercurylogo.png",
       },
       {
         rel: "preconnect",
@@ -73,6 +74,7 @@ export const Route = createRootRouteWithContext<{
   ),
 
   component: Root,
+  
 
   notFoundComponent: () => (
     <main className="grid min-h-screen place-items-center px-5 text-center">
@@ -92,8 +94,32 @@ export const Route = createRootRouteWithContext<{
   ),
 });
 
+
 function Root() {
   const { queryClient } = Route.useRouteContext();
+
+  
+useEffect(() => {
+  const cleanupReveal = () => {
+    document
+      .querySelectorAll("[data-page-reveal]")
+      .forEach((element) => element.remove());
+  };
+
+  // Clean up when the page is restored or browser navigation occurs.
+  window.addEventListener("pageshow", cleanupReveal);
+  window.addEventListener("popstate", cleanupReveal);
+  window.addEventListener("pagehide", cleanupReveal);
+
+  cleanupReveal();
+
+  return () => {
+    window.removeEventListener("pageshow", cleanupReveal);
+    window.removeEventListener("popstate", cleanupReveal);
+    window.removeEventListener("pagehide", cleanupReveal);
+  };
+}, []);
+
 
   useLayoutEffect(() => {
     window.history.scrollRestoration = "manual";

@@ -1,4 +1,4 @@
-@import "tailwindcss" source(none);
+@import "tailwindcss";
 @source "../src";
 @import "tw-animate-css";
 @custom-variant dark (&:is(.dark *));
@@ -10,3 +10,90 @@
 :root{--background:oklch(.98 .005 247);--foreground:oklch(.22 .05 254);--card:oklch(1 0 0);--card-foreground:oklch(.22 .05 254);--popover:oklch(1 0 0);--popover-foreground:oklch(.22 .05 254);--primary:oklch(.29 .105 254);--primary-foreground:oklch(.98 .005 247);--secondary:oklch(.93 .02 247);--secondary-foreground:oklch(.25 .08 254);--muted:oklch(.95 .012 247);--muted-foreground:oklch(.49 .035 255);--accent:oklch(.7 .19 52);--accent-foreground:oklch(.2 .05 254);--destructive:oklch(.58 .23 28);--border:oklch(.87 .018 249);--input:oklch(.82 .025 249);--ring:oklch(.52 .14 253);--success:oklch(.56 .16 148);--success-foreground:oklch(.99 0 0);}
 *{border-color:var(--border)}html{scroll-behavior:smooth}body{margin:0;background:var(--background);color:var(--foreground);font-family:var(--font-sans);letter-spacing:0}h1,h2,h3,h4{font-family:var(--font-heading);letter-spacing:0}.eyebrow{font-family:var(--font-heading);font-size:.73rem;font-weight:700;letter-spacing:.18em;text-transform:uppercase}.bg-hero-overlay{background:linear-gradient(90deg,oklch(.16 .07 254/.97),oklch(.2 .07 254/.58) 60%,transparent)}::selection{background:var(--accent);color:var(--accent-foreground)}
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;animation-duration:.01ms!important;transition-duration:.01ms!important}}
+
+
+/* Marine capabilities: continuous right-to-left marquee */
+
+.marine-capabilities-marquee {
+  width: 100%;
+  overflow: hidden;
+  padding: 12px 0 24px;
+}
+
+.marine-capabilities-track {
+  display: flex;
+  width: max-content;
+  align-items: stretch;
+  animation: marine-capabilities-scroll 32s linear infinite;
+  will-change: transform;
+}
+
+.marine-capabilities-group {
+  display: flex;
+  flex: 0 0 auto;
+  align-items: stretch;
+  gap: 20px;
+  padding-right: 20px;
+}
+
+.marine-capability-card {
+  flex: 0 0 340px;
+  width: 340px;
+  height: 280px;
+}
+
+.marine-capability-card > * {
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+}
+
+@keyframes marine-capabilities-scroll {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+@media (max-width: 640px) {
+  .marine-capability-card {
+    flex-basis: 280px;
+    width: 280px;
+    height: 300px;
+  }
+
+  .marine-capabilities-track {
+    animation-duration: 26s;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .marine-capabilities-track {
+    animation: none;
+  }
+}
+@keyframes category-marquee {
+  from {
+    transform: translateX(0);
+  }
+
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+.category-marquee {
+  animation: category-marquee 35s linear infinite;
+}
+
+.category-marquee[data-paused="true"] {
+  animation-play-state: paused;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .category-marquee {
+    animation: none;
+  }
+}

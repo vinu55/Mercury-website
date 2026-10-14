@@ -115,25 +115,27 @@ function Home() {
   ref={heroRef}
   className="relative isolate h-[100svh] min-h-[600px] w-full overflow-hidden bg-[#07182d] text-white"
 >
-  {/* Background video */}
-  <motion.video
-    style={{ y: heroY }}
-    src="/media/intro.mp4"
-    autoPlay
-    muted
-    loop
-    playsInline
-    preload="metadata"
-    aria-hidden="true"
-    className="absolute inset-0 -z-20 h-[115%] w-full object-cover object-center"
-  />
+{/* Background video */}
+<video
+  key="/media/intro.mp4"
+  autoPlay
+  muted
+  loop
+  playsInline
+  preload="auto"
+  aria-hidden="true"
+  onError={(e) => console.error("Hero video failed:", e.currentTarget.error)}
+  className="absolute inset-0 z-0 h-full w-full object-cover object-center"
+>
+  <source src="/media/intro.mp4" type="video/mp4" />
+</video>
 
-  {/* Cinematic overlays */}
-  <div className="absolute inset-0 -z-10 bg-gradient-to-r from-[#06152a]/90 via-[#07182d]/60 to-[#07182d]/15" />
-  <div className="absolute inset-0 -z-10 bg-gradient-to-t from-[#06152a]/80 via-transparent to-[#06152a]/20" />
+{/* Dark overlays — above video, below content */}
+<div className="pointer-events-none absolute inset-0 z-10 bg-gradient-to-r from-[#06152a]/75 via-[#07182d]/40 to-[#07182d]/10" />
+<div className="pointer-events-none absolute inset-0 z-10 bg-gradient-to-t from-[#06152a]/65 via-transparent to-[#06152a]/20" />
 
-  {/* Hero content */}
-  <div className="mx-auto flex h-full max-w-[1440px] items-center px-6 pb-14 pt-24 sm:px-10 lg:px-16 translate-x-10 translate-y-10">
+{/* Hero content */}
+<div className="relative z-20 mx-auto flex h-full max-w-[1440px] items-center px-6 pb-14 pt-24 sm:px-10 lg:px-16 translate-x-10 translate-y-10">
     <motion.div
       
       initial={{ opacity: 0, y: 18 }}
@@ -162,7 +164,7 @@ function Home() {
             delay={1500}
             className="text-white"
           />
-          <span className="text-[#f58220]">.</span>
+          <span className="text-[#f58220]">,</span>
 
           <br />
           <TypewriterText
@@ -312,19 +314,14 @@ function ServicesParallax() {
   const viewportRef = useRef<HTMLDivElement>(null);
   const trackRef = useRef<HTMLDivElement>(null);
 
-const [horizontalDistance, setHorizontalDistance] = useState(0);
-const [viewportHeight, setViewportHeight] = useState(
-  typeof window !== "undefined" ? window.innerHeight : 800
-);
-const [measured, setMeasured] = useState(false);
+  const [horizontalDistance, setHorizontalDistance] = useState(0);
+  const [viewportHeight, setViewportHeight] = useState(
+    typeof window !== "undefined" ? window.innerHeight : 800,
+  );
+  const [measured, setMeasured] = useState(false);
 
-  /*
-   * Measure the real width of the horizontal track.
-   *
-   * This means we don't guess with -300vw.
-   * The animation always ends exactly when the final card
-   * reaches the correct position.
-   */
+  // Measure the viewport and track, including the space
+  // required to centre the first and last cards.
   useLayoutEffect(() => {
     const measure = () => {
       const viewport = viewportRef.current;
@@ -333,11 +330,32 @@ const [measured, setMeasured] = useState(false);
       if (!viewport || !track) return;
 
       const viewportWidth = viewport.clientWidth;
-      const trackWidth = track.scrollWidth;
+      const firstCard = track.firstElementChild as HTMLElement | null;
+      const lastCard = track.lastElementChild as HTMLElement | null;
+
+      if (!firstCard || !lastCard) return;
+
+      const firstCardWidth = firstCard.getBoundingClientRect().width;
+      const lastCardWidth = lastCard.getBoundingClientRect().width;
+
+      // Keep the first card centred at the beginning.
+      const startPadding = Math.max(
+        0,
+        (viewportWidth - firstCardWidth) / 2,
+      );
+
+      // Leave enough room for the last card to reach the centre.
+      const endPadding = Math.max(
+        0,
+        (viewportWidth - lastCardWidth) / 2,
+      );
+
+      track.style.paddingLeft = `${startPadding}px`;
+      track.style.paddingRight = `${endPadding}px`;
 
       const distance = Math.max(
         0,
-        trackWidth - viewportWidth,
+        track.scrollWidth - viewportWidth,
       );
 
       setHorizontalDistance(distance);
@@ -347,163 +365,83 @@ const [measured, setMeasured] = useState(false);
 
     measure();
 
-    const resizeObserver = new ResizeObserver(measure);
+    const observer = new ResizeObserver(measure);
 
-    if (viewportRef.current) {
-      resizeObserver.observe(viewportRef.current);
-    }
-
-    if (trackRef.current) {
-      resizeObserver.observe(trackRef.current);
-    }
+    if (viewportRef.current) observer.observe(viewportRef.current);
+    if (trackRef.current) observer.observe(trackRef.current);
 
     window.addEventListener("resize", measure);
 
     return () => {
-      resizeObserver.disconnect();
+      observer.disconnect();
       window.removeEventListener("resize", measure);
     };
   }, []);
-
-  /*
-   * The section height is directly connected to the
-   * horizontal distance.
-   *
-   * Example:
-   *
-   * 1000px horizontal travel
-   * +
-   * 100vh sticky viewport
-   * =
-   * exact vertical scroll duration.
-   */
-  const sectionHeight =
-  horizontalDistance > 0
-    ? horizontalDistance + viewportHeight
-    : viewportHeight;
 
   const { scrollYProgress } = useScroll({
     target: sectionRef,
     offset: ["start start", "end end"],
   });
 
-  /*
-   * Direct mapping instead of a spring.
-   *
-   * This is intentional.
-   *
-   * A spring can lag behind the user's scroll position.
-   * That can cause the footer to appear while the final
-   * card is still moving.
-   *
-   * Direct mapping keeps vertical scroll and horizontal
-   * position perfectly synchronized.
-   */
+  // Move the horizontal track exactly across its measured distance.
   const trackX = useTransform(
     scrollYProgress,
     [0, 1],
     [0, -horizontalDistance],
   );
 
-  /*
-   * Heading fades away shortly after the section begins.
-   */
-  const headingOpacity = useTransform(
-    scrollYProgress,
-    [0, 0.08, 0.18],
-    [1, 0.65, 0],
-  );
-
-  /*
-   * Heading moves slightly upward while disappearing.
-   */
-  const headingY = useTransform(
-    scrollYProgress,
-    [0, 0.18],
-    [0, -30],
-  );
+  const sectionHeight = horizontalDistance + viewportHeight;
 
   return (
     <section
-  id="solutions"
-  ref={sectionRef}
-  style={{
-    height: measured
-      ? `${horizontalDistance + viewportHeight}px`
-      : "100vh",
-  }}
-  className="relative bg-[#061a34] text-white"
->
+      id="solutions"
+      ref={sectionRef}
+      style={{
+        height: measured ? `${sectionHeight}px` : "100vh",
+      }}
+      className="relative bg-[#061a34] text-white"
+    >
       <div
         ref={viewportRef}
         className="
-          sticky
-          top-0
-          flex
-          h-screen
-          w-full
-          items-center
+          sticky top-0
+          h-screen w-full
           overflow-hidden
         "
       >
+        {/* TOP-LEFT HEADING */}
+        <div
+  className="
+    pointer-events-none
+    absolute left-0 top-0 z-30
+    px-5 pt-[18vh]
+    sm:px-8 sm:pt-[14vh]
+    lg:px-12 lg:pt-12
+  "
+>
+  <p
+    className="
+      text-[10px] font-medium uppercase
+      tracking-[0.25em] text-[#f58220]
+      sm:text-xs
+    "
+  >
+    Our solutions
+  </p>
+</div>
 
-        {/* =====================================================
-            HEADER
-        ===================================================== */}
-
-        <motion.div
-          
-          className="
-            pointer-events-none
-  absolute
-  left-0
-  top-0
-  z-30
-  w-full
-  px-5
-  pt-16
-  sm:px-8
-  sm:pt-20
-  lg:px-12
-  lg:pt-24
-          "
-        >
-          <div className="mx-auto max-w-[1440px]">
-
-            <p className="text-[10px] font-medium uppercase tracking-[0.25em] text-accent sm:text-xs">
-              Our solutions
-            </p>
-
-            
-
-          </div>
-        </motion.div>
-
-
-        {/* =====================================================
-            HORIZONTAL TRACK
-        ===================================================== */}
-
+        {/* HORIZONTAL CARD TRACK */}
         <motion.div
           ref={trackRef}
-          style={{
-            x: trackX,
-          }}
+          style={{ x: trackX }}
           className="
-            flex
-            w-max
-            shrink-0
-            items-center
-            gap-5
-            px-5
-            pt-16
+            absolute left-0 top-1/2
+            flex w-max -translate-y-1/2
+            items-center gap-5
+            py-0
             will-change-transform
             sm:gap-7
-            sm:px-8
-            sm:pt-20
-            lg:gap-8
-            lg:px-12
-            lg:pt-24
+            lg:gap-10
           "
         >
           {SERVICES.map((service, index) => (
@@ -516,65 +454,34 @@ const [measured, setMeasured] = useState(false);
           ))}
         </motion.div>
 
-
-        {/* =====================================================
-            BOTTOM UI
-        ===================================================== */}
-
+        {/* BOTTOM PROGRESS INDICATOR */}
         <div className="
           pointer-events-none
-          absolute
-          bottom-7
-          left-0
-          z-30
-          w-full
-          px-5
-          sm:px-8
-          lg:px-12
+          absolute bottom-7 left-0 z-30 w-full
+          px-5 sm:px-8 lg:px-12
         ">
           <div className="
-            mx-auto
-            flex
-            max-w-[1440px]
-            items-center
-            justify-between
+            mx-auto flex max-w-[1440px]
+            items-center justify-between
           ">
-
-            <motion.p
-              style={{
-                opacity: useTransform(
-                  scrollYProgress,
-                  [0, 0.7, 1],
-                  [1, 0.7, 0.35],
-                ),
-              }}
-              className="
-                text-[10px]
-                uppercase
-                tracking-[0.22em]
-                text-white/35
-                sm:text-xs
-              "
-            >
+            <p className="
+              text-[10px] uppercase tracking-[0.22em]
+              text-white/40 sm:text-xs
+            ">
               Scroll to explore
-            </motion.p>
-
+            </p>
 
             <div className="flex items-center gap-3">
-
               <div className="
-                h-px
-                w-20
-                overflow-hidden
-                bg-white/15
-                sm:w-32
+                h-px w-20 overflow-hidden
+                bg-white/15 sm:w-32
               ">
                 <motion.div
                   style={{
                     scaleX: scrollYProgress,
                     transformOrigin: "left",
                   }}
-                  className="h-full w-full bg-white"
+                  className="h-full w-full bg-[#f58220]"
                 />
               </div>
 
@@ -589,12 +496,9 @@ const [measured, setMeasured] = useState(false);
               >
                 <ArrowRight className="size-4 text-white/50" />
               </motion.div>
-
             </div>
-
           </div>
         </div>
-
       </div>
     </section>
   );
@@ -668,16 +572,16 @@ function ServiceParallaxCard({
         opacity: cardOpacity,
       }}
       className="
-        h-[62vh]
-        min-h-[500px]
-        w-[82vw]
-        max-w-[1080px]
-        shrink-0
-        will-change-transform
-        sm:h-[65vh]
-        lg:h-[68vh]
-        lg:w-[68vw]
-      "
+  h-[42vh]
+  min-h-[200px]
+  w-[82vw]
+  max-w-[1080px]
+  shrink-0
+  will-change-transform
+  sm:h-[45vh]
+  lg:h-[48vh]
+  lg:w-[40vw]
+"
     >
       <Link
         to={service.href}
@@ -733,39 +637,40 @@ function ServiceParallaxCard({
             
 
             <span
-              className="
-                mt-6
-                inline-flex
-                items-center
-                gap-3
-                rounded-full
-                border
-                border-[#294f8f]
-                bg-white
-                px-5
-                py-3
-                text-sm
-                font-semibold
-                text-[#294f8f]
-                shadow-sm
-                transition-all
-                duration-300
-                group-hover:bg-[#294f8f]
-                group-hover:text-white
-                group-hover:shadow-lg
-              "
-            >
-              Explore service
+  className="
+    mt-6
+    inline-flex
+    items-center
+    gap-3
+    rounded-full
+    border
+    border-[#294f8f]
+    bg-[#294f8f]
+    px-5
+    py-3
+    text-sm
+    font-semibold
+    text-white
+    shadow-sm
+    transition-all
+    duration-300
+    group-hover:border-[#f58220]
+    group-hover:bg-[#f58220]
+    group-hover:text-white
+    group-hover:shadow-lg
+  "
+>
+  Explore service
 
-              <ArrowRight
-                className="
-                  size-4
-                  transition-transform
-                  duration-300
-                  group-hover:translate-x-1
-                "
-              />
-            </span>
+  <ArrowRight
+    className="
+      size-4
+      transition-transform
+      duration-300
+      group-hover:translate-x-1
+    "
+  />
+</span>
           </div>
         </div>
       </Link>
@@ -831,6 +736,7 @@ function TypewriterText({
 ============================================================= */
 
 
+
 function AboutText({
   scrollProgress,
 }: {
@@ -842,14 +748,13 @@ function AboutText({
   });
 
   const headlineText = "One Partner, Multiple Solutions";
-
   const descriptionText =
     "Mercury Energy Solutions delivers integrated engineering services, marine and industrial boiler solutions, biomass fuel, solar energy systems, and specialist spare parts — all under one roof.";
 
   const [headline, setHeadline] = useState("");
   const [description, setDescription] = useState("");
 
-  // Type the headline whenever the section enters the viewport.
+  // Type the headline only when the section is visible.
   useEffect(() => {
     setHeadline("");
     setDescription("");
@@ -864,22 +769,18 @@ function AboutText({
       setHeadline(headlineText.slice(0, index));
 
       if (index < headlineText.length) {
-        timer = setTimeout(typeNext, 45);
+        timer = setTimeout(typeNext, 55);
       }
     };
 
-    timer = setTimeout(typeNext, 200);
+    timer = setTimeout(typeNext, 250);
 
     return () => clearTimeout(timer);
   }, [isInView]);
 
-  // Start typing the description after the headline finishes.
+  // Start the description once the headline finishes.
   useEffect(() => {
-    setDescription("");
-
-    if (!isInView || headline.length !== headlineText.length) {
-      return;
-    }
+    if (!isInView || headline !== headlineText) return;
 
     let index = 0;
     let timer: ReturnType<typeof setTimeout>;
@@ -889,20 +790,19 @@ function AboutText({
       setDescription(descriptionText.slice(0, index));
 
       if (index < descriptionText.length) {
-        timer = setTimeout(typeNext, 16);
+        timer = setTimeout(typeNext, 18);
       }
     };
 
-    timer = setTimeout(typeNext, 300);
+    timer = setTimeout(typeNext, 250);
 
     return () => clearTimeout(timer);
   }, [isInView, headline]);
 
-  // Scroll-based movement and opacity.
   const x = useTransform(
     scrollProgress,
     [0, 0.35, 0.75, 1],
-    [-70, -30, -8, 0],
+    [-40, -20, -5, 0],
   );
 
   const opacity = useTransform(
@@ -915,57 +815,93 @@ function AboutText({
     <motion.div
       ref={inViewRef}
       style={{ x, opacity }}
-      className="relative z-20 max-w-2xl lg:pr-8 lg:translate-x-4"
+      className="relative z-20 w-full max-w-2xl lg:pr-8 lg:translate-x-4"
     >
-      {/* Section label */}
       <p className="eyebrow text-accent">
         About Mercury
       </p>
 
-      {/* Animated headline with orange period */}
+      {/* Fixed layout prevents the heading from jumping while typing. */}
       <h2
-        className="mt-4 min-h-[2.4em] text-4xl font-semibold leading-tight sm:text-5xl lg:text-6xl"
-        aria-label={`${headlineText}.`}
+        className="mt-5 min-h-[3.2em] max-w-xl text-4xl font-semibold leading-[1.12] tracking-tight text-white sm:min-h-[2.4em] sm:text-5xl lg:text-6xl"
+        aria-label={headlineText}
       >
         <span>{headline}</span>
-
-        {headline.length === headlineText.length && (
+        {headline === headlineText && (
           <span className="text-[#f58220]">.</span>
         )}
 
-        {isInView && headline.length < headlineText.length && (
+        {isInView && headline !== headlineText && (
           <span
             aria-hidden="true"
-            className="ml-1 inline-block h-[0.8em] w-[2px] translate-y-[0.04em] animate-pulse bg-[#f58220]"
+            className="ml-1 inline-block h-[0.8em] w-[2px] animate-pulse bg-[#f58220] align-baseline"
           />
         )}
       </h2>
 
-      {/* Animated description */}
+      {/* Reserved height keeps the content below stable. */}
       <p
-        className="mt-8 min-h-[8em] max-w-xl text-base leading-8 text-primary-foreground/70 sm:text-lg"
+        className="mt-7 min-h-[12rem] max-w-xl text-base leading-8 text-white/70 sm:min-h-[10rem] sm:text-lg"
         aria-label={descriptionText}
       >
         {description}
-
         {isInView &&
-          headline.length === headlineText.length &&
-          description.length < descriptionText.length && (
+          headline === headlineText &&
+          description !== descriptionText && (
             <span
               aria-hidden="true"
-              className="ml-1 inline-block h-[0.8em] w-[2px] translate-y-[0.04em] animate-pulse bg-[#f58220]"
+              className="ml-1 inline-block h-[0.8em] w-[2px] animate-pulse bg-[#f58220] align-baseline"
             />
           )}
       </p>
 
-      {/* About page link */}
       <Link
         to="/about"
-        className="group mt-8 inline-flex items-center gap-2 font-semibold text-primary-foreground transition-colors duration-300 hover:text-accent"
-      >
-        Discover our approach
+        onClick={(e) => {
+          e.preventDefault();
 
-        <ArrowRight className="size-4 transition-transform duration-300 group-hover:translate-x-2" />
+          if (document.getElementById("page-transition-overlay")) return;
+
+          const button = e.currentTarget;
+          const rect = button.getBoundingClientRect();
+          const x = rect.left + rect.width / 2;
+          const y = rect.top + rect.height / 2;
+
+          const overlay = document.createElement("div");
+          overlay.id = "page-transition-overlay";
+
+          Object.assign(overlay.style, {
+            position: "fixed",
+            inset: "0",
+            background: "#f58220",
+            zIndex: "99999",
+            clipPath: `circle(0px at ${x}px ${y}px)`,
+            transition: "clip-path 850ms cubic-bezier(0.76, 0, 0.24, 1)",
+            pointerEvents: "none",
+          });
+
+          document.body.appendChild(overlay);
+
+          const radius = Math.hypot(
+            Math.max(x, window.innerWidth - x),
+            Math.max(y, window.innerHeight - y),
+          );
+
+          requestAnimationFrame(() => {
+            requestAnimationFrame(() => {
+              overlay.style.clipPath = `circle(${radius}px at ${x}px ${y}px)`;
+            });
+          });
+
+          setTimeout(() => {
+            overlay.remove();
+            window.location.assign("/about");
+          }, 850);
+        }}
+        aria-label="Discover our approach"
+        className="mt-8 inline-flex h-12 w-12 items-center justify-center rounded-full bg-[#f58220] text-white transition-transform duration-300 hover:scale-110 active:scale-95"
+      >
+        <ArrowRight className="size-5 transition-transform duration-300 group-hover:translate-x-1" />
       </Link>
     </motion.div>
   );
