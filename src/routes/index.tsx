@@ -35,7 +35,7 @@ export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
       {
-        title: "Mercury Energy Solutions | Boiler, Biomass & Solar Engineering",
+        title: "Mercury Energy Solutions | Complete Solutions for Marine, Land-Based Boilers & Thermal Equipment.",
       },
       {
         name: "description",
@@ -428,13 +428,14 @@ function ServicesParallax() {
         "
       >
         {/* TOP-LEFT HEADING */}
-        <div
+
+<div
   className="
     pointer-events-none
     absolute left-0 top-0 z-30
     px-5 pt-[18vh]
     sm:px-8 sm:pt-[14vh]
-    lg:px-12 lg:pt-12
+    lg:px-12 lg:pt-[22vh]
   "
 >
   <p
@@ -447,6 +448,7 @@ function ServicesParallax() {
     Our solutions
   </p>
 </div>
+
 
         {/* HORIZONTAL CARD TRACK */}
         <motion.div

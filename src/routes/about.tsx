@@ -12,8 +12,6 @@ import {
   Target,
 } from "lucide-react";
 import { motion } from "motion/react";
-
-import marine from "@/assets/marine-boiler.jpg";
 import worldmap from "@/assets/worldmap.png";
 import { COMPANY } from "@/lib/site-data";
 

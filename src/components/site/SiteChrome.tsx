@@ -458,6 +458,7 @@ export function Footer() {
         "
       >
         <div className="flex flex-col justify-center">
+          
           <img
             src={logo}
             alt="Mercury Energy Solutions"
@@ -465,27 +466,34 @@ export function Footer() {
           />
 
           <p className="mt-5 max-w-md text-sm font-medium leading-7 text-[#294f8f]/80 sm:text-base">
-            Engineering solutions for a more efficient future.
+            Complete Solutions for Marine, Land-Based Boilers & Thermal Equipment.
           </p>
         </div>
 
-        <div>
-          <p className="font-heading text-sm font-bold uppercase tracking-[0.18em] text-[#f58220]">
-            Solutions
-          </p>
+    
+<div>
+  <p className="font-heading text-sm font-bold uppercase tracking-[0.18em] text-[#f58220]">
+    Solutions
+  </p>
 
-          <div className="mt-5 grid gap-3">
-            {SERVICES.map((service) => (
-              <Link
-                key={service.href}
-                to={service.href}
-                className="w-fit text-sm font-medium text-[#294f8f]/80 transition-all duration-200 hover:translate-x-1 hover:text-[#f58220]"
-              >
-                {service.title}
-              </Link>
-            ))}
-          </div>
-        </div>
+  <div className="mt-5 grid gap-3">
+    {SERVICES.map((service) => {
+      const Icon = getServiceIcon(service.title);
+
+      return (
+        <Link
+          key={service.href}
+          to={service.href}
+          className="group flex w-fit items-center gap-3 text-sm font-medium text-[#294f8f]/80 transition-all duration-200 hover:translate-x-1 hover:text-[#f58220]"
+        >
+          <Icon className="size-4 shrink-0 text-[#f58220] transition-transform duration-200 group-hover:scale-110" />
+          <span>{service.title}</span>
+        </Link>
+      );
+    })}
+  </div>
+</div>
+
 
         <div>
           <p className="font-heading text-sm font-bold uppercase tracking-[0.18em] text-[#f58220]">

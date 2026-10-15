@@ -19,6 +19,7 @@ import {
 } from "@/components/site/SiteChrome";
 
 
+
 export const Route = createRootRouteWithContext<{
   queryClient: QueryClient;
 }>()({
@@ -39,7 +40,7 @@ export const Route = createRootRouteWithContext<{
       {
         rel: "icon",
         type: "image/png",
-        href: "/mercurylogo.png",
+        href: "/models/mercurylogo.png",
       },
       {
         rel: "preconnect",

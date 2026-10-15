@@ -12,8 +12,15 @@ const enquirySchema = z.object({
 });
 
 export const submitEnquiry = createServerFn({ method: "POST" })
-  .inputValidator((data) => enquirySchema.parse(data))
-  .handler(async () => {
+  .validator((data) => enquirySchema.parse(data))
+  .handler(async ({ data }) => {
+    const enquiry = enquirySchema.parse(data);
+
+    console.log("Enquiry received:", {
+      ...enquiry,
+      receivedAt: new Date().toISOString(),
+    });
+
     throw new Error(
       "Online enquiry submission is temporarily unavailable. Please contact us by email or WhatsApp.",
     );

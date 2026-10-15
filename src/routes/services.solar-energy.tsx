@@ -3,7 +3,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { AnimatePresence, motion } from "motion/react";
 import { useState } from "react";
 import type { PointerEvent as ReactPointerEvent } from "react";
-import renewables from "@/assets/solar banner .jpeg";
+import renewables from "@/assets/solar banner.jpeg";
 import {
   EnquiryBand,
   PageHero,
