@@ -115,20 +115,30 @@ function Home() {
   ref={heroRef}
   className="relative isolate h-[100svh] min-h-[600px] w-full overflow-hidden bg-[#07182d] text-white"
 >
+
 {/* Background video */}
 <video
-  key="/media/intro.mp4"
   autoPlay
   muted
   loop
   playsInline
+  webkit-playsinline="true"
   preload="auto"
+  disablePictureInPicture
   aria-hidden="true"
-  onError={(e) => console.error("Hero video failed:", e.currentTarget.error)}
+  onCanPlay={(e) => {
+    e.currentTarget.play().catch((error) => {
+      console.warn("Hero video autoplay blocked:", error);
+    });
+  }}
+  onError={(e) => {
+    console.error("Hero video failed:", e.currentTarget.error);
+  }}
   className="absolute inset-0 z-0 h-full w-full object-cover object-center"
 >
   <source src="/media/intro.mp4" type="video/mp4" />
 </video>
+
 
 {/* Dark overlays — above video, below content */}
 <div className="pointer-events-none absolute inset-0 z-10 bg-gradient-to-r from-[#06152a]/75 via-[#07182d]/40 to-[#07182d]/10" />
@@ -156,11 +166,11 @@ function Home() {
       {/* Animated headline */}
       <div
         className="min-h-[2.15em] sm:min-h-[2.1em]"
-        aria-label="Built to perform. Engineered to last."
+        aria-label="Complete Solutions for Marine & Land-Based Boilers and Thermal Equipment."
       >
         <h1 className="text-5xl font-semibold leading-[1.04] tracking-[-0.055em] sm:text-6xl md:text-7xl lg:text-[6.5rem]">
           <TypewriterText
-            text="Built to perform"
+            text="Complete Solutions for Marine"
             delay={1500}
             className="text-white"
           />
@@ -168,7 +178,15 @@ function Home() {
 
           <br />
           <TypewriterText
-            text="Engineered to last"
+            text="Land-Based Boilers"
+            delay={2000}
+            className="text-white"
+          />
+          {" "}
+          <span className="text-[#f58220]">&</span>
+          <br/>
+          <TypewriterText
+            text="Thermal Equipment"
             delay={2000}
             className="text-white"
           />
