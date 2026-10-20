@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
-import { Environment, Lightformer, useGLTF } from "@react-three/drei";
+import { useGLTF } from "@react-three/drei";
 import { SkeletonUtils } from "three-stdlib";
 import * as THREE from "three";
 
@@ -22,24 +22,27 @@ function Sun() {
     clone.traverse((object) => {
       if (!(object instanceof THREE.Mesh)) return;
 
-      object.castShadow = true;
-      object.receiveShadow = true;
+      object.castShadow = false;
+      object.receiveShadow = false;
 
-      const materials = Array.isArray(object.material)
-        ? object.material
-        : [object.material];
+      // Extract the existing texture map from the imported material
+      const oldMat = Array.isArray(object.material)
+        ? object.material[0]
+        : object.material;
+      const texture = oldMat.map || oldMat.emissiveMap;
 
-      materials.forEach((material) => {
-        // Preserve the model's original colors and textures.
-        material.side = THREE.FrontSide;
-        material.needsUpdate = true;
+      if (texture) {
+        // Enforce sRGB color space so production bundlers don't desaturate it
+        texture.colorSpace = THREE.SRGBColorSpace;
+        texture.needsUpdate = true;
 
-        if (material instanceof THREE.MeshStandardMaterial ||
-            material instanceof THREE.MeshPhysicalMaterial) {
-          material.roughness = Math.min(material.roughness, 0.85);
-          material.envMapIntensity = 0.8;
-        }
-      });
+        // Replace with MeshBasicMaterial to show the exact texture colors
+        // without washed-out ambient reflections or tone-mapping loss
+        object.material = new THREE.MeshBasicMaterial({
+          map: texture,
+          side: THREE.FrontSide,
+        });
+      }
     });
   }, [clone]);
 
@@ -90,47 +93,17 @@ export default function SunScene() {
     <Canvas
       dpr={[1, 2]}
       camera={{ position: [0, 0, 7], fov: 45 }}
+      flat // Disables ACES tone-mapping so the texture colors render at 100% true saturation
       gl={{
         antialias: true,
         alpha: true,
         powerPreference: "high-performance",
-        toneMapping: THREE.ACESFilmicToneMapping,
-        toneMappingExposure: 1,
+        outputColorSpace: THREE.SRGBColorSpace,
       }}
       onPointerMissed={() => {
         document.body.style.cursor = "";
       }}
     >
-      <ambientLight intensity={0.45} color="#fff0d5" />
-
-      <directionalLight
-        position={[4, 5, 5]}
-        intensity={1.5}
-        color="#ffb45c"
-      />
-
-      <pointLight
-        position={[-4, -1, 3]}
-        intensity={0.65}
-        color="#ff6b24"
-      />
-
-      <Environment resolution={256}>
-        <Lightformer
-          intensity={1.2}
-          color="#ffd08a"
-          position={[0, 5, 0]}
-          scale={[10, 10, 1]}
-        />
-        <Lightformer
-          intensity={0.65}
-          color="#4e8fc8"
-          position={[-5, 1, -1]}
-          rotation-y={Math.PI / 2}
-          scale={[20, 2, 1]}
-        />
-      </Environment>
-
       <Sun />
     </Canvas>
   );
