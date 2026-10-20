@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
-import { useGLTF } from "@react-three/drei";
+import { Environment, Lightformer, useGLTF } from "@react-three/drei";
 import { SkeletonUtils } from "three-stdlib";
 import * as THREE from "three";
 
@@ -32,6 +32,12 @@ function Sun() {
       materials.forEach((material) => {
         material.side = THREE.FrontSide;
 
+        // Reset base tint and emission back to pure default (model's original texture colors)
+        material.color = new THREE.Color("#ffffff");
+        material.emissive = new THREE.Color("#000000");
+        material.emissiveIntensity = 0;
+
+        // Ensure textures are rendered in correct sRGB color space
         if (material.map) material.map.colorSpace = THREE.SRGBColorSpace;
         if (material.emissiveMap) material.emissiveMap.colorSpace = THREE.SRGBColorSpace;
 
@@ -39,17 +45,9 @@ function Sun() {
           material instanceof THREE.MeshStandardMaterial ||
           material instanceof THREE.MeshPhysicalMaterial
         ) {
-          // 1. Overdrive base red channel to 8x intensity (R: 8.0, G: 0.0, B: 0.0)
-          material.color.setRGB(8.0, 0.0, 0.0);
-
-          // 2. Overdrive emissive glow with pure crimson
-          material.emissive.setRGB(4.0, 0.0, 0.0);
-          material.emissiveIntensity = 2.5;
-
-          // 3. Kill all reflections so no ambient white or grey dilutes the red
-          material.roughness = 1.0;
-          material.metalness = 0.0;
-          material.envMapIntensity = 0.0;
+          material.roughness = 0.85;
+          // Keep envMap subtle so it doesn't leave a milky/faded film over the texture
+          material.envMapIntensity = 0.35;
         }
 
         material.needsUpdate = true;
@@ -108,31 +106,48 @@ export default function SunScene() {
         antialias: true,
         alpha: true,
         powerPreference: "high-performance",
-        // NoToneMapping prevents Three.js from converting intense reds into yellow/white
-        toneMapping: THREE.NoToneMapping,
+        toneMapping: THREE.ACESFilmicToneMapping,
+        // Kept at 0.85 to avoid overexposing the warm highlights into pale yellow
+        toneMappingExposure: 0.85,
         outputColorSpace: THREE.SRGBColorSpace,
       }}
       onPointerMissed={() => {
         document.body.style.cursor = "";
       }}
     >
-      {/* Deep dark maroon base ambient */}
-      <ambientLight intensity={0.5} color="#400000" />
+      {/* Warm, balanced ambient fill */}
+      <ambientLight intensity={0.4} color="#ffe0b2" />
 
-      {/* Pure maximum scarlet key light on the right hemisphere */}
+      {/* Main warm sun key light */}
       <directionalLight
-        position={[6, 1, 4]}
-        intensity={5.0}
-        color="#ff0000"
+        position={[4, 5, 5]}
+        intensity={1.2}
+        color="#ffab40"
       />
 
-      {/* Side spot creating the intense red half */}
+      {/* Warm orange depth fill */}
       <pointLight
-        position={[4, -1, 3]}
-        intensity={8.0}
-        distance={15}
-        color="#ff0000"
+        position={[-4, -1, 3]}
+        intensity={0.6}
+        color="#ff6e40"
       />
+
+      {/* Natural soft environment lightformers without cold blues */}
+      <Environment resolution={256}>
+        <Lightformer
+          intensity={0.8}
+          color="#ffd180"
+          position={[0, 5, 0]}
+          scale={[10, 10, 1]}
+        />
+        <Lightformer
+          intensity={0.4}
+          color="#ff9e80"
+          position={[-5, 1, -1]}
+          rotation-y={Math.PI / 2}
+          scale={[20, 2, 1]}
+        />
+      </Environment>
 
       <Sun />
     </Canvas>
