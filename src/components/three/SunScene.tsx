@@ -12,12 +12,34 @@ function Sun() {
 
   const canvasWidth = useThree((state) => state.size.width);
 
-  const responsiveScale = THREE.MathUtils.clamp(canvasWidth * 0.00025, 0.035, 0.26);
+  const responsiveScale = THREE.MathUtils.clamp(
+    canvasWidth * 0.00025,
+    0.035,
+    0.26,
+  );
+
   useEffect(() => {
     clone.traverse((object) => {
-      if ((object as THREE.Mesh).isMesh) {
-        (object as THREE.Mesh).castShadow = true;
-      }
+      if (!(object instanceof THREE.Mesh)) return;
+
+      object.castShadow = true;
+      object.receiveShadow = true;
+
+      const materials = Array.isArray(object.material)
+        ? object.material
+        : [object.material];
+
+      materials.forEach((material) => {
+        // Preserve the model's original colors and textures.
+        material.side = THREE.FrontSide;
+        material.needsUpdate = true;
+
+        if (material instanceof THREE.MeshStandardMaterial ||
+            material instanceof THREE.MeshPhysicalMaterial) {
+          material.roughness = Math.min(material.roughness, 0.85);
+          material.envMapIntensity = 0.8;
+        }
+      });
     });
   }, [clone]);
 
@@ -28,7 +50,6 @@ function Sun() {
     const frameDelta = Math.min(delta, 0.05);
     const easing = 1 - Math.exp(-3 * frameDelta);
 
-    // Continuous clockwise rotation
     current.rotation.y -= frameDelta * (hovered ? 0.55 : 0.18);
 
     current.rotation.x = THREE.MathUtils.lerp(
@@ -52,8 +73,12 @@ function Sun() {
       onPointerEnter={(event) => {
         event.stopPropagation();
         setHovered(true);
+        document.body.style.cursor = "grab";
       }}
-      onPointerLeave={() => setHovered(false)}
+      onPointerLeave={() => {
+        setHovered(false);
+        document.body.style.cursor = "";
+      }}
     >
       <primitive object={clone} />
     </group>
@@ -63,20 +88,42 @@ function Sun() {
 export default function SunScene() {
   return (
     <Canvas
-      dpr={[1, 1.5]}
+      dpr={[1, 2]}
       camera={{ position: [0, 0, 7], fov: 45 }}
-      gl={{ antialias: true, alpha: true }}
+      gl={{
+        antialias: true,
+        alpha: true,
+        powerPreference: "high-performance",
+        toneMapping: THREE.ACESFilmicToneMapping,
+        toneMappingExposure: 1,
+      }}
       onPointerMissed={() => {
         document.body.style.cursor = "";
       }}
     >
-      <ambientLight intensity={1.2} />
-      <directionalLight position={[4, 5, 5]} intensity={3} color="#ffb35a" />
+      <ambientLight intensity={0.45} color="#fff0d5" />
 
-      <Environment>
-        <Lightformer intensity={2} position={[0, 5, 0]} scale={[10, 10, 1]} />
+      <directionalLight
+        position={[4, 5, 5]}
+        intensity={1.5}
+        color="#ffb45c"
+      />
+
+      <pointLight
+        position={[-4, -1, 3]}
+        intensity={0.65}
+        color="#ff6b24"
+      />
+
+      <Environment resolution={256}>
         <Lightformer
-          intensity={1}
+          intensity={1.2}
+          color="#ffd08a"
+          position={[0, 5, 0]}
+          scale={[10, 10, 1]}
+        />
+        <Lightformer
+          intensity={0.65}
           color="#4e8fc8"
           position={[-5, 1, -1]}
           rotation-y={Math.PI / 2}
