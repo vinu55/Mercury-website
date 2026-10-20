@@ -1,6 +1,5 @@
-
 import { useRef, useState, type FormEvent, type ReactNode } from "react";
-import { useServerFn } from "@tanstack/react-start";
+
 import {
   ArrowRight,
   CheckCircle2,
@@ -12,6 +11,8 @@ import {
   Upload,
   X,
 } from "lucide-react";
+
+import emailjs from "@emailjs/browser";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -26,7 +27,6 @@ import {
 } from "@/components/ui/select";
 
 import { SERVICES } from "@/lib/site-data";
-import { submitEnquiry } from "@/lib/enquiries.functions";
 
 type FormState = "idle" | "sending" | "sent" | "error";
 
@@ -67,12 +67,7 @@ function fileToBase64(file: File): Promise<string> {
   });
 }
 
-export function EnquiryForm({
-  initialService = "",
-}: {
-  initialService?: string;
-}) {
-  const submit = useServerFn(submitEnquiry);
+export function EnquiryForm({ initialService = "" }: { initialService?: string }) {
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const [service, setService] = useState(initialService);
@@ -107,8 +102,7 @@ export function EnquiryForm({
         }
 
         const duplicate = next.some(
-          ({ file: existing }) =>
-            existing.name === file.name && existing.size === file.size,
+          ({ file: existing }) => existing.name === file.name && existing.size === file.size,
         );
 
         if (duplicate) continue;
@@ -141,53 +135,46 @@ export function EnquiryForm({
   async function onSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
 
-    if (!service || state === "sending") return;
-
-    if (attachments.length > MAX_FILES) {
-      setFileError("You can attach a maximum of 5 files.");
-      return;
-    }
+    if (!service || state === "sending" || fileError) return;
 
     const formElement = e.currentTarget;
     const form = new FormData(formElement);
 
     setState("sending");
-    setFileError("");
 
     try {
-      const encodedAttachments = await Promise.all(
-        attachments.map(async ({ file }) => ({
-          name: file.name,
-          type: file.type,
-          size: file.size,
-          content: await fileToBase64(file),
-        })),
-      );
+      const attachmentNames = attachments.map(({ file }) => file.name).join(", ");
 
-      // Your server function must be updated to accept the attachments field.
-      await submit({
-        data: {
+      await emailjs.send(
+        import.meta.env.VITE_EMAILJS_SERVICE_ID,
+        import.meta.env.VITE_EMAILJS_TEMPLATE_ID,
+        {
           name: String(form.get("name") || ""),
           company: String(form.get("company") || ""),
           email: String(form.get("email") || ""),
           phone: String(form.get("phone") || ""),
-          serviceInterest: service,
+          service_interest: service,
           message: String(form.get("message") || ""),
-          attachments: encodedAttachments,
+          attachments: attachmentNames || "No files attached",
         },
-      });
+        {
+          publicKey: import.meta.env.VITE_EMAILJS_PUBLIC_KEY,
+        },
+      );
 
       formElement.reset();
-      setService("");
+      setService(initialService);
       setAttachments([]);
+      setFileError("");
       setState("sent");
-    } catch {
+    } catch (error) {
+      console.error("EmailJS submission failed:", error);
       setState("error");
     }
   }
 
   function resetForm() {
-    setService("");
+    setService(initialService);
     setAttachments([]);
     setFileError("");
     setState("idle");
@@ -215,8 +202,8 @@ export function EnquiryForm({
         </h2>
 
         <p className="mt-3 max-w-sm text-sm leading-6 text-slate-500">
-          Your enquiry has been received. Our team will review your
-          requirements and get back to you.
+          Your enquiry has been received. Our team will review your requirements and get back to
+          you.
         </p>
 
         <Button
@@ -233,11 +220,7 @@ export function EnquiryForm({
   }
 
   return (
-    <form
-      onSubmit={onSubmit}
-      aria-label="Enquiry form"
-      className="grid gap-6"
-    >
+    <form onSubmit={onSubmit} aria-label="Enquiry form" className="grid gap-6">
       <div className="grid gap-5 sm:grid-cols-2">
         <Field label="Full name" htmlFor="name" required>
           <Input
@@ -288,9 +271,9 @@ export function EnquiryForm({
       <Field label="Service interest" htmlFor="service" required>
         <Select required value={service} onValueChange={setService}>
           <SelectTrigger
-  id="service"
-  className="h-12 w-full rounded-xl border-sky-200 bg-sky-50/60 px-4 text-sm shadow-none transition-colors focus:ring-2 focus:ring-sky-400/20 focus:ring-offset-0 data-[placeholder]:text-slate-400"
->
+            id="service"
+            className="h-12 w-full rounded-xl border-sky-200 bg-sky-50/60 px-4 text-sm shadow-none transition-colors focus:ring-2 focus:ring-sky-400/20 focus:ring-offset-0 data-[placeholder]:text-slate-400"
+          >
             <SelectValue placeholder="Select a solution" />
           </SelectTrigger>
 
@@ -311,7 +294,8 @@ export function EnquiryForm({
           placeholder="Tell us about your project, technical requirements, or the solution you're looking for..."
           required
           minLength={10}
-          className="min-h-36 resize-y rounded-xl border-sky-200 bg-sky-50/60 px-4 py-3 text-sm leading-6 shadow-none transition-colors placeholder:text-slate-400 focus-visible:border-sky-400 focus-visible:ring-2 focus-visible:ring-sky-400/20"/>
+          className="min-h-36 resize-y rounded-xl border-sky-200 bg-sky-50/60 px-4 py-3 text-sm leading-6 shadow-none transition-colors placeholder:text-slate-400 focus-visible:border-sky-400 focus-visible:ring-2 focus-visible:ring-sky-400/20"
+        />
 
         <p className="text-xs leading-5 text-slate-400">
           Include any relevant specifications, capacity requirements, or project details.
@@ -321,12 +305,8 @@ export function EnquiryForm({
       {/* File attachments */}
       <div className="grid gap-3">
         <div>
-          <Label
-            htmlFor="project-attachments"
-            className="text-[13px] font-medium text-[#061A34]"
-          >
-            Project files{" "}
-            <span className="font-normal text-slate-400">(optional)</span>
+          <Label htmlFor="project-attachments" className="text-[13px] font-medium text-[#061A34]">
+            Project files <span className="font-normal text-slate-400">(optional)</span>
           </Label>
 
           <p className="mt-1 text-xs leading-5 text-slate-500">
@@ -347,15 +327,13 @@ export function EnquiryForm({
         <button
           type="button"
           onClick={() => fileInputRef.current?.click()}
-          className="group flex min-h-32 w-full flex-col items-center justify-center rounded-xl border border-dashed border-sky-300 bg-sky-50/70 px-5 py-6 text-center transition-colors hover:border-sky-400 hover:bg-sky-100/70 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-400/40">
-
+          className="group flex min-h-32 w-full flex-col items-center justify-center rounded-xl border border-dashed border-sky-300 bg-sky-50/70 px-5 py-6 text-center transition-colors hover:border-sky-400 hover:bg-sky-100/70 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-400/40"
+        >
           <span className="flex size-11 items-center justify-center rounded-xl border border-sky-200 bg-white text-sky-600 transition-colors group-hover:border-sky-300 group-hover:text-sky-700">
             <Upload className="size-5" />
           </span>
 
-          <span className="mt-3 text-sm font-medium text-[#061A34]">
-            Click to upload files
-          </span>
+          <span className="mt-3 text-sm font-medium text-[#061A34]">Click to upload files</span>
 
           <span className="mt-1 text-xs text-slate-500">
             JPG, PNG, WebP or PDF · 10 MB per file · 5 files maximum
@@ -378,12 +356,8 @@ export function EnquiryForm({
                 </div>
 
                 <div className="min-w-0 flex-1">
-                  <p className="truncate text-sm font-medium text-slate-700">
-                    {file.name}
-                  </p>
-                  <p className="mt-0.5 text-xs text-slate-400">
-                    {formatBytes(file.size)}
-                  </p>
+                  <p className="truncate text-sm font-medium text-slate-700">{file.name}</p>
+                  <p className="mt-0.5 text-xs text-slate-400">{formatBytes(file.size)}</p>
                 </div>
 
                 <button
@@ -416,9 +390,7 @@ export function EnquiryForm({
           </div>
 
           <div>
-            <p className="text-sm font-medium text-red-800">
-              We couldn't send your enquiry.
-            </p>
+            <p className="text-sm font-medium text-red-800">We couldn't send your enquiry.</p>
             <p className="mt-1 text-sm leading-5 text-red-700">
               Please try again. You can also contact our team directly.
             </p>
@@ -431,7 +403,8 @@ export function EnquiryForm({
           type="submit"
           size="lg"
           disabled={state === "sending" || !service}
-          className="group h-12 w-full rounded-xl bg-[#F58220] px-6 text-sm font-semibold text-white shadow-sm transition-all duration-200 hover:bg-[#E87512] hover:shadow-md disabled:cursor-not-allowed disabled:opacity-50 sm:w-auto sm:min-w-48">
+          className="group h-12 w-full rounded-xl bg-[#F58220] px-6 text-sm font-semibold text-white shadow-sm transition-all duration-200 hover:bg-[#E87512] hover:shadow-md disabled:cursor-not-allowed disabled:opacity-50 sm:w-auto sm:min-w-48"
+        >
           {state === "sending" ? (
             <>
               <Loader2 className="mr-2 size-4 animate-spin" />
@@ -467,10 +440,7 @@ function Field({
 }) {
   return (
     <div className="grid min-w-0 gap-2">
-      <Label
-        htmlFor={htmlFor}
-        className="text-[13px] font-medium text-[#061A34]"
-      >
+      <Label htmlFor={htmlFor} className="text-[13px] font-medium text-[#061A34]">
         {label}
         {required && (
           <span aria-hidden="true" className="ml-1 text-[#F58220]">

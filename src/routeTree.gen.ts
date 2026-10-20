@@ -11,7 +11,10 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AboutRouteImport } from './routes/about'
+import { Route as CareersRouteImport } from './routes/careers'
+import { Route as CaseStudyRouteImport } from './routes/case-study'
 import { Route as ContactRouteImport } from './routes/contact'
+import { Route as UpdatesRouteImport } from './routes/updates'
 import { Route as ServicesBiomassFuelRouteImport } from './routes/services.biomass-fuel'
 import { Route as ServicesLandBoilerRouteImport } from './routes/services.land-boiler'
 import { Route as ServicesMarineBoilerRouteImport } from './routes/services.marine-boiler'
@@ -28,9 +31,24 @@ const AboutRoute = AboutRouteImport.update({
   path: '/about',
   getParentRoute: () => rootRouteImport,
 } as any)
+const CareersRoute = CareersRouteImport.update({
+  id: '/careers',
+  path: '/careers',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CaseStudyRoute = CaseStudyRouteImport.update({
+  id: '/case-study',
+  path: '/case-study',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ContactRoute = ContactRouteImport.update({
   id: '/contact',
   path: '/contact',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const UpdatesRoute = UpdatesRouteImport.update({
+  id: '/updates',
+  path: '/updates',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ServicesBiomassFuelRoute = ServicesBiomassFuelRouteImport.update({
@@ -62,7 +80,10 @@ const ServicesSparePartsRoute = ServicesSparePartsRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
+  '/careers': typeof CareersRoute
+  '/case-study': typeof CaseStudyRoute
   '/contact': typeof ContactRoute
+  '/updates': typeof UpdatesRoute
   '/services/biomass-fuel': typeof ServicesBiomassFuelRoute
   '/services/land-boiler': typeof ServicesLandBoilerRoute
   '/services/marine-boiler': typeof ServicesMarineBoilerRoute
@@ -72,7 +93,10 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
+  '/careers': typeof CareersRoute
+  '/case-study': typeof CaseStudyRoute
   '/contact': typeof ContactRoute
+  '/updates': typeof UpdatesRoute
   '/services/biomass-fuel': typeof ServicesBiomassFuelRoute
   '/services/land-boiler': typeof ServicesLandBoilerRoute
   '/services/marine-boiler': typeof ServicesMarineBoilerRoute
@@ -83,7 +107,10 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
+  '/careers': typeof CareersRoute
+  '/case-study': typeof CaseStudyRoute
   '/contact': typeof ContactRoute
+  '/updates': typeof UpdatesRoute
   '/services/biomass-fuel': typeof ServicesBiomassFuelRoute
   '/services/land-boiler': typeof ServicesLandBoilerRoute
   '/services/marine-boiler': typeof ServicesMarineBoilerRoute
@@ -95,7 +122,10 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/about'
+    | '/careers'
+    | '/case-study'
     | '/contact'
+    | '/updates'
     | '/services/biomass-fuel'
     | '/services/land-boiler'
     | '/services/marine-boiler'
@@ -105,7 +135,10 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/about'
+    | '/careers'
+    | '/case-study'
     | '/contact'
+    | '/updates'
     | '/services/biomass-fuel'
     | '/services/land-boiler'
     | '/services/marine-boiler'
@@ -115,7 +148,10 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/about'
+    | '/careers'
+    | '/case-study'
     | '/contact'
+    | '/updates'
     | '/services/biomass-fuel'
     | '/services/land-boiler'
     | '/services/marine-boiler'
@@ -126,7 +162,10 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AboutRoute: typeof AboutRoute
+  CareersRoute: typeof CareersRoute
+  CaseStudyRoute: typeof CaseStudyRoute
   ContactRoute: typeof ContactRoute
+  UpdatesRoute: typeof UpdatesRoute
   ServicesBiomassFuelRoute: typeof ServicesBiomassFuelRoute
   ServicesLandBoilerRoute: typeof ServicesLandBoilerRoute
   ServicesMarineBoilerRoute: typeof ServicesMarineBoilerRoute
@@ -150,11 +189,32 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AboutRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/careers': {
+      id: '/careers'
+      path: '/careers'
+      fullPath: '/careers'
+      preLoaderRoute: typeof CareersRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/case-study': {
+      id: '/case-study'
+      path: '/case-study'
+      fullPath: '/case-study'
+      preLoaderRoute: typeof CaseStudyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/contact': {
       id: '/contact'
       path: '/contact'
       fullPath: '/contact'
       preLoaderRoute: typeof ContactRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/updates': {
+      id: '/updates'
+      path: '/updates'
+      fullPath: '/updates'
+      preLoaderRoute: typeof UpdatesRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/services/biomass-fuel': {
@@ -198,7 +258,10 @@ declare module '@tanstack/react-router' {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AboutRoute: AboutRoute,
+  CareersRoute: CareersRoute,
+  CaseStudyRoute: CaseStudyRoute,
   ContactRoute: ContactRoute,
+  UpdatesRoute: UpdatesRoute,
   ServicesBiomassFuelRoute: ServicesBiomassFuelRoute,
   ServicesLandBoilerRoute: ServicesLandBoilerRoute,
   ServicesMarineBoilerRoute: ServicesMarineBoilerRoute,

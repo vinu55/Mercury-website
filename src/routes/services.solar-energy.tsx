@@ -1,13 +1,9 @@
-
 import { createFileRoute } from "@tanstack/react-router";
 import { AnimatePresence, motion } from "motion/react";
 import { useState } from "react";
 import type { PointerEvent as ReactPointerEvent } from "react";
 import renewables from "@/assets/solar banner.jpeg";
-import {
-  EnquiryBand,
-  PageHero,
-} from "@/components/site/PageShell";
+import { EnquiryBand, PageHero } from "@/components/site/PageShell";
 
 type SolarService = {
   number: string;
@@ -17,68 +13,28 @@ type SolarService = {
 };
 
 const solutions = [
-  "Solar Park",
   "Solar Rooftop",
   "Solar Water Heating",
-  "Solar Generator",
-  "Solar Trees (Solar Hub)",
   "Operations & Maintenance (O&M)",
-  "CSR & Corporate Gifting",
 ] as const;
 
-const serviceDescriptions: Record<
-  (typeof solutions)[number],
-  string
-> = {
-  "Solar Park":
-    "Solar park solutions for large-scale energy generation, planned around available land, project requirements and energy demand.",
+const serviceDescriptions: Record<(typeof solutions)[number], string> = {
   "Solar Rooftop":
     "Rooftop solar systems for commercial and industrial facilities, making productive use of existing roof space.",
   "Solar Water Heating":
     "Solar thermal solutions designed to provide hot water for suitable commercial and industrial applications.",
-  "Solar Generator":
-    "Solar power generation solutions planned around site conditions, energy requirements and project objectives.",
-  "Solar Trees (Solar Hub)":
-    "Space-efficient solar tree concepts that combine renewable energy generation with distinctive architectural design.",
   "Operations & Maintenance (O&M)":
     "Inspection, performance monitoring and maintenance support to help solar installations operate reliably.",
-  "CSR & Corporate Gifting":
-    "Solar-themed corporate gifting and sustainability initiatives for organisations looking to support environmental awareness.",
 };
 
-const serviceImages = [
-  "/media/s1.jpeg",
-  "/media/s2.jpeg",
-  "/media/s3.jpeg",
-  "/media/s4.jpeg",
-  "/media/s5.jpeg",
-  "/media/s6.jpeg",
-  "/media/s7.jpeg",
-];
+const serviceImages = ["/media/s02.jpeg", "/media/s03.jpeg", "/media/s06.jpeg"];
 
-const solarServices: SolarService[] = solutions.map(
-  (title, index) => ({
-    number: String(index + 1).padStart(2, "0"),
-    title,
-    description: serviceDescriptions[title],
-    image: serviceImages[index] ?? "/media/Solar Panel.png",
-  }),
-);
-
-const process = [
-  "Consultation and Feasibility Study",
-  "Customized Proposal",
-  "Professional Installation",
-  "System Activation & Monitoring",
-  "Maintenance & Support",
-];
-
-const benefits = [
-  "Sustainable Energy",
-  "Cost Savings",
-  "Net Zero",
-  "Long-Term Reliability",
-];
+const solarServices: SolarService[] = solutions.map((title, index) => ({
+  number: String(index + 1).padStart(2, "0"),
+  title,
+  description: serviceDescriptions[title],
+  image: serviceImages[index] ?? "/media/Solar Panel.png",
+}));
 
 export const Route = createFileRoute("/services/solar-energy")({
   head: () => ({
@@ -97,8 +53,7 @@ export const Route = createFileRoute("/services/solar-energy")({
       },
       {
         property: "og:description",
-        content:
-          "Industrial and commercial solar delivery from feasibility to support.",
+        content: "Industrial and commercial solar delivery from feasibility to support.",
       },
       {
         property: "og:type",
@@ -127,18 +82,14 @@ function Page() {
       <section className="bg-white px-5 py-20 sm:px-8 lg:py-24">
         <div className="mx-auto max-w-7xl">
           <div className="mb-12">
-            <p className="text-xs font-semibold uppercase tracking-[0.24em] text-[#f58220]">
-              Industrial & commercial projects
-            </p>
-
             <h2 className="mt-3 text-3xl font-semibold tracking-tight text-[#061a34] sm:text-4xl">
               Solar Energy Services
               <span className="text-[#f58220]">.</span>
             </h2>
 
             <p className="mt-4 max-w-2xl leading-7 text-slate-600">
-              Explore our solar solutions for commercial and industrial
-              energy requirements. Select a service to learn more.
+              Explore our solar solutions for commercial and industrial energy requirements. Select
+              a service to learn more.
             </p>
           </div>
 
@@ -148,150 +99,20 @@ function Page() {
 
       {/* OUR PROCESS */}
 
-
-{/* OUR PROCESS */}
-<section className="overflow-hidden bg-[#061a34] py-20 text-white">
-  <div className="mx-auto max-w-[1440px] px-5 lg:px-10">
-    <p className="text-xs font-semibold uppercase tracking-[0.24em] text-[#f58220]">
-      Our process
-    </p>
-
-    <h2 className="mt-4 max-w-3xl text-3xl font-semibold leading-tight tracking-tight sm:text-4xl lg:text-5xl">
-      From feasibility to ongoing support
-      <span className="text-[#f58220]">.</span>
-    </h2>
-
-    <p className="mt-5 max-w-2xl text-base leading-7 text-white/65">
-      A structured approach to delivering reliable solar energy solutions,
-      from initial assessment to long-term system performance.
-    </p>
-  </div>
-
-  <div className="solar-process-marquee mt-12">
-    <div className="solar-process-track">
-      {[...process, ...process].map((step, index) => (
-        <div
-          key={`${step}-${index}`}
-          className="solar-process-card group relative flex min-h-[290px] w-[280px] shrink-0 cursor-pointer items-center justify-center overflow-hidden rounded-2xl border border-white/10 bg-[#0b2545] p-7 text-center text-white transition-all duration-300 hover:-translate-y-2 hover:border-[#f58220] hover:bg-[#f58220] hover:text-white hover:shadow-xl sm:w-[320px] sm:p-8"
-        >
-          <div
-            aria-hidden="true"
-            className="pointer-events-none absolute -right-12 -top-12 size-40 rounded-full bg-[#f58220]/10 blur-3xl transition-all duration-500 group-hover:bg-white/20"
-          />
-
-          <div className="relative z-10">
-            <h3 className="text-2xl font-semibold leading-snug tracking-tight">
-              {step}
-            </h3>
-
-            <div className="mx-auto mt-5 h-1 w-12 rounded-full bg-[#f58220] transition-all duration-300 group-hover:w-20 group-hover:bg-white" />
-          </div>
-        </div>
-      ))}
-    </div>
-  </div>
-
-  <style>{`
-    .solar-process-marquee {
-      width: 100%;
-      overflow: hidden;
-    }
-
-    .solar-process-track {
-      display: flex;
-      width: max-content;
-      gap: 1.25rem;
-      animation: solar-process-scroll 32s linear infinite;
-      will-change: transform;
-    }
-
-    .solar-process-marquee:hover .solar-process-track {
-      animation-play-state: paused;
-    }
-
-    @keyframes solar-process-scroll {
-      from {
-        transform: translateX(0);
-      }
-
-      to {
-        transform: translateX(calc(-50% - 0.625rem));
-      }
-    }
-
-    @media (prefers-reduced-motion: reduce) {
-      .solar-process-track {
-        animation: none;
-      }
-
-      .solar-process-card {
-        transition: none;
-      }
-    }
-  `}</style>
-</section>
-
-
-{/* BENEFITS */}
-<section className="bg-[#f5f7fa] px-5 py-20 sm:px-8 lg:py-24">
-  <div className="mx-auto max-w-7xl">
-    <p className="text-left text-xs font-semibold uppercase tracking-[0.24em] text-[#f58220]">
-  Benefits
-</p>
-
-<h2 className="mt-3 text-left text-3xl font-semibold tracking-tight text-[#061a34] sm:text-4xl">
-  Designed for long-term value
-  <span className="text-[#f58220]">.</span>
-</h2>
-
-    <div className="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
-      {benefits.map((benefit, index) => (
-        <motion.div
-          key={benefit}
-          initial={{ opacity: 0, y: 24 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, amount: 0.2 }}
-          transition={{
-            duration: 0.45,
-            delay: index * 0.08,
-          }}
-          whileHover={{ y: -8 }}
-          className="group flex min-h-[170px] cursor-pointer items-center justify-center rounded-2xl bg-white p-7 text-center shadow-sm transition-shadow duration-300 hover:shadow-xl"
-        >
-          <h3 className="text-xl font-semibold tracking-tight text-[#061a34] transition-colors duration-300 group-hover:text-[#f58220]">
-            {benefit}
-          </h3>
-        </motion.div>
-      ))}
-    </div>
-  </div>
-</section>
-
-
       <EnquiryBand service="your solar project" />
     </main>
   );
 }
 
-function SolarServiceAccordionList({
-  items,
-}: {
-  items: SolarService[];
-}) {
+function SolarServiceAccordionList({ items }: { items: SolarService[] }) {
   const [openIndex, setOpenIndex] = useState<number | null>(null);
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
   const [pointer, setPointer] = useState({ x: 24, y: 24 });
 
-  const hoveredService =
-    hoveredIndex !== null ? items[hoveredIndex] : undefined;
+  const hoveredService = hoveredIndex !== null ? items[hoveredIndex] : undefined;
 
-  function handlePointerMove(
-    event: ReactPointerEvent<HTMLDivElement>,
-  ) {
-    if (
-      event.pointerType !== "mouse" &&
-      event.pointerType !== "pen"
-    ) {
+  function handlePointerMove(event: ReactPointerEvent<HTMLDivElement>) {
+    if (event.pointerType !== "mouse" && event.pointerType !== "pen") {
       return;
     }
 
@@ -327,28 +148,19 @@ function SolarServiceAccordionList({
           <div
             key={service.number}
             onPointerEnter={(event) => {
-              if (
-                event.pointerType === "mouse" ||
-                event.pointerType === "pen"
-              ) {
+              if (event.pointerType === "mouse" || event.pointerType === "pen") {
                 setHoveredIndex(index);
               }
             }}
             onPointerLeave={(event) => {
-              if (
-                event.pointerType === "mouse" ||
-                event.pointerType === "pen"
-              ) {
+              if (event.pointerType === "mouse" || event.pointerType === "pen") {
                 setHoveredIndex(null);
               }
             }}
             onPointerMove={handlePointerMove}
             onClick={() => setOpenIndex(isOpen ? null : index)}
             onKeyDown={(event) => {
-              if (
-                event.key === "Enter" ||
-                event.key === " "
-              ) {
+              if (event.key === "Enter" || event.key === " ") {
                 event.preventDefault();
                 setOpenIndex(isOpen ? null : index);
               }
@@ -432,9 +244,6 @@ function SolarServiceAccordionList({
               alt={hoveredService.title}
               className="h-full w-full object-cover"
             />
-
-            
-            
           </motion.div>
         )}
       </AnimatePresence>

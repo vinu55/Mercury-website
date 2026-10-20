@@ -1,4 +1,3 @@
-
 import { Link } from "@tanstack/react-router";
 import { ArrowRight } from "lucide-react";
 import { motion } from "motion/react";
@@ -18,13 +17,7 @@ export function PageHero({
   return (
     <section className="relative overflow-hidden bg-primary pt-20 text-primary-foreground">
       <div className="absolute inset-0 opacity-30">
-        {image && (
-          <img
-            src={image}
-            alt=""
-            className="h-full w-full object-cover"
-          />
-        )}
+        {image && <img src={image} alt="" className="h-full w-full object-cover" />}
       </div>
 
       <div className="absolute inset-0 bg-hero-overlay" />
@@ -80,9 +73,7 @@ export function EnquiryBand({ service }: { service: string }) {
       <div className="mx-auto flex max-w-[1440px] flex-col items-start justify-between gap-8 px-5 lg:flex-row lg:items-center lg:px-10">
         <div>
           <p className="eyebrow">Start a conversation</p>
-          <h2 className="mt-3 text-3xl font-semibold sm:text-4xl">
-            Need support with {service}?
-          </h2>
+          <h2 className="mt-3 text-3xl font-semibold sm:text-4xl">Need support with {service}?</h2>
         </div>
         <Button asChild size="lg" variant="secondary">
           <Link to="/contact" search={{ service }}>

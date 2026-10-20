@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import { Canvas, useFrame } from "@react-three/fiber";
+import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import { Environment, Lightformer, useGLTF } from "@react-three/drei";
 import { SkeletonUtils } from "three-stdlib";
 import * as THREE from "three";
@@ -10,14 +10,9 @@ function Sun() {
   const clone = useMemo(() => SkeletonUtils.clone(scene), [scene]);
   const [hovered, setHovered] = useState(false);
 
-  useEffect(() => {
-    document.body.style.cursor = hovered ? "grab" : "";
+  const canvasWidth = useThree((state) => state.size.width);
 
-    return () => {
-      document.body.style.cursor = "";
-    };
-  }, [hovered]);
-
+  const responsiveScale = THREE.MathUtils.clamp(canvasWidth * 0.00025, 0.035, 0.26);
   useEffect(() => {
     clone.traverse((object) => {
       if ((object as THREE.Mesh).isMesh) {
@@ -32,12 +27,16 @@ function Sun() {
 
     const frameDelta = Math.min(delta, 0.05);
     const easing = 1 - Math.exp(-3 * frameDelta);
-    current.rotation.y += frameDelta * (hovered ? 0.55 : 0.18);
+
+    // Continuous clockwise rotation
+    current.rotation.y -= frameDelta * (hovered ? 0.55 : 0.18);
+
     current.rotation.x = THREE.MathUtils.lerp(
       current.rotation.x,
       hovered ? state.pointer.y * 0.16 : 0,
       easing,
     );
+
     current.rotation.z = THREE.MathUtils.lerp(
       current.rotation.z,
       hovered ? -state.pointer.x * 0.16 : 0,
@@ -48,7 +47,8 @@ function Sun() {
   return (
     <group
       ref={group}
-      scale={0.18}
+      scale={responsiveScale}
+      position={[0, 0, 0]}
       onPointerEnter={(event) => {
         event.stopPropagation();
         setHovered(true);
@@ -64,24 +64,17 @@ export default function SunScene() {
   return (
     <Canvas
       dpr={[1, 1.5]}
-      camera={{ position: [0, 0, 6], fov: 40 }}
+      camera={{ position: [0, 0, 7], fov: 45 }}
       gl={{ antialias: true, alpha: true }}
       onPointerMissed={() => {
         document.body.style.cursor = "";
       }}
     >
       <ambientLight intensity={1.2} />
-      <directionalLight
-        position={[4, 5, 5]}
-        intensity={3}
-        color="#ffb35a"
-      />
+      <directionalLight position={[4, 5, 5]} intensity={3} color="#ffb35a" />
+
       <Environment>
-        <Lightformer
-          intensity={2}
-          position={[0, 5, 0]}
-          scale={[10, 10, 1]}
-        />
+        <Lightformer intensity={2} position={[0, 5, 0]} scale={[10, 10, 1]} />
         <Lightformer
           intensity={1}
           color="#4e8fc8"
@@ -90,6 +83,7 @@ export default function SunScene() {
           scale={[20, 2, 1]}
         />
       </Environment>
+
       <Sun />
     </Canvas>
   );

@@ -1,6 +1,9 @@
-
 import { createFileRoute } from "@tanstack/react-router";
+import { useRef } from "react";
 import {
+  ArrowLeft,
+  ChevronLeft,
+  ChevronRight,
   ArrowRight,
   Search,
   Wrench,
@@ -14,20 +17,12 @@ import {
   Package,
 } from "lucide-react";
 import { motion } from "motion/react";
-import {
-  useMemo,
-  useState,
-  type PointerEvent as ReactPointerEvent,
-} from "react";
+import { useMemo, useState, type PointerEvent as ReactPointerEvent } from "react";
 import marine from "@/assets/spare part banner.jpeg";
-import {
-  EnquiryBand,
-  PageHero,
-} from "@/components/site/PageShell";
+import { EnquiryBand, PageHero } from "@/components/site/PageShell";
 import { Input } from "@/components/ui/input";
 
 import { AnimatePresence } from "motion/react";
-
 
 export const Route = createFileRoute("/services/spare-parts")({
   ssr: false,
@@ -47,8 +42,7 @@ export const Route = createFileRoute("/services/spare-parts")({
       },
       {
         property: "og:description",
-        content:
-          "Specialist sourcing across boiler, burner, pump, valve and control components.",
+        content: "Specialist sourcing across boiler, burner, pump, valve and control components.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
@@ -111,13 +105,7 @@ const categories = [
 const manufacturerGroups = [
   {
     name: "Boilers",
-    brands: [
-      "Aalborg",
-      "Kangrim",
-      "Saacke",
-      "Osaka",
-      "Greens",
-    ],
+    brands: ["Aalborg", "Kangrim", "Saacke", "Osaka", "Greens"],
   },
   {
     name: "Burners",
@@ -134,33 +122,15 @@ const manufacturerGroups = [
   },
   {
     name: "Pumps",
-    brands: [
-      "Allweiler",
-      "Grundfos",
-      "Dickow",
-      "KBS",
-      "Kral",
-      "Suntec",
-      "Danfoss",
-    ],
+    brands: ["Allweiler", "Grundfos", "Dickow", "KBS", "Kral", "Suntec", "Danfoss"],
   },
   {
     name: "Water Control",
-    brands: [
-      "Igema",
-      "Mobrey",
-      "Gestra",
-      "Spirax",
-      "Wika",
-    ],
+    brands: ["Igema", "Mobrey", "Gestra", "Spirax", "Wika"],
   },
   {
     name: "Engine",
-    brands: [
-      "Wärtsilä Corporation",
-      "Mitsubishi Heavy Industries",
-      "Hyundai Heavy Industries",
-    ],
+    brands: ["Wärtsilä Corporation", "Mitsubishi Heavy Industries", "Hyundai Heavy Industries"],
   },
   {
     name: "Tank Management System",
@@ -176,42 +146,19 @@ const manufacturerGroups = [
   },
   {
     name: "Smoke Density",
-    brands: [
-      "Mobrey",
-      "Green Instruments",
-      "Skil",
-      "Sick",
-      "Fuji Electric",
-    ],
+    brands: ["Mobrey", "Green Instruments", "Skil", "Sick", "Fuji Electric"],
   },
   {
     name: "Valves",
-    brands: [
-      "ARI",
-      "Leser",
-      "NAF",
-      "Meson",
-      "Klinger",
-      "Barker & Bille",
-    ],
+    brands: ["ARI", "Leser", "NAF", "Meson", "Klinger", "Barker & Bille"],
   },
   {
     name: "Water Level",
-    brands: [
-      "Danfoss",
-      "EGO",
-      "Parker",
-      "Econosto",
-    ],
+    brands: ["Danfoss", "EGO", "Parker", "Econosto"],
   },
   {
     name: "Blower",
-    brands: [
-      "Spirax",
-      "Samson",
-      "Tyco Valves",
-      "Masonelian",
-    ],
+    brands: ["Spirax", "Samson", "Tyco Valves", "Masonelian"],
   },
   {
     name: "Electrical Equipment",
@@ -264,32 +211,43 @@ const manufacturerGroups = [
 ];
 
 const products = [
-  { number: "01", name: "Engine Part", image: "/media/Engine part.png" },
-  { number: "02", name: "Pressure Switch", image: "/media/Pressure Switch.png" },
-  { number: "03", name: "Pressure Sensor", image: "/media/Pressure Sensor.png" },
-  { number: "04", name: "Pressure Gauge", image: "/media/Pressure Gauge.png" },
-  { number: "05", name: "Tank Management System", image: "/media/Tank Management System.png" },
-  { number: "06", name: "Relay", image: "/media/Relay.png" },
-  { number: "07", name: "Solenoid Valve", image: "/media/Solenoid Valve.png" },
-  { number: "08", name: "Oil Meter", image: "/media/Oil Meter.png" },
-  { number: "09", name: "Temperature Sensor", image: "/media/Temperature Senser.png" },
-  { number: "10", name: "Burner Electrode", image: "/media/Burner Electrode.png" },
-  { number: "11", name: "Burner Controller Unit", image: "/media/Burner Controller Unit.png" },
-  { number: "12", name: "Burner Transformer Unit", image: "/media/Burner Transformer Unit.png" },
-  { number: "13", name: "Control Valves", image: "/media/Control Valves.png" },
-  { number: "14", name: "Manual Valves", image: "/media/Manual Valves.png" },
-  { number: "15", name: "Flame Amplifier", image: "/media/Flame Amplifire.png" },
-  { number: "16", name: "Motors", image: "/media/Motors.png" },
-  { number: "17", name: "Pumps", image: "/media/pump.png" },
-  { number: "18", name: "Burner Oil Pump", image: "/media/Burner Oil Pump.png" },
-  { number: "19", name: "Water Gauge Glass", image: "/media/Water Gauge Glass.png" },
+  { number: "01", name: "Marine Engine Part", image: "/media/s1.jpg" },
+  { number: "02", name: "Pressure Switch", image: "/media/s2.jpg" },
+  { number: "03", name: "Pressure Sensor", image: "/media/s3.jpg" },
+  { number: "04", name: "Pressure Gauge", image: "/media/s4.jpg" },
+  { number: "05", name: "Tank Management System", image: "/media/s5.jpg" },
+  { number: "06", name: "Relay", image: "/media/s6.jpg" },
+  { number: "07", name: "Solenoid Valve", image: "/media/s7.jpg" },
+  { number: "08", name: "Oil Meter", image: "/media/s8.jpg" },
+  { number: "09", name: "Temperature Sensor", image: "/media/s9.jpg" },
+  { number: "10", name: "Burner Electrode", image: "/media/s10.jpg" },
+  { number: "11", name: "Burner Controller Unit", image: "/media/s11.jpg" },
+  { number: "12", name: "Burner Transformer Unit", image: "/media/s12.jpg" },
+  { number: "13", name: "Control Valves", image: "/media/s13.jpg" },
+  { number: "14", name: "Manual Valves", image: "/media/s14.jpg" },
+  { number: "15", name: "Flame Amplifier", image: "/media/s15.jpg" },
+  { number: "16", name: "Motors", image: "/media/s16.jpg" },
+  { number: "17", name: "Pumps", image: "/media/s17.jpg" },
+  { number: "18", name: "Burner Oil Pump", image: "/media/s18.jpg" },
+  { number: "19", name: "Water Gauge Glass", image: "/media/s19.jpg" },
   {
     number: "20",
     name: "Programmable Logic Controllers",
-    image: "/media/Programmable Logic Controllers.png",
+    image: "/media/s20.jpg",
   },
 ];
 function Page() {
+  const categorySliderRef = useRef<HTMLDivElement>(null);
+
+  const scrollCategories = (direction: "left" | "right") => {
+    categorySliderRef.current?.scrollBy({
+      left:
+        direction === "right"
+          ? categorySliderRef.current.clientWidth * 0.75
+          : -categorySliderRef.current.clientWidth * 0.75,
+      behavior: "smooth",
+    });
+  };
   const [q, setQ] = useState("");
   const [activeCategory, setActiveCategory] = useState("All categories");
 
@@ -297,16 +255,12 @@ function Page() {
     const query = q.trim().toLowerCase();
 
     return manufacturerGroups.filter((group) => {
-      const matchesCategory =
-        activeCategory === "All categories" ||
-        group.name === activeCategory;
+      const matchesCategory = activeCategory === "All categories" || group.name === activeCategory;
 
       const matchesSearch =
         !query ||
         group.name.toLowerCase().includes(query) ||
-        group.brands.some((brand) =>
-          brand.toLowerCase().includes(query),
-        );
+        group.brands.some((brand) => brand.toLowerCase().includes(query));
 
       return matchesCategory && matchesSearch;
     });
@@ -315,9 +269,7 @@ function Page() {
   const filteredProducts = useMemo(() => {
     const query = q.trim().toLowerCase();
 
-    return products.filter((product) =>
-      product.name.toLowerCase().includes(query),
-    );
+    return products.filter((product) => product.name.toLowerCase().includes(query));
   }, [q]);
 
   return (
@@ -349,8 +301,8 @@ function Page() {
             </h2>
 
             <p className="mt-5 max-w-2xl text-base leading-7 text-slate-600">
-              Browse manufacturers by equipment category or search for
-              a particular manufacturer to help identify your requirement.
+              Browse manufacturers by equipment category or search for a particular manufacturer to
+              help identify your requirement.
             </p>
           </motion.div>
 
@@ -377,56 +329,78 @@ function Page() {
           </div>
 
           {/* CATEGORY FILTERS */}
-          {/* CATEGORY FILTERS */}
-<div
-  className="group relative mt-7 overflow-hidden pb-3"
-  onMouseEnter={(event) => {
-    const track = event.currentTarget.querySelector(
-      "[data-category-track]",
-    );
-    track?.setAttribute("data-paused", "true");
-  }}
-  onMouseLeave={(event) => {
-    const track = event.currentTarget.querySelector(
-      "[data-category-track]",
-    );
-    track?.setAttribute("data-paused", "false");
-  }}
->
-  <div
-    data-category-track
-    data-paused="false"
-    className="category-marquee flex w-max gap-2"
-  >
-    {[...categories, ...categories].map((category, index) => {
-      const Icon = category.icon;
-      const active = activeCategory === category.name;
+          <div className="mt-7">
+            <div className="flex items-center gap-2 sm:gap-3">
+              {/* LEFT ARROW */}
+              <button
+                type="button"
+                onClick={() => scrollCategories("left")}
+                aria-label="Scroll categories left"
+                className="flex size-10 shrink-0 items-center justify-center rounded-full border border-slate-200 bg-white text-[#061a34] transition-colors hover:border-[#f58220] hover:bg-orange-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#f58220]"
+              >
+                <ChevronLeft size={20} aria-hidden="true" />
+              </button>
 
-      return (
-        <button
-          key={`${category.name}-${index}`}
-          type="button"
-          onClick={() => setActiveCategory(category.name)}
-          className={`inline-flex shrink-0 items-center gap-2 rounded-full border px-4 py-2.5 text-sm font-medium transition-colors duration-300 ${
-            active
-              ? "border-[#061a34] bg-[#061a34] text-white"
-              : "border-slate-200 bg-white text-slate-600 hover:border-[#f58220] hover:bg-orange-50 hover:text-[#061a34]"
-          }`}
-        >
-          <Icon size={16} aria-hidden="true" />
-          {category.name}
-        </button>
-      );
-    })}
-  </div>
-</div>
+              {/* CATEGORY SLIDER */}
+              <div
+                ref={categorySliderRef}
+                className="flex min-w-0 flex-1 gap-2 overflow-x-auto scroll-smooth py-1"
+                style={{ scrollbarWidth: "none" }}
+              >
+                {/* ALL EQUIPMENT */}
+                <button
+                  type="button"
+                  onClick={() => setActiveCategory("All categories")}
+                  aria-pressed={activeCategory === "All categories"}
+                  className={`inline-flex shrink-0 items-center gap-2 rounded-full border px-4 py-2.5 text-sm font-medium transition-colors duration-300 ${
+                    activeCategory === "All categories"
+                      ? "border-[#061a34] bg-[#061a34] text-white"
+                      : "border-slate-200 bg-white text-slate-600 hover:border-[#f58220] hover:bg-orange-50 hover:text-[#061a34]"
+                  }`}
+                >
+                  <Package size={16} aria-hidden="true" />
+                  All Equipment
+                </button>
 
+                {/* INDIVIDUAL CATEGORIES */}
+                {categories.map((category) => {
+                  const Icon = category.icon;
+                  const active = activeCategory === category.name;
+
+                  return (
+                    <button
+                      key={category.name}
+                      type="button"
+                      onClick={() => setActiveCategory(category.name)}
+                      aria-pressed={active}
+                      className={`inline-flex shrink-0 items-center gap-2 rounded-full border px-4 py-2.5 text-sm font-medium transition-colors duration-300 ${
+                        active
+                          ? "border-[#061a34] bg-[#061a34] text-white"
+                          : "border-slate-200 bg-white text-slate-600 hover:border-[#f58220] hover:bg-orange-50 hover:text-[#061a34]"
+                      }`}
+                    >
+                      <Icon size={16} aria-hidden="true" />
+                      {category.name}
+                    </button>
+                  );
+                })}
+              </div>
+
+              {/* RIGHT ARROW */}
+              <button
+                type="button"
+                onClick={() => scrollCategories("right")}
+                aria-label="Scroll categories right"
+                className="flex size-10 shrink-0 items-center justify-center rounded-full border border-slate-200 bg-white text-[#061a34] transition-colors hover:border-[#f58220] hover:bg-orange-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#f58220]"
+              >
+                <ChevronRight size={20} aria-hidden="true" />
+              </button>
+            </div>
+          </div>
           {/* MANUFACTURER CARDS */}
           <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {filteredManufacturers.map((group, index) => {
-              const category = categories.find(
-                (item) => item.name === group.name,
-              );
+              const category = categories.find((item) => item.name === group.name);
               const Icon = category?.icon ?? Package;
 
               return (
@@ -467,9 +441,7 @@ function Page() {
                   </div>
 
                   <a
-                    href={`/contact?service=${encodeURIComponent(
-                      `Spare parts - ${group.name}`,
-                    )}`}
+                    href={`/contact?service=${encodeURIComponent(`Spare parts - ${group.name}`)}`}
                     className="mt-6 inline-flex items-center gap-2 text-sm font-semibold text-[#f58220] transition-colors duration-300 group-hover:text-white"
                   >
                     Enquire
@@ -510,84 +482,69 @@ function Page() {
         </div>
       </section>
 
-{/* SPARE PARTS GALLERY */}
-<section className="bg-white px-5 py-20 sm:px-8 lg:py-24">
-  <div className="mx-auto max-w-7xl">
-    <motion.div
-      initial={{ opacity: 0, y: 24 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true }}
-      transition={{ duration: 0.6 }}
-      className="mb-12"
-    >
-      <span className="text-xs font-semibold uppercase tracking-[0.24em] text-[#f58220]">
-        Component catalogue
-      </span>
+      {/* SPARE PARTS GALLERY */}
+      <section className="bg-white px-5 py-20 sm:px-8 lg:py-24">
+        <div className="mx-auto max-w-7xl">
+          <motion.div
+            initial={{ opacity: 0, y: 24 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
+            className="mb-12"
+          >
+            <span className="text-xs font-semibold uppercase tracking-[0.24em] text-[#f58220]">
+              Component catalogue
+            </span>
 
-      <h2 className="mt-4 text-3xl font-semibold tracking-tight text-[#061a34] sm:text-4xl lg:text-5xl">
-        Spare parts &amp; equipment
-        <span className="text-[#f58220]">.</span>
-      </h2>
+            <h2 className="mt-4 text-3xl font-semibold tracking-tight text-[#061a34] sm:text-4xl lg:text-5xl">
+              Spare parts &amp; equipment
+              <span className="text-[#f58220]">.</span>
+            </h2>
 
-      <p className="mt-5 max-w-2xl text-base leading-7 text-slate-600">
-        Explore our spare parts catalogue. Select a component to learn more
-        and enquire about your equipment requirements.
-      </p>
-    </motion.div>
+            <p className="mt-5 max-w-2xl text-base leading-7 text-slate-600">
+              Explore our spare parts catalogue. Select a component to learn more and enquire about
+              your equipment requirements.
+            </p>
+          </motion.div>
 
-    <div className="relative max-w-xl">
-      <Search
-        aria-hidden="true"
-        className="absolute left-4 top-1/2 size-5 -translate-y-1/2 text-slate-400"
-      />
+          <div className="relative max-w-xl">
+            <Search
+              aria-hidden="true"
+              className="absolute left-4 top-1/2 size-5 -translate-y-1/2 text-slate-400"
+            />
 
-      <Input
-        value={q}
-        onChange={(event) => setQ(event.target.value)}
-        placeholder="Search components..."
-        className="h-14 rounded-xl border-slate-200 bg-slate-50 pl-12 text-[#061a34] focus-visible:ring-[#f58220]"
-        aria-label="Search spare parts"
-      />
-    </div>
+            <Input
+              value={q}
+              onChange={(event) => setQ(event.target.value)}
+              placeholder="Search components..."
+              className="h-14 rounded-xl border-slate-200 bg-slate-50 pl-12 text-[#061a34] focus-visible:ring-[#f58220]"
+              aria-label="Search spare parts"
+            />
+          </div>
 
-    <p className="mt-4 text-sm text-slate-500">
-      {filteredProducts.length} components
-    </p>
+          <p className="mt-4 text-sm text-slate-500">{filteredProducts.length} components</p>
 
-    <div className="mt-8">
-      <SparePartsAccordionList
-        items={filteredProducts}
-      />
-    </div>
-  </div>
-</section>
+          <div className="mt-8">
+            <SparePartsAccordionList items={filteredProducts} />
+          </div>
+        </div>
+      </section>
 
       {/* ENQUIRY */}
       <EnquiryBand service="your spare parts requirement" />
     </main>
   );
 }
-function SparePartsAccordionList({
-  items,
-}: {
-  items: typeof products;
-}) {
+function SparePartsAccordionList({ items }: { items: typeof products }) {
   const [openIndex, setOpenIndex] = useState<string | null>(null);
   const [hoveredIndex, setHoveredIndex] = useState<string | null>(null);
   const [pointer, setPointer] = useState({ x: 24, y: 24 });
 
   const hoveredProduct =
-    hoveredIndex !== null
-      ? items.find((item) => item.number === hoveredIndex)
-      : undefined;
+    hoveredIndex !== null ? items.find((item) => item.number === hoveredIndex) : undefined;
 
-  const handlePointerMove = (
-  event: ReactPointerEvent<HTMLDivElement>,
-) => {
-    if (
-      event.pointerType !== "mouse" &&
-      event.pointerType !== "pen"
-    ) {
+  const handlePointerMove = (event: ReactPointerEvent<HTMLDivElement>) => {
+    if (event.pointerType !== "mouse" && event.pointerType !== "pen") {
       return;
     }
 
@@ -623,18 +580,12 @@ function SparePartsAccordionList({
           <div
             key={product.number}
             onPointerEnter={(event) => {
-              if (
-                event.pointerType === "mouse" ||
-                event.pointerType === "pen"
-              ) {
+              if (event.pointerType === "mouse" || event.pointerType === "pen") {
                 setHoveredIndex(product.number);
               }
             }}
             onPointerLeave={(event) => {
-              if (
-                event.pointerType === "mouse" ||
-                event.pointerType === "pen"
-              ) {
+              if (event.pointerType === "mouse" || event.pointerType === "pen") {
                 setHoveredIndex(null);
               }
             }}
@@ -656,9 +607,7 @@ function SparePartsAccordionList({
                 <button
                   type="button"
                   aria-expanded={isOpen}
-                  onClick={() =>
-                    setOpenIndex(isOpen ? null : product.number)
-                  }
+                  onClick={() => setOpenIndex(isOpen ? null : product.number)}
                   onKeyDown={(event) => {
                     if (event.key === "Escape") {
                       setOpenIndex(null);
@@ -666,9 +615,7 @@ function SparePartsAccordionList({
                     }
                   }}
                   className={`text-left text-xl font-semibold tracking-tight outline-none transition-colors duration-300 focus-visible:ring-2 focus-visible:ring-[#f58220] sm:text-2xl ${
-                    showDescription
-                      ? "text-[#f58220]"
-                      : "text-[#061a34]"
+                    showDescription ? "text-[#f58220]" : "text-[#061a34]"
                   }`}
                 >
                   {product.name}
@@ -686,8 +633,8 @@ function SparePartsAccordionList({
                   aria-hidden={!showDescription}
                 >
                   <p className="max-w-3xl pt-3 text-sm leading-6 text-slate-600 sm:text-base">
-                    Contact our team to confirm availability,
-                    compatibility and sourcing options for this component.
+                    Contact our team to confirm availability, compatibility and sourcing options for
+                    this component.
                   </p>
 
                   {isOpen && (
@@ -723,7 +670,7 @@ function SparePartsAccordionList({
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0, scale: 0.94 }}
             transition={{ duration: 0.18, ease: "easeOut" }}
-            className="pointer-events-none fixed z-[100] hidden overflow-hidden rounded-2xl border border-white/80 bg-[#061a34] shadow-2xl md:block"
+            className="pointer-events-none fixed z-[100] hidden overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-2xl md:block"
             style={{
               left: pointer.x,
               top: pointer.y,
@@ -734,13 +681,11 @@ function SparePartsAccordionList({
             <img
               src={hoveredProduct.image}
               alt={hoveredProduct.name}
-              className="h-full w-full object-cover"
+              className="h-full w-full object-contain p-2"
               onError={(event) => {
                 event.currentTarget.style.visibility = "hidden";
               }}
             />
-
-            
           </motion.div>
         )}
       </AnimatePresence>

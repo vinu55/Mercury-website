@@ -1,7 +1,4 @@
-import {
-  QueryClient,
-  QueryClientProvider,
-} from "@tanstack/react-query";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import {
   Outlet,
   Link,
@@ -9,16 +6,11 @@ import {
   HeadContent,
   Scripts,
 } from "@tanstack/react-router";
-import { useLayoutEffect, type ReactNode } from "react";
-import { useEffect } from "react";
+import { useLayoutEffect, useEffect, type ReactNode } from "react";
 import appCss from "../styles.css?url";
-import {
-  Header,
-  Footer,
-  WhatsAppButton,
-} from "@/components/site/SiteChrome";
+import { Header, Footer, WhatsAppButton } from "@/components/site/SiteChrome";
 
-
+const GA_MEASUREMENT_ID = "G-92V19TEZ8B";
 
 export const Route = createRootRouteWithContext<{
   queryClient: QueryClient;
@@ -58,11 +50,7 @@ export const Route = createRootRouteWithContext<{
     ],
   }),
 
-  shellComponent: ({
-    children,
-  }: {
-    children: ReactNode;
-  }) => (
+  shellComponent: ({ children }: { children: ReactNode }) => (
     <html lang="en">
       <head>
         <HeadContent />
@@ -75,19 +63,13 @@ export const Route = createRootRouteWithContext<{
   ),
 
   component: Root,
-  
 
   notFoundComponent: () => (
     <main className="grid min-h-screen place-items-center px-5 text-center">
       <div>
         <p className="eyebrow text-accent">404</p>
-        <h1 className="mt-4 text-5xl font-semibold">
-          Page not found
-        </h1>
-        <Link
-          to="/"
-          className="mt-6 inline-block text-primary underline"
-        >
+        <h1 className="mt-4 text-5xl font-semibold">Page not found</h1>
+        <Link to="/" className="mt-6 inline-block text-primary underline">
           Return home
         </Link>
       </div>
@@ -95,33 +77,54 @@ export const Route = createRootRouteWithContext<{
   ),
 });
 
-
 function Root() {
   const { queryClient } = Route.useRouteContext();
 
-  
-useEffect(() => {
-  const cleanupReveal = () => {
-    document
-      .querySelectorAll("[data-page-reveal]")
-      .forEach((element) => element.remove());
-  };
+  // Google Analytics
+  const GA_MEASUREMENT_ID = "G-92V19TEZ8B";
 
-  // Clean up when the page is restored or browser navigation occurs.
-  window.addEventListener("pageshow", cleanupReveal);
-  window.addEventListener("popstate", cleanupReveal);
-  window.addEventListener("pagehide", cleanupReveal);
+  useEffect(() => {
+    if (document.querySelector('script[data-google-analytics="true"]')) {
+      return;
+    }
 
-  cleanupReveal();
+    window.dataLayer = window.dataLayer || [];
 
-  return () => {
-    window.removeEventListener("pageshow", cleanupReveal);
-    window.removeEventListener("popstate", cleanupReveal);
-    window.removeEventListener("pagehide", cleanupReveal);
-  };
-}, []);
+    window.gtag = function (...args: unknown[]) {
+      window.dataLayer.push(args);
+    };
 
+    window.gtag("js", new Date());
+    window.gtag("config", GA_MEASUREMENT_ID);
 
+    const script = document.createElement("script");
+    script.async = true;
+    script.src = `https://www.googletagmanager.com/gtag/js?id=${GA_MEASUREMENT_ID}`;
+    script.dataset["googleAnalytics"] = "true";
+
+    document.head.appendChild(script);
+  }, []);
+
+  // Clean up page-reveal elements during browser navigation.
+  useEffect(() => {
+    const cleanupReveal = () => {
+      document.querySelectorAll("[data-page-reveal]").forEach((element) => element.remove());
+    };
+
+    window.addEventListener("pageshow", cleanupReveal);
+    window.addEventListener("popstate", cleanupReveal);
+    window.addEventListener("pagehide", cleanupReveal);
+
+    cleanupReveal();
+
+    return () => {
+      window.removeEventListener("pageshow", cleanupReveal);
+      window.removeEventListener("popstate", cleanupReveal);
+      window.removeEventListener("pagehide", cleanupReveal);
+    };
+  }, []);
+
+  // Preserve the existing scroll-restoration behavior.
   useLayoutEffect(() => {
     window.history.scrollRestoration = "manual";
     window.scrollTo(0, 0);

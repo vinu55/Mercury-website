@@ -1,4 +1,3 @@
-
 import { defineConfig } from "vite";
 import { fileURLToPath, URL } from "node:url";
 import { tanstackStart } from "@tanstack/react-start/plugin/vite";

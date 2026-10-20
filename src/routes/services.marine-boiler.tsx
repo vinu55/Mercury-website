@@ -1,17 +1,19 @@
-
 import { createFileRoute } from "@tanstack/react-router";
-import { useState } from "react";
-import type { ElementType, PointerEvent as ReactPointerEvent } from "react";
+import { useRef, useState } from "react";
+import type { PointerEvent as ReactPointerEvent } from "react";
 import { AnimatePresence, motion } from "motion/react";
 import {
+  ArrowRight,
   Activity,
   Anchor,
+  ChevronLeft,
+  ChevronRight,
   Gauge,
   ShieldCheck,
   Wrench,
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
- 
+
 import marine from "@/assets/marine banner.jpeg";
 import { PageHero } from "@/components/site/PageShell";
 
@@ -22,15 +24,14 @@ export const Route = createFileRoute("/services/marine-boiler")({
 const whyChooseUs = [
   {
     icon: Anchor,
-    title: "Marine expertise",
+    title: "Marine Boiler Solutions",
     description:
-      "Solutions for vessels, shipboard systems and marine power equipment.",
+      "Specialized thermal and marine boiler solutions focused on reliability and operational efficiency.",
   },
   {
     icon: Wrench,
-    title: "End-to-end support",
-    description:
-      "Design, supply, installation, commissioning, servicing and upgrades.",
+    title: "End-to-End support",
+    description: "Design, supply, installation, commissioning, servicing and upgrades.",
   },
   {
     icon: ShieldCheck,
@@ -41,8 +42,7 @@ const whyChooseUs = [
   {
     icon: Activity,
     title: "Lifecycle performance",
-    description:
-      "Retrofits, efficiency improvements and service-life extension.",
+    description: "Retrofits, efficiency improvements and service-life extension.",
   },
 ];
 
@@ -79,98 +79,107 @@ const MARINE_SERVICES = [
     title: "Insulation Repair and Re-application",
     description:
       "Repair or replacement of damaged boiler insulation to support thermal performance and protect surrounding equipment.",
-    image: "/media/01.jpeg",
+    image: "/media/1.png",
   },
   {
     number: "02",
     title: "Commissioning Support",
     description:
       "Technical support during system checks, startup, functional testing and commissioning activities.",
-    image: "/media/02.jpeg",
+    image: "/media/2.png",
   },
   {
     number: "03",
     title: "Refractory Re-installation & Repair",
     description:
       "Refractory inspection, lining repairs and reinstatement to help protect boiler components from high temperatures.",
-    image: "/media/03.jpeg",
+    image: "/media/3.png",
   },
   {
     number: "04",
     title: "Chemical Cleaning and Descaling",
     description:
       "Cleaning and descaling solutions to address deposits and help maintain heat-transfer performance.",
-    image: "/media/04.jpeg",
+    image: "/media/4.png",
   },
   {
     number: "05",
     title: "Surface Preparation and Re-painting",
     description:
       "Surface preparation and coating application to help protect equipment against corrosion and environmental exposure.",
-    image: "/media/05.jpeg",
+    image: "/media/5.png",
   },
   {
     number: "06",
-    title:
-      "Onboard Boiler Inspection, Operation, Troubleshooting and Maintenance",
+    title: "Onboard Boiler Inspection, Operation, Troubleshooting and Maintenance",
     description:
       "Onboard technical assistance, operating checks, fault investigation and preventive maintenance.",
-    image: "/media/06.jpeg",
+    image: "/media/6.png",
   },
   {
     number: "07",
     title: "Boiler Repairs, Design Upgrades & Retrofit Solutions",
     description:
       "Repair and upgrade solutions tailored to equipment condition, operational needs and lifecycle requirements.",
-    image: "/media/07.jpeg",
+    image: "/media/7.png",
   },
   {
     number: "08",
     title: "Burner Automation, BMS & Ignition System Services",
     description:
       "Support for burner controls, burner management systems, ignition equipment and operating sequences.",
-    image: "/media/08.jpeg",
+    image: "/media/8.png",
   },
   {
     number: "09",
     title: "Electrical & Instrumentation Services",
     description:
       "Inspection and servicing of instrumentation, control wiring, sensors and related electrical systems.",
-    image: "/media/09.jpeg",
+    image: "/media/9.png",
   },
   {
     number: "10",
     title: "Performance Optimization & Efficiency Study",
     description:
       "Review of operating performance and potential improvements in combustion, heat transfer and energy efficiency.",
-    image: "/media/10.jpeg",
+    image: "/media/10.png",
   },
   {
     number: "11",
     title: "Non-destructive Examination (NDE) & Borescope Inspection",
     description:
       "Equipment condition assessment using suitable non-destructive examination methods and borescope inspection.",
-    image: "/media/11.jpeg",
+    image: "/media/11.png",
   },
   {
     number: "12",
-    title:
-      "Life Extension and Fitness-for-Service (FFS) Assessment – API 579-1 / ASME FFS",
+    title: "Life Extension and Fitness-for-Service (FFS) Assessment – API 579-1 / ASME FFS",
     description:
       "Engineering assessments to evaluate equipment condition and support repair, continued operation or upgrade decisions.",
-    image: "/media/12.jpeg",
+    image: "/media/12.png",
   },
   {
     number: "13",
     title: "Boiler Tube Assessment, Plugging & Renewal",
     description:
       "Boiler tube condition assessment and appropriate plugging or renewal solutions based on inspection findings.",
-    image: "/media/13.jpeg",
+    image: "/media/13.png",
   },
 ];
 
-
 function MarineBoilerPage() {
+  const capabilitiesSliderRef = useRef<HTMLDivElement>(null);
+
+  const scrollCapabilities = (direction: "left" | "right") => {
+    const slider = capabilitiesSliderRef.current;
+    if (!slider) return;
+
+    slider.scrollBy({
+      left: direction === "right" ? slider.clientWidth * 0.8 : -slider.clientWidth * 0.8,
+      behavior: "smooth",
+    });
+  };
+
   return (
     <>
       <PageHero
@@ -195,14 +204,13 @@ function MarineBoilerPage() {
             </span>
 
             <h2 className="mt-4 text-3xl font-semibold leading-tight tracking-tight text-[#061a34] sm:text-4xl lg:text-5xl">
-              Marine expertise<span className="text-[#f58220]">.</span>
-              <br />
-              Reliable execution<span className="text-[#f58220]">.</span>
+              Marine Boiler Expertise
+              <span className="text-[#f58220]">.</span>
             </h2>
 
             <p className="mt-5 max-w-lg text-base leading-7 text-slate-600">
-              Practical engineering support focused on safety, equipment
-              reliability and long-term vessel performance.
+              Practical engineering support focused on safety, equipment reliability and long-term
+              vessel performance.
             </p>
 
             <a
@@ -252,35 +260,49 @@ function MarineBoilerPage() {
             </h2>
 
             <p className="mt-5 max-w-2xl text-base leading-7 text-white/65">
-              From inspections and repairs to automation and lifecycle upgrades,
-              we help keep marine boiler systems operating safely and
-              efficiently.
+              From inspections and repairs to automation and lifecycle upgrades, we help keep marine
+              boiler systems operating safely and efficiently.
             </p>
           </motion.div>
 
-          <div className="marine-capabilities-marquee">
-            <div className="marine-capabilities-track">
-              {[0, 1].map((group) => (
-                <div
-                  key={group}
-                  className="marine-capabilities-group"
-                  aria-hidden={group === 1}
-                >
-                  {capabilities.map((item, index) => (
-                    <div
-                      key={`${group}-${item.title}`}
-                      className="marine-capability-card"
-                    >
-                      <MarineInteractiveCard
-                        index={index}
-                        icon={item.icon}
-                        title={item.title}
-                        description={item.description}
-                      />
-                    </div>
-                  ))}
+          {/* CAPABILITIES SLIDER */}
+          <div className="relative">
+            <div
+              ref={capabilitiesSliderRef}
+              className="flex snap-x snap-mandatory gap-5 overflow-x-auto scroll-smooth pb-5"
+              style={{ scrollbarWidth: "none" }}
+            >
+              {capabilities.map((item, index) => (
+                <div key={item.title} className="w-[85%] shrink-0 snap-start sm:w-[48%] lg:w-[32%]">
+                  <MarineInteractiveCard
+                    index={index}
+                    icon={item.icon}
+                    title={item.title}
+                    description={item.description}
+                  />
                 </div>
               ))}
+            </div>
+
+            {/* SLIDER CONTROLS */}
+            <div className="mt-6 flex items-center justify-end gap-3">
+              <button
+                type="button"
+                onClick={() => scrollCapabilities("left")}
+                aria-label="Previous capabilities"
+                className="flex size-12 items-center justify-center rounded-full border border-white/20 text-white transition-colors hover:border-[#f58220] hover:bg-[#f58220] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#f58220]"
+              >
+                <ChevronLeft size={22} />
+              </button>
+
+              <button
+                type="button"
+                onClick={() => scrollCapabilities("right")}
+                aria-label="Next capabilities"
+                className="flex size-12 items-center justify-center rounded-full border border-white/20 text-white transition-colors hover:border-[#f58220] hover:bg-[#f58220] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#f58220]"
+              >
+                <ChevronRight size={22} />
+              </button>
             </div>
           </div>
         </div>
@@ -290,10 +312,6 @@ function MarineBoilerPage() {
       <section className="bg-white px-5 py-20 sm:px-8 lg:py-24">
         <div className="mx-auto max-w-7xl">
           <div className="mb-12">
-            <span className="text-xs font-semibold uppercase tracking-[0.24em] text-[#f58220]">
-              Complete scope
-            </span>
-
             <h2 className="mt-2 text-3xl font-semibold tracking-tight text-[#061a34] sm:text-4xl">
               Marine Boiler Services
               <span className="text-[#f58220]">.</span>
@@ -305,36 +323,43 @@ function MarineBoilerPage() {
       </section>
 
       {/* ENQUIRY SECTION */}
-      <section className="bg-[#061a34] px-5 py-16 sm:px-8 lg:py-20">
-        <div className="mx-auto flex max-w-7xl flex-col gap-6 sm:flex-row sm:items-center sm:justify-between">
-          <div className="max-w-2xl">
-            <p className="text-xs font-semibold uppercase tracking-[0.24em] text-[#f58220]">
-              Let&apos;s work together
-            </p>
-
-            <h2 className="mt-3 text-3xl font-semibold tracking-tight text-white sm:text-4xl">
-              Need marine boiler support
-              <span className="text-[#f58220]">?</span>
-            </h2>
-
-            <p className="mt-4 leading-7 text-white/70">
-              Get in touch to discuss your equipment, maintenance needs and
-              engineering requirements.
-            </p>
-          </div>
-
-          <a
-            href="/contact"
-            className="inline-flex shrink-0 items-center justify-center rounded-full bg-[#f58220] px-6 py-3.5 text-sm font-semibold text-white transition-colors duration-300 hover:bg-white hover:text-[#061a34] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white"
+      <section className="overflow-hidden bg-[#F58220] px-5 py-16 text-[#061A34] sm:px-8 lg:py-20">
+        <div className="mx-auto flex max-w-[1440px] flex-col gap-7 lg:flex-row lg:items-center lg:justify-between lg:gap-10">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, amount: 0.25 }}
+            transition={{ duration: 0.6, ease: "easeOut" }}
+            className="max-w-5xl"
           >
-            Contact our team
-          </a>
+            <p className="text-xs font-bold uppercase tracking-[0.24em]">Start a conversation</p>
+
+            <h2 className="mt-4 text-3xl font-semibold leading-tight tracking-tight sm:text-4xl lg:text-5xl">
+              Need support with marine boiler or spare parts?
+            </h2>
+          </motion.div>
+
+          <motion.a
+            href="/contact"
+            initial={{ opacity: 0, x: 18 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true, amount: 0.25 }}
+            transition={{ duration: 0.6, delay: 0.1, ease: "easeOut" }}
+            whileHover={{ scale: 1.025 }}
+            whileTap={{ scale: 0.98 }}
+            className="group inline-flex min-h-14 shrink-0 items-center justify-center gap-4 rounded-md bg-[#E1EAF5] px-7 text-sm font-semibold text-[#061A34] shadow-sm transition-colors duration-300 hover:bg-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#061A34] sm:px-9"
+          >
+            Discuss your requirement
+            <ArrowRight
+              size={20}
+              className="transition-transform duration-300 group-hover:translate-x-1"
+            />
+          </motion.a>
         </div>
       </section>
     </>
   );
 }
-
 
 function MarineInteractiveCard({
   index,
@@ -414,9 +439,7 @@ function MarineInteractiveCard({
         <div className="mb-7 flex items-center justify-between">
           <motion.div
             animate={{
-              backgroundColor: active
-                ? "rgba(255,255,255,0.18)"
-                : "rgba(245,130,32,0.10)",
+              backgroundColor: active ? "rgba(255,255,255,0.18)" : "rgba(245,130,32,0.10)",
               rotate: active ? -6 : 0,
               scale: active ? 1.12 : 1,
             }}
@@ -424,11 +447,11 @@ function MarineInteractiveCard({
             className="flex size-12 items-center justify-center rounded-xl border border-white/20"
           >
             <Icon
-  size={24}
-  color={active ? "#ffffff" : "#f58220"}
-  strokeWidth={1.7}
-  aria-hidden="true"
-/>
+              size={24}
+              color={active ? "#ffffff" : "#f58220"}
+              strokeWidth={1.7}
+              aria-hidden="true"
+            />
           </motion.div>
         </div>
 
@@ -442,9 +465,7 @@ function MarineInteractiveCard({
 
         <motion.p
           animate={{
-            color: active
-              ? "rgba(255,255,255,0.96)"
-              : "rgba(255,255,255,0.65)",
+            color: active ? "rgba(255,255,255,0.96)" : "rgba(255,255,255,0.65)",
           }}
           transition={{ duration: 0.25 }}
           className="mt-3 max-w-md text-sm leading-6 sm:text-base"
@@ -456,21 +477,14 @@ function MarineInteractiveCard({
   );
 }
 
-function MarineServiceAccordionList({
-  items,
-}: {
-  items: typeof MARINE_SERVICES;
-}) {
+function MarineServiceAccordionList({ items }: { items: typeof MARINE_SERVICES }) {
   const [openIndex, setOpenIndex] = useState<number | null>(null);
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
   const [pointer, setPointer] = useState({ x: 24, y: 24 });
 
-  const hoveredService =
-    hoveredIndex !== null ? items[hoveredIndex] : undefined;
+  const hoveredService = hoveredIndex !== null ? items[hoveredIndex] : undefined;
 
-  const handlePointerMove = (
-    event: ReactPointerEvent<HTMLDivElement>,
-  ) => {
+  const handlePointerMove = (event: ReactPointerEvent<HTMLDivElement>) => {
     if (event.pointerType !== "mouse" && event.pointerType !== "pen") return;
 
     const previewWidth = Math.min(420, window.innerWidth - 32);
@@ -598,11 +612,6 @@ function MarineServiceAccordionList({
               alt={hoveredService.title}
               className="h-full w-full object-cover"
             />
-
-            <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-[#061a34] via-[#061a34]/90 to-transparent px-5 pb-5 pt-16">
-              
-              
-            </div>
           </motion.div>
         )}
       </AnimatePresence>

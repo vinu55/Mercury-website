@@ -1,12 +1,5 @@
-
 import { createFileRoute } from "@tanstack/react-router";
-import {
-  Mail,
-  MapPin,
-  MessageCircle,
-  Phone,
-  ArrowUpRight,
-} from "lucide-react";
+import { Mail, MapPin, MessageCircle, Phone, ArrowUpRight } from "lucide-react";
 import { motion } from "motion/react";
 import { PageHero } from "@/components/site/PageShell";
 import { EnquiryForm } from "@/components/site/EnquiryForm";
@@ -18,9 +11,7 @@ type ContactSearch = {
 
 export const Route = createFileRoute("/contact")({
   validateSearch: (search: Record<string, unknown>): ContactSearch =>
-    typeof search["service"] === "string"
-      ? { service: search["service"] }
-      : {},
+    typeof search["service"] === "string" ? { service: search["service"] } : {},
 
   head: () => ({
     meta: [
@@ -36,8 +27,7 @@ export const Route = createFileRoute("/contact")({
       },
       {
         property: "og:description",
-        content:
-          "Discuss your boiler, biomass, solar or spare parts requirement.",
+        content: "Discuss your boiler, biomass, solar or spare parts requirement.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
@@ -81,25 +71,24 @@ function Contact() {
 
   return (
     <main className="bg-white">
-
       {/* CUSTOM HEADING WITH ORANGE FULL STOP */}
       <section className="bg-[#061A34] px-5 py-20 sm:px-10 sm:py-28 lg:px-16 lg:py-32">
-  <div className="mx-auto max-w-[1280px]">
-    <motion.div
-      initial={{ opacity: 0, y: 18 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.6 }}
-    >
-      <p className="text-sm font-semibold uppercase tracking-[0.25em] text-[#F58220]">
-        Contact
-      </p>
+        <div className="mx-auto max-w-[1280px]">
+          <motion.div
+            initial={{ opacity: 0, y: 18 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+          >
+            <p className="text-sm font-semibold uppercase tracking-[0.25em] text-[#F58220]">
+              Contact
+            </p>
 
-      <h1 className="mt-5 max-w-4xl text-4xl font-semibold leading-tight tracking-tight text-white sm:text-5xl lg:text-7xl">
-        Let’s build together<span className="text-[#F58220]">.</span>
-      </h1>
-    </motion.div>
-  </div>
-</section>
+            <h1 className="mt-5 max-w-4xl text-4xl font-semibold leading-tight tracking-tight text-white sm:text-5xl lg:text-7xl">
+              Let’s build together<span className="text-[#F58220]">.</span>
+            </h1>
+          </motion.div>
+        </div>
+      </section>
 
       {/* CONTACT CONTENT */}
       <section className="px-5 py-12 sm:px-10 sm:py-20 lg:px-16 lg:py-24">
@@ -124,8 +113,8 @@ function Contact() {
                 </h2>
 
                 <p className="mt-3 max-w-md text-sm leading-7 text-slate-600">
-                  Reach out to discuss your requirements, request technical
-                  information or explore a potential collaboration.
+                  Reach out to discuss your requirements, request technical information or explore a
+                  potential collaboration.
                 </p>
               </div>
 
@@ -217,20 +206,17 @@ function Contact() {
                 </h2>
 
                 <p className="mt-3 text-sm leading-7 text-slate-600">
-                  Share a few details below so we can better understand your
-                  needs and respond appropriately.
+                  Share a few details below so we can better understand your needs and respond
+                  appropriately.
                 </p>
               </div>
 
               <div className="relative overflow-hidden rounded-2xl border border-slate-200 bg-white p-5 shadow-sm shadow-slate-900/[0.03] sm:p-8">
-              
-
                 <EnquiryForm initialService={service ?? ""} />
               </div>
 
               <p className="mt-4 text-xs leading-5 text-slate-500">
-                Please provide accurate contact details so our team can follow
-                up on your enquiry.
+                Please provide accurate contact details so our team can follow up on your enquiry.
               </p>
             </motion.div>
           </div>

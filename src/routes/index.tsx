@@ -1,4 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+
 import {
   lazy,
   Suspense,
@@ -10,13 +11,7 @@ import {
 } from "react";
 import { ArrowDown, ArrowRight } from "lucide-react";
 import { useInView } from "react-intersection-observer";
-import {
-  motion,
-  useMotionValue,
-  useScroll,
-  useSpring,
-  useTransform,
-} from "motion/react";
+import { motion, useMotionValue, useScroll, useSpring, useTransform } from "motion/react";
 
 import biomass from "@/assets/biomass.png";
 import boiler from "@/assets/boiler.png";
@@ -27,20 +22,31 @@ import spareparts from "@/assets/spareparts.png";
 import { IntroLoader } from "@/components/site/Loader";
 import { SERVICES } from "@/lib/site-data";
 
+const MARQUEE_SERVICES = [
+  "DESIGN & ENGINEERING",
+  "BOILERS",
+  "MARINE",
+  "SERVICES",
+  "TROUBLESHOOTING",
+  "E & I AUTOMATIONS",
+  "SPARES",
+  "SUPPLY",
+  "BIO ENERGY",
+];
 
 const SunScene = lazy(() => import("@/components/three/SunScene"));
 
 export const Route = createFileRoute("/")({
-
   head: () => ({
     meta: [
       {
-        title: "Mercury Energy Solutions | Complete Solutions for Marine, Land-Based Boilers & Thermal Equipment.",
+        title:
+          "Mercury Energy Solutions | Complete Solutions for Marine, Land-Based Boilers & Thermal Equipment.",
       },
       {
         name: "description",
         content:
-          "Engineering-led marine boiler, industrial boiler, biomass fuel, solar energy and spare parts solutions.",
+          "Engineering-led marine boiler, industrial boiler, bioenergy, solar energy and spare parts solutions.",
       },
       {
         property: "og:title",
@@ -48,8 +54,7 @@ export const Route = createFileRoute("/")({
       },
       {
         property: "og:description",
-        content:
-          "Engineering energy forward across boiler, biomass and solar systems.",
+        content: "Engineering energy forward across boiler, biomass and solar systems.",
       },
       {
         property: "og:type",
@@ -70,9 +75,9 @@ function Home() {
   const aboutRef = useRef<HTMLElement>(null);
 
   useLayoutEffect(() => {
-  window.history.scrollRestoration = "manual";
-  window.scrollTo(0, 0);
-}, []);
+    window.history.scrollRestoration = "manual";
+    window.scrollTo(0, 0);
+  }, []);
   /* =========================================================
      HERO SCROLL
   ========================================================= */
@@ -82,11 +87,7 @@ function Home() {
     offset: ["start start", "end start"],
   });
 
-  const heroY = useTransform(
-    heroScrollProgress,
-    [0, 1],
-    [0, 160],
-  );
+  const heroY = useTransform(heroScrollProgress, [0, 1], [0, 160]);
 
   /* =========================================================
      ABOUT SCROLL
@@ -105,170 +106,94 @@ function Home() {
           HERO VIDEO
       ========================================================= */}
 
-
-{/* CINEMATIC HERO */}
-{/* =========================================================
+      {/* CINEMATIC HERO */}
+      {/* =========================================================
     CINEMATIC HERO — TYPEWRITER ANIMATION
 ========================================================= */}
 
-<section
-  ref={heroRef}
-  className="relative isolate h-[100svh] min-h-[600px] w-full overflow-hidden bg-[#07182d] text-white"
->
-
-{/* Background video */}
-<video
-  autoPlay
-  muted
-  loop
-  playsInline
-  webkit-playsinline="true"
-  preload="auto"
-  disablePictureInPicture
-  aria-hidden="true"
-  onCanPlay={(e) => {
-    e.currentTarget.play().catch((error) => {
-      console.warn("Hero video autoplay blocked:", error);
-    });
-  }}
-  onError={(e) => {
-    console.error("Hero video failed:", e.currentTarget.error);
-  }}
-  className="absolute inset-0 z-0 h-full w-full object-cover object-center"
->
-  <source src="/media/intro.mp4" type="video/mp4" />
-</video>
-
-
-{/* Dark overlays — above video, below content */}
-<div className="pointer-events-none absolute inset-0 z-10 bg-gradient-to-r from-[#06152a]/75 via-[#07182d]/40 to-[#07182d]/10" />
-<div className="pointer-events-none absolute inset-0 z-10 bg-gradient-to-t from-[#06152a]/65 via-transparent to-[#06152a]/20" />
-
-{/* Hero content */}
-<div className="relative z-20 mx-auto flex h-full max-w-[1440px] items-center px-6 pb-14 pt-24 sm:px-10 lg:px-16 translate-x-10 translate-y-10">
-    <motion.div
-      
-      initial={{ opacity: 0, y: 18 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.8, ease: "easeOut" }}
-      className="w-full max-w-6xl"
-    >
-      {/* Brand label */}
-      <motion.p
-        initial={{ opacity: 0, x: -8 }}
-        animate={{ opacity: 1, x: 0 }}
-        transition={{ duration: 3, delay: 1.5 }}
-        className="mb-5 text-xs font-semibold uppercase tracking-[0.22em] text-[#ff922e] sm:mb-7 sm:text-sm sm:tracking-[0.3em] translate-x-2 translate-y-5"
+      <section
+        ref={heroRef}
+        className="relative isolate h-[100svh] min-h-[600px] w-full overflow-hidden bg-black text-white"
       >
-        Mercury Energy Solutions
-      </motion.p>
+        {/* Full-screen responsive video */}
+        <video
+          autoPlay
+          muted
+          loop
+          playsInline
+          preload="auto"
+          aria-hidden="true"
+          className="absolute inset-0 z-0 h-full w-full object-cover object-center"
+        >
+          <source src="/media/intro.mp4" type="video/mp4" />
+        </video>
 
-      {/* Animated headline */}
-      <div
-        className="min-h-[2.15em] sm:min-h-[2.1em]"
-        aria-label="Complete Solutions for Marine & Land-Based Boilers and Thermal Equipment."
-      >
-        <h1 className="text-5xl font-semibold leading-[1.04] tracking-[-0.055em] sm:text-6xl md:text-7xl lg:text-[6.5rem]">
-          <TypewriterText
-            text="Complete Solutions for Marine"
-            delay={1500}
-            className="text-white"
-          />
-          <span className="text-[#f58220]">,</span>
+        {/* Hero content */}
+        <div className="absolute inset-x-0 bottom-8 z-20 mx-auto max-w-[1440px] px-5 sm:bottom-14 sm:px-10 lg:bottom-16 lg:px-16">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, ease: "easeOut" }}
+            className="max-w-3xl"
+          >
+            <motion.p
+              initial={{ opacity: 0, x: -8 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.8, delay: 0.3 }}
+              className="eyebrow text-accent !text-xs font-semibold uppercase tracking-[0.15em] sm:!text-base sm:tracking-[0.25em]"
+            >
+              Mercury Energy Solutions
+            </motion.p>
 
-          <br />
-          <TypewriterText
-            text="Land-Based Boilers"
-            delay={2000}
-            className="text-white"
-          />
-          {" "}
-          <span className="text-[#f58220]">&</span>
-          <br/>
-          <TypewriterText
-            text="Thermal Equipment"
-            delay={2000}
-            className="text-white"
-          />
-          <span className="text-[#f58220]">.</span>
-        </h1>
-      </div>
+            <h1
+              aria-label="Complete Solutions for Marine and Land-Based Boilers and Thermal Equipment."
+              className="mt-3 max-w-3xl text-3xl font-semibold leading-[1.08] tracking-tight text-white sm:text-4xl md:text-5xl lg:text-6xl"
+            >
+              <TypewriterText
+                text="Complete Solutions for Marine & Land-Based Boilers and Thermal Equipment"
+                delay={500}
+                className="inline"
+              />
+              <span className="text-[#f58220]">.</span>
+            </h1>
 
-      {/* Minimal Explore button */}
-      
+            <motion.button
+              type="button"
+              initial="rest"
+              whileHover="hover"
+              whileTap={{ scale: 0.94 }}
+              onClick={() =>
+                document.getElementById("solutions")?.scrollIntoView({
+                  behavior: "smooth",
+                  block: "start",
+                })
+              }
+              variants={{
+                rest: { width: 46 },
+                hover: { width: 125 },
+              }}
+              transition={{ duration: 0.3, ease: "easeInOut" }}
+              className="group mt-5 flex h-11 items-center overflow-hidden rounded-full bg-[#f58220] text-white shadow-lg sm:mt-6 sm:h-12"
+              aria-label="Explore solutions"
+            >
+              <span className="flex h-11 w-[46px] shrink-0 items-center justify-center sm:h-12 sm:w-[48px]">
+                <ArrowRight size={21} strokeWidth={2.4} />
+              </span>
 
-{/* Animated Explore Button */}
-<motion.button
-  animate={{ x: 10, y: 24 }}
-  type="button"
-  onClick={() => {
-    document.getElementById("solutions")?.scrollIntoView({
-      behavior: "smooth",
-      block: "start",
-    });
-  }}
-  initial="rest"
-  whileHover="hover"
-  whileTap={{ scale: 0.94 }}
-  variants={{
-    rest: { width: 52 },
-    hover: { width: 135 },
-  }}
-  transition={{ duration: 0.35, ease: "easeInOut" }}
-  className="group flex h-12 items-center overflow-hidden rounded-full bg-[#f58220] text-white shadow-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/70"
-  aria-label="Explore solutions"
->
-  {/* White animated arrow */}
-  <span className="flex h-12 w-[52px] shrink-0 items-center justify-center">
-    <motion.span
-  variants={{
-    rest: { rotate: 0, x: 0 },
-    hover: { rotate: 90, x: 6 },
-  }}
-  transition={{ duration: 0.3, ease: "easeInOut" }}
-  className="inline-flex"
->
-  <ArrowRight size={23} strokeWidth={2.4} className="text-white" />
-</motion.span>
-  </span>
-
-  {/* Explore text appears on hover */}
-
-<motion.span
-  variants={{
-    rest: { opacity: 0, x: -10 },
-    hover: { opacity: 1, x: 0 },
-  }}
-  transition={{ duration: 0.22, delay: 0.06 }}
-  className="whitespace-nowrap pr-5 text-sm font-semibold text-white"
->
-  Explore
-</motion.span>
-
-</motion.button>
-
-
-    </motion.div>
-  </div>
-
-  {/* Scroll indicator */}
-  <motion.div
-    initial={{ opacity: 0 }}
-    animate={{ opacity: 1 }}
-    transition={{ delay: 3, duration: 0.7 }}
-    className="absolute bottom-7 left-6 flex items-center gap-3 text-[10px] font-medium uppercase tracking-[0.24em] text-white/60 sm:left-10 lg:left-16"
-  >
-    <span className="flex h-8 w-5 items-start justify-center rounded-full border border-white/30 p-1">
-      <motion.span
-        animate={{ y: [0, 10, 0], opacity: [1, 0.35, 1] }}
-        transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
-        className="h-1.5 w-1 rounded-full bg-[#f58220]"
-      />
-    </span>
-    Scroll to explore
-  </motion.div>
-</section>
-
+              <motion.span
+                variants={{
+                  rest: { opacity: 0, x: -8 },
+                  hover: { opacity: 1, x: 0 },
+                }}
+                transition={{ duration: 0.2 }}
+                className="whitespace-nowrap pr-4 text-sm font-semibold"
+              >
+                Explore
+              </motion.span>
+            </motion.button>
+          </motion.div>
+        </div>
+      </section>
 
       {/* =========================================================
           ABOUT + INTERACTIVE 3D SUN
@@ -307,14 +232,62 @@ function Home() {
       </section>
 
       {/* =========================================================
-          SERVICES — LAST SECTION
+          MOVING ENGINEERING SERVICES TEXT
       ========================================================= */}
 
-      {/* =========================================================
-    OUR SOLUTIONS — HORIZONTAL SCROLL
-========================================================= */}
+      <section
+        aria-label="Mercury engineering capabilities"
+        className="overflow-hidden bg-[#061a34] py-7 sm:py-8"
+      >
+        <div className="services-marquee">
+          <div className="services-marquee-track">
+            {[...MARQUEE_SERVICES, ...MARQUEE_SERVICES].map((service, index) => (
+              <span
+                key={`${service}-${index}`}
+                className="flex shrink-0 items-center whitespace-nowrap text-lg font-semibold tracking-[0.12em] text-white transition-colors duration-300 hover:text-[#f58220] sm:text-xl sm:tracking-[0.16em]"
+              >
+                {service}
+                <span className="mx-5 text-white sm:mx-8"></span>
+              </span>
+            ))}
+          </div>
+        </div>
 
-<ServicesParallax />
+        <style>{`
+          .services-marquee {
+            width: 100%;
+            overflow: hidden;
+          }
+
+          .services-marquee-track {
+            display: flex;
+            width: max-content;
+            will-change: transform;
+            animation: mercury-services-marquee 35s linear infinite;
+          }
+
+          @keyframes mercury-services-marquee {
+            from {
+              transform: translateX(-50%);
+            }
+            to {
+              transform: translateX(0);
+            }
+          }
+
+          @media (prefers-reduced-motion: reduce) {
+            .services-marquee-track {
+              animation: none;
+            }
+          }
+        `}</style>
+      </section>
+
+      {/* =========================================================
+          OUR SOLUTIONS — HORIZONTAL SCROLL
+      ========================================================= */}
+
+      <ServicesParallax />
     </main>
   );
 }
@@ -338,8 +311,6 @@ function ServicesParallax() {
   );
   const [measured, setMeasured] = useState(false);
 
-  // Measure the viewport and track, including the space
-  // required to centre the first and last cards.
   useLayoutEffect(() => {
     const measure = () => {
       const viewport = viewportRef.current;
@@ -356,25 +327,13 @@ function ServicesParallax() {
       const firstCardWidth = firstCard.getBoundingClientRect().width;
       const lastCardWidth = lastCard.getBoundingClientRect().width;
 
-      // Keep the first card centred at the beginning.
-      const startPadding = Math.max(
-        0,
-        (viewportWidth - firstCardWidth) / 2,
-      );
-
-      // Leave enough room for the last card to reach the centre.
-      const endPadding = Math.max(
-        0,
-        (viewportWidth - lastCardWidth) / 2,
-      );
+      const startPadding = Math.max(0, (viewportWidth - firstCardWidth) / 2);
+      const endPadding = Math.max(0, (viewportWidth - lastCardWidth) / 2);
 
       track.style.paddingLeft = `${startPadding}px`;
       track.style.paddingRight = `${endPadding}px`;
 
-      const distance = Math.max(
-        0,
-        track.scrollWidth - viewportWidth,
-      );
+      const distance = Math.max(0, track.scrollWidth - viewportWidth);
 
       setHorizontalDistance(distance);
       setViewportHeight(window.innerHeight);
@@ -401,12 +360,10 @@ function ServicesParallax() {
     offset: ["start start", "end end"],
   });
 
-  // Move the horizontal track exactly across its measured distance.
-  const trackX = useTransform(
-    scrollYProgress,
-    [0, 1],
-    [0, -horizontalDistance],
-  );
+  // Keep all Motion hooks at the component's top level.
+  const trackX = useTransform(scrollYProgress, [0, 1], [0, -horizontalDistance]);
+
+  const arrowRotate = useTransform(scrollYProgress, [0, 1], [0, 180]);
 
   const sectionHeight = horizontalDistance + viewportHeight;
 
@@ -419,38 +376,21 @@ function ServicesParallax() {
       }}
       className="relative bg-[#061a34] text-white"
     >
-      <div
-        ref={viewportRef}
-        className="
-          sticky top-0
-          h-screen w-full
-          overflow-hidden
-        "
-      >
-        {/* TOP-LEFT HEADING */}
+      <div ref={viewportRef} className="sticky top-0 h-screen w-full overflow-hidden">
+        <div
+          className="
+            pointer-events-none
+            absolute left-0 top-0 z-30
+            px-5 pt-[18vh]
+            sm:px-8 sm:pt-[14vh]
+            lg:px-12 lg:pt-[22vh]
+          "
+        >
+          <p className="eyebrow text-accent !text-base font-semibold uppercase tracking-[0.2em] sm:!text-base sm:tracking-[0.25em]">
+            Our solutions
+          </p>
+        </div>
 
-<div
-  className="
-    pointer-events-none
-    absolute left-0 top-0 z-30
-    px-5 pt-[18vh]
-    sm:px-8 sm:pt-[14vh]
-    lg:px-12 lg:pt-[22vh]
-  "
->
-  <p
-    className="
-      text-[10px] font-medium uppercase
-      tracking-[0.25em] text-[#f58220]
-      sm:text-xs
-    "
-  >
-    Our solutions
-  </p>
-</div>
-
-
-        {/* HORIZONTAL CARD TRACK */}
         <motion.div
           ref={trackRef}
           style={{ x: trackX }}
@@ -474,28 +414,20 @@ function ServicesParallax() {
           ))}
         </motion.div>
 
-        {/* BOTTOM PROGRESS INDICATOR */}
-        <div className="
-          pointer-events-none
-          absolute bottom-7 left-0 z-30 w-full
-          px-5 sm:px-8 lg:px-12
-        ">
-          <div className="
-            mx-auto flex max-w-[1440px]
-            items-center justify-between
-          ">
-            <p className="
-              text-[10px] uppercase tracking-[0.22em]
-              text-white/40 sm:text-xs
-            ">
+        <div
+          className="
+            pointer-events-none
+            absolute bottom-7 left-0 z-30 w-full
+            px-5 sm:px-8 lg:px-12
+          "
+        >
+          <div className="mx-auto flex max-w-[1440px] items-center justify-between">
+            <p className="text-[10px] uppercase tracking-[0.22em] text-white/40 sm:text-xs">
               Scroll to explore
             </p>
 
             <div className="flex items-center gap-3">
-              <div className="
-                h-px w-20 overflow-hidden
-                bg-white/15 sm:w-32
-              ">
+              <div className="h-px w-20 overflow-hidden bg-white/15 sm:w-32">
                 <motion.div
                   style={{
                     scaleX: scrollYProgress,
@@ -505,15 +437,7 @@ function ServicesParallax() {
                 />
               </div>
 
-              <motion.div
-                style={{
-                  rotate: useTransform(
-                    scrollYProgress,
-                    [0, 1],
-                    [0, 180],
-                  ),
-                }}
-              >
+              <motion.div style={{ rotate: arrowRotate }}>
                 <ArrowRight className="size-4 text-white/50" />
               </motion.div>
             </div>
@@ -553,37 +477,19 @@ function ServiceParallaxCard({
 
   const cardScale = useTransform(
     scrollProgress,
-    [
-      Math.max(0, cardStart - 0.12),
-      cardStart,
-      cardEnd,
-      Math.min(1, cardEnd + 0.12),
-    ],
+    [Math.max(0, cardStart - 0.12), cardStart, cardEnd, Math.min(1, cardEnd + 0.12)],
     [0.94, 1, 1, 0.94],
   );
 
   const cardOpacity = useTransform(
     scrollProgress,
-    [
-      Math.max(0, cardStart - 0.1),
-      cardStart,
-      cardEnd,
-      Math.min(1, cardEnd + 0.1),
-    ],
+    [Math.max(0, cardStart - 0.1), cardStart, cardEnd, Math.min(1, cardEnd + 0.1)],
     [0.72, 1, 1, 0.72],
   );
 
-  const imageX = useTransform(
-    scrollProgress,
-    [0, 1],
-    [index * -25, index * 25],
-  );
+  const imageX = useTransform(scrollProgress, [0, 1], [index * -25, index * 25]);
 
-  const imageScale = useTransform(
-    scrollProgress,
-    [0, 1],
-    [1.08, 1.16],
-  );
+  const imageScale = useTransform(scrollProgress, [0, 1], [1.08, 1.16]);
 
   return (
     <motion.div
@@ -620,25 +526,21 @@ function ServiceParallaxCard({
       >
         {/* Image */}
         <motion.img
-  src={img}
-  alt={service.title}
-  loading={index === 0 ? "eager" : "lazy"}
-  style={{
-    x: index === 4 ? 0 : imageX,
-    scale: index === 4 ? 1 : imageScale,
-  }}
-  className={`
+          src={img}
+          alt={service.title}
+          loading={index === 0 ? "eager" : "lazy"}
+          style={{
+            x: index === 4 ? 0 : imageX,
+            scale: index === 4 ? 1 : imageScale,
+          }}
+          className={`
     absolute
     inset-0
     h-full
     w-full
-    ${
-      index === 4
-        ? "object-contain p-0"
-        : "object-contain p-8 sm:p-10 lg:p-14"
-    }
+    ${index === 4 ? "object-contain p-0" : "object-contain p-8 sm:p-10 lg:p-14"}
   `}
-/>
+        />
 
         {/* Service Name + Button */}
         <div
@@ -654,10 +556,8 @@ function ServiceParallaxCard({
           "
         >
           <div className="max-w-3xl">
-            
-
             <span
-  className="
+              className="
     mt-6
     inline-flex
     items-center
@@ -679,18 +579,17 @@ function ServiceParallaxCard({
     group-hover:text-white
     group-hover:shadow-lg
   "
->
-  Explore service
-
-  <ArrowRight
-    className="
+            >
+              Explore service
+              <ArrowRight
+                className="
       size-4
       transition-transform
       duration-300
       group-hover:translate-x-1
     "
-  />
-</span>
+              />
+            </span>
           </div>
         </div>
       </Link>
@@ -715,12 +614,11 @@ function TypewriterText({
 
   useEffect(() => {
     let intervalId: ReturnType<typeof setInterval> | undefined;
-    let timeoutId: ReturnType<typeof setTimeout> | undefined;
     let index = 0;
 
     setVisibleText("");
 
-    timeoutId = setTimeout(() => {
+    const timeoutId = setTimeout(() => {
       intervalId = setInterval(() => {
         index += 1;
         setVisibleText(text.slice(0, index));
@@ -732,8 +630,11 @@ function TypewriterText({
     }, delay);
 
     return () => {
-      if (timeoutId) clearTimeout(timeoutId);
-      if (intervalId) clearInterval(intervalId);
+      clearTimeout(timeoutId);
+
+      if (intervalId) {
+        clearInterval(intervalId);
+      }
     };
   }, [text, delay]);
 
@@ -750,12 +651,9 @@ function TypewriterText({
   );
 }
 
-
 /* =============================================================
    ABOUT TEXT
 ============================================================= */
-
-
 
 function AboutText({
   scrollProgress,
@@ -764,72 +662,58 @@ function AboutText({
 }) {
   const { ref: inViewRef, inView: isInView } = useInView({
     threshold: 0.3,
-    triggerOnce: false,
+    triggerOnce: true,
   });
 
   const headlineText = "One Partner, Multiple Solutions";
   const descriptionText =
-    "Mercury Energy Solutions delivers integrated engineering services, marine and industrial boiler solutions, biomass fuel, solar energy systems, and specialist spare parts — all under one roof.";
+    "Mercury Energy Solutions delivers integrated engineering services, marine and industrial boiler solutions, bioenergy, solar energy systems, and specialist spare parts — all under one roof.";
 
   const [headline, setHeadline] = useState("");
   const [description, setDescription] = useState("");
+  const [hasAnimated, setHasAnimated] = useState(false);
 
-  // Type the headline only when the section is visible.
   useEffect(() => {
-    setHeadline("");
-    setDescription("");
+    if (!isInView || hasAnimated) return;
 
-    if (!isInView) return;
+    let headlineIndex = 0;
+    let descriptionIndex = 0;
+    let headlineTimer: ReturnType<typeof setTimeout>;
+    let descriptionTimer: ReturnType<typeof setTimeout>;
 
-    let index = 0;
-    let timer: ReturnType<typeof setTimeout>;
+    const typeDescription = () => {
+      descriptionIndex += 1;
+      setDescription(descriptionText.slice(0, descriptionIndex));
 
-    const typeNext = () => {
-      index += 1;
-      setHeadline(headlineText.slice(0, index));
-
-      if (index < headlineText.length) {
-        timer = setTimeout(typeNext, 55);
+      if (descriptionIndex < descriptionText.length) {
+        descriptionTimer = setTimeout(typeDescription, 18);
+      } else {
+        setHasAnimated(true);
       }
     };
 
-    timer = setTimeout(typeNext, 250);
+    const typeHeadline = () => {
+      headlineIndex += 1;
+      setHeadline(headlineText.slice(0, headlineIndex));
 
-    return () => clearTimeout(timer);
-  }, [isInView]);
-
-  // Start the description once the headline finishes.
-  useEffect(() => {
-    if (!isInView || headline !== headlineText) return;
-
-    let index = 0;
-    let timer: ReturnType<typeof setTimeout>;
-
-    const typeNext = () => {
-      index += 1;
-      setDescription(descriptionText.slice(0, index));
-
-      if (index < descriptionText.length) {
-        timer = setTimeout(typeNext, 18);
+      if (headlineIndex < headlineText.length) {
+        headlineTimer = setTimeout(typeHeadline, 55);
+      } else {
+        descriptionTimer = setTimeout(typeDescription, 350);
       }
     };
 
-    timer = setTimeout(typeNext, 250);
+    headlineTimer = setTimeout(typeHeadline, 250);
 
-    return () => clearTimeout(timer);
-  }, [isInView, headline]);
+    return () => {
+      clearTimeout(headlineTimer);
+      clearTimeout(descriptionTimer);
+    };
+  }, [isInView, hasAnimated]);
 
-  const x = useTransform(
-    scrollProgress,
-    [0, 0.35, 0.75, 1],
-    [-40, -20, -5, 0],
-  );
+  const x = useTransform(scrollProgress, [0, 0.35, 0.75, 1], [-40, -20, -5, 0]);
 
-  const opacity = useTransform(
-    scrollProgress,
-    [0, 0.25, 0.65, 1],
-    [0, 0.35, 0.85, 1],
-  );
+  const opacity = useTransform(scrollProgress, [0, 0.25, 0.65, 1], [0, 0.35, 0.85, 1]);
 
   return (
     <motion.div
@@ -837,21 +721,18 @@ function AboutText({
       style={{ x, opacity }}
       className="relative z-20 w-full max-w-2xl lg:pr-8 lg:translate-x-4"
     >
-      <p className="eyebrow text-accent">
+      <p className="eyebrow text-accent !text-base font-semibold uppercase tracking-[0.2em] sm:!text-base sm:tracking-[0.25em]">
         About Mercury
       </p>
 
-      {/* Fixed layout prevents the heading from jumping while typing. */}
       <h2
         className="mt-5 min-h-[3.2em] max-w-xl text-4xl font-semibold leading-[1.12] tracking-tight text-white sm:min-h-[2.4em] sm:text-5xl lg:text-6xl"
-        aria-label={headlineText}
+        aria-label={`${headlineText}.`}
       >
-        <span>{headline}</span>
-        {headline === headlineText && (
-          <span className="text-[#f58220]">.</span>
-        )}
+        <span>{hasAnimated ? headlineText : headline}</span>
+        {(hasAnimated || headline === headlineText) && <span className="text-[#f58220]">.</span>}
 
-        {isInView && headline !== headlineText && (
+        {!hasAnimated && isInView && headline !== headlineText && (
           <span
             aria-hidden="true"
             className="ml-1 inline-block h-[0.8em] w-[2px] animate-pulse bg-[#f58220] align-baseline"
@@ -859,14 +740,15 @@ function AboutText({
         )}
       </h2>
 
-      {/* Reserved height keeps the content below stable. */}
       <p
         className="mt-7 min-h-[12rem] max-w-xl text-base leading-8 text-white/70 sm:min-h-[10rem] sm:text-lg"
         aria-label={descriptionText}
       >
-        {description}
-        {isInView &&
+        {hasAnimated ? descriptionText : description}
+
+        {!hasAnimated &&
           headline === headlineText &&
+          isInView &&
           description !== descriptionText && (
             <span
               aria-hidden="true"
@@ -927,7 +809,6 @@ function AboutText({
   );
 }
 
-
 /* =============================================================
    INTERACTIVE 3D SUN
 
@@ -953,7 +834,6 @@ function InteractiveSun({
      CURSOR POSITION
   ========================================================= */
 
-
   const mouseX = useMotionValue(0);
   const mouseY = useMotionValue(0);
 
@@ -973,33 +853,17 @@ function InteractiveSun({
      CURSOR ROTATION
   ========================================================= */
 
-  const rotateX = useTransform(
-    smoothY,
-    [-1, 1],
-    [7, -7],
-  );
+  const rotateX = useTransform(smoothY, [-1, 1], [7, -7]);
 
-  const rotateY = useTransform(
-    smoothX,
-    [-1, 1],
-    [-10, 10],
-  );
+  const rotateY = useTransform(smoothX, [-1, 1], [-10, 10]);
 
   /* =========================================================
      CURSOR MOVEMENT
   ========================================================= */
 
-  const cursorX = useTransform(
-    smoothX,
-    [-1, 1],
-    [-24, 24],
-  );
+  const cursorX = useTransform(smoothX, [-1, 1], [-24, 24]);
 
-  const cursorY = useTransform(
-    smoothY,
-    [-1, 1],
-    [-16, 16],
-  );
+  const cursorY = useTransform(smoothY, [-1, 1], [-16, 16]);
 
   /* =========================================================
      SCROLL MOVEMENT
@@ -1015,23 +879,11 @@ function InteractiveSun({
        scale = 1
   ========================================================= */
 
-  const rawScrollX = useTransform(
-    scrollProgress,
-    [0, 0.2, 0.55, 1],
-    [100, 65, 20, 0],
-  );
+  const rawScrollX = useTransform(scrollProgress, [0, 0.2, 0.55, 1], [100, 65, 20, 0]);
 
-  const rawScrollY = useTransform(
-    scrollProgress,
-    [0, 0.2, 0.55, 1],
-    [80, 45, 12, 0],
-  );
+  const rawScrollY = useTransform(scrollProgress, [0, 0.2, 0.55, 1], [80, 45, 12, 0]);
 
-  const rawScrollScale = useTransform(
-    scrollProgress,
-    [0, 0.2, 0.55, 1],
-    [0.78, 0.84, 0.94, 1],
-  );
+  const rawScrollScale = useTransform(scrollProgress, [0, 0.2, 0.55, 1], [0.78, 0.84, 0.94, 1]);
 
   const rawScrollOpacity = useTransform(
     scrollProgress,
@@ -1072,39 +924,28 @@ function InteractiveSun({
 
   const combinedX = useTransform(
     [scrollX, cursorX],
-    ([scrollValue, cursorValue]) =>
-      (scrollValue as number) + (cursorValue as number),
+    ([scrollValue, cursorValue]) => (scrollValue as number) + (cursorValue as number),
   );
 
   const combinedY = useTransform(
     [scrollY, cursorY],
-    ([scrollValue, cursorValue]) =>
-      (scrollValue as number) + (cursorValue as number),
+    ([scrollValue, cursorValue]) => (scrollValue as number) + (cursorValue as number),
   );
 
   /* =========================================================
      POINTER
   ========================================================= */
 
-  const handlePointerMove = (
-    event: PointerEvent<HTMLDivElement>,
-  ) => {
-    const rect =
-      event.currentTarget.getBoundingClientRect();
+  const handlePointerMove = (event: PointerEvent<HTMLDivElement>) => {
+    const rect = event.currentTarget.getBoundingClientRect();
 
-    const x =
-      ((event.clientX - rect.left) / rect.width) * 2 - 1;
+    const x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
 
-    const y =
-      ((event.clientY - rect.top) / rect.height) * 2 - 1;
+    const y = ((event.clientY - rect.top) / rect.height) * 2 - 1;
 
-    mouseX.set(
-      Math.max(-1, Math.min(1, x)),
-    );
+    mouseX.set(Math.max(-1, Math.min(1, x)));
 
-    mouseY.set(
-      Math.max(-1, Math.min(1, y)),
-    );
+    mouseY.set(Math.max(-1, Math.min(1, y)));
   };
 
   const handlePointerLeave = () => {

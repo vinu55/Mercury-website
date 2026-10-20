@@ -1,10 +1,4 @@
-import {
-  Anchor,
-  Factory,
-  Flame,
-  PackageSearch,
-  Sun,
-} from "lucide-react";
+import { Anchor, Factory, Flame, PackageSearch, Sun } from "lucide-react";
 
 /* -------------------------------------------------------------------------- */
 /* Company Information                                                        */
@@ -15,17 +9,14 @@ export const COMPANY = {
   shortName: "Mercury Energy Solutions",
 
   email: "enquiries@mercuryenergysolutions.com",
-  phone: "+91 6366414655",
+  phone: "+91 74836 51445",
   phoneHref: "tel:+916366414655",
-  whatsapp: "https://wa.me/916366414655",
-  linkedin:
-    "https://www.linkedin.com/company/mercury-energy-solutions/home/",
+  whatsapp: "https://wa.me/917483651445",
+  linkedin: "https://www.linkedin.com/company/mercury-energy-solutions/home/",
 
-  office:
-    "#141, Yashada Windsong, Pune, Maharashtra - 412101, India",
+  office: "#141, Yashada Windsong, Pune, Maharashtra - 412101, India",
 
-  registered:
-    "1st Floor, Ghanshyam Complex, Gulbarga, Karnataka - 585103, India",
+  registered: "1st Floor, Ghanshyam Complex, Gulbarga, Karnataka - 585103, India",
 
   director: "Bhimreddy Biradar",
 } as const;
@@ -52,28 +43,25 @@ export const SERVICES = [
       "Engineering, conversion, retrofits, and performance improvement for industrial boilers.",
   },
   {
-    title: "Biomass Fuel Solutions",
+    title: "Bioenergy Solutions",
     short: "Biomass",
     href: "/services/biomass-fuel",
     icon: Flame,
-    description:
-      "Fuel conversion support and dependable biomass and bagasse supply.",
+    description: "Fuel conversion support and dependable biomass and bagasse supply.",
   },
   {
     title: "Solar Energy Solutions",
     short: "Solar",
     href: "/services/solar-energy",
     icon: Sun,
-    description:
-      "Commercial and industrial solar systems from feasibility through maintenance.",
+    description: "Commercial and industrial solar systems from feasibility through maintenance.",
   },
   {
     title: "Spare Parts",
     short: "Spares",
     href: "/services/spare-parts",
     icon: PackageSearch,
-    description:
-      "Sourcing for boiler, burner, pump, valve, and control components.",
+    description: "Sourcing for boiler, burner, pump, valve, and control components.",
   },
 ] as const;
 
@@ -108,7 +96,6 @@ export const LAND_SERVICES = [
   "Annual Maintenance Contracts (AMC)",
   "Boiler Retrofitting and Upgrades",
   "Performance Improvement Studies",
-  "Biomass & Bagasse Supply",
   "Performance Optimization",
 ] as const;
 
@@ -163,13 +150,7 @@ export const SPARES = [
   },
   {
     name: "Smoke Density",
-    brands: [
-      "Mobrey",
-      "Green Instruments",
-      "Skil",
-      "Sick",
-      "Fuji Electric",
-    ],
+    brands: ["Mobrey", "Green Instruments", "Skil", "Sick", "Fuji Electric"],
   },
   {
     name: "Valves",

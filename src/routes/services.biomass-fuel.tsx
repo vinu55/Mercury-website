@@ -1,14 +1,9 @@
-
 import { createFileRoute } from "@tanstack/react-router";
 import { AnimatePresence, motion } from "motion/react";
 import { useState } from "react";
 import type { PointerEvent as ReactPointerEvent } from "react";
 import renewables from "@/assets/biomass banner.jpeg";
-import {
-  EnquiryBand,
-  PageHero,
-} from "@/components/site/PageShell";
-
+import { EnquiryBand, PageHero } from "@/components/site/PageShell";
 
 type BiomassService = {
   number: string;
@@ -18,27 +13,44 @@ type BiomassService = {
 };
 
 const work = [
-  "Fuel Conversion, Retrofits and Firing System Upgrades",
-  "Upgrades and Conversion Services",
-  "Biomass & Bagasse Supply",
+  "Bioenergy Technology",
+  "Engineering Feasibility & Assessment Study",
+  "Bioenergy Conversion & Co-firing",
+  "Biomass Fuel Supply (Briquettes & Pellets)",
+  "Biomass Supply for CBG Plants",
+  "Agricultural Biomass Backward Integration",
 ] as const;
 
 const serviceDescriptions: Record<string, string> = {
-  "Fuel Conversion, Retrofits and Firing System Upgrades":
-    "Fuel conversion and firing-system modifications tailored to boiler configuration, fuel requirements and operating needs.",
-  "Upgrades and Conversion Services":
-    "Boiler upgrade and conversion support developed around existing equipment, plant requirements and lifecycle needs.",
-  "Biomass & Bagasse Supply":
-    "Biomass and bagasse supply support for industrial operations requiring suitable alternative boiler fuels.",
+  "Bioenergy Technology":
+    "Practical bioenergy solutions tailored to industrial boilers, fuel systems, and plant operating requirements.",
+
+  "Engineering Feasibility & Assessment Study":
+    "Assess plant equipment, fuel demand, operating conditions, and infrastructure to determine bioenergy conversion feasibility.",
+
+  "Bioenergy Conversion & Co-firing":
+    "Evaluate and implement suitable fuel conversion, boiler retrofits, and bioenergy co-firing solutions to reduce fossil fuel use.",
+
+  "Biomass Fuel Supply (Briquettes & Pellets)":
+    "Supply of biomass fuels, including briquettes, pellets and other biomass-based fuels for industrial applications.",
+
+  "Biomass Supply for CBG Plants":
+    "Supply of agricultural biomass and other feedstock materials for compressed biogas (CBG) plant operations.",
+
+  "Agricultural Biomass Backward Integration":
+    "Integrated sourcing of agricultural biomass to strengthen feedstock availability and support reliable bioenergy supply chains.",
 };
 
 const serviceImages = [
-  "/media/b1.jpeg",
-  "/media/b2.jpeg",
-  "/media/b3.jpeg",
+  "/media/b1.png",
+  "/media/b2.png",
+  "/media/b3.png",
+  "/media/bioene.png",
+  "/media/bioind.png",
+  "/media/agri.png",
 ];
 
- const biomassServices: BiomassService[] = work.map((title, index) => ({
+const biomassServices: BiomassService[] = work.map((title, index) => ({
   number: String(index + 1).padStart(2, "0"),
   title,
   description: serviceDescriptions[title] ?? "",
@@ -46,69 +58,76 @@ const serviceImages = [
 }));
 const rows = [
   {
-    fuel: "Biomass briquettes",
-    gcv: "3600+",
-    ash: "8–14%",
-    moisture: "10%",
-    cost: "₹6/kg avg.",
-    steam: "₹1.45/kg",
-    handling: "Easy, high-density packaged delivery",
-    impact:
-      "Emissions within pollution-control limits; supports farmers, reduces pollution and waste",
+    fuel: "Biomass Pellets",
+    gcv: "4,000–4,500 kcal/kg*",
+    ash: "2–5%*",
+    moisture: "5–8%*",
+    form: "Uniform, compact pellets",
+    handling: "Suitable for automated feeding",
+    combustion: "Performance depends on fuel quality and equipment",
+    impact: "Renewable when sustainably sourced",
+    applications: "Industrial boilers and thermal-fluid heaters",
+  },
+  {
+    fuel: "Biomass Briquettes",
+    gcv: "3,600–4,000 kcal/kg*",
+    ash: "5–12%*",
+    moisture: "8–12%*",
+    form: "Dense, compact blocks",
+    handling: "Convenient bulk handling",
+    combustion: "Suitable for compatible industrial boilers",
+    impact: "Supports agricultural-residue utilisation",
+    applications: "Boilers, furnaces and industrial heating",
   },
   {
     fuel: "Wood",
-    gcv: "2800+",
-    ash: "9–10%",
-    moisture: "25–40%",
-    cost: "₹7.5/kg",
-    steam: "₹2.08/kg",
-    handling: "Difficult, uneven logs",
-    impact: "Dense smoke and deforestation impact",
+    gcv: "2,800+ kcal/kg*",
+    ash: "9–10%*",
+    moisture: "25–40%*",
+    form: "Logs or wood pieces",
+    handling: "Difficult handling; uneven logs",
+    combustion: "Depends on moisture and wood quality",
+    impact: "Smoke emissions and potential deforestation impact",
+    applications: "Wood-fired boilers and heating systems",
   },
   {
     fuel: "Coal",
-    gcv: "5500+",
-    ash: "5–7%",
-    moisture: "10%",
-    cost: "₹13/kg",
-    steam: "₹2.60/kg",
-    handling: "Difficult and unhygienic",
-    impact:
-      "High CO₂ and SO₂; major pollution and import dependency",
+    gcv: "5,000–6,000 kcal/kg*",
+    ash: "5–20%*",
+    moisture: "5–15%*",
+    form: "Lumps or fines",
+    handling: "Requires suitable handling and ash management",
+    combustion: "Performance depends on coal grade and equipment",
+    impact: "Fossil fuel with significant CO₂ emissions",
+    applications: "Industrial boilers and furnaces",
   },
 ];
 
 const advantages = [
-  "More combustion time",
-  "Easy transportation",
-  "Tax benefit",
-  "Lower emission of harmful gases",
-  "Concentrated energy",
-  "Highly economical",
-  "High thermal value",
-  "Made from biomass waste",
+  "Carbon Credit Benefits",
+  "Reduced Fossil Fuel Dependence",
+  "Utilisation of Bioenergy Waste",
+  "Cost-Effective Industrial Energy",
 ];
 
 export const Route = createFileRoute("/services/biomass-fuel")({
   head: () => ({
     meta: [
       {
-        title: "Biomass Fuel Solutions | Mercury Energy Solutions",
+        title: "Bioenergy solution | Mercury Energy Solutions",
       },
       {
         name: "description",
         content:
-          "Biomass fuel conversion, firing system upgrades, briquettes, pellets and bagasse supply with fuel comparison.",
+          "Bioenergy conversion, firing system upgrades, briquettes, pellets and bagasse supply with fuel comparison.",
       },
       {
         property: "og:title",
-        content: "Biomass Fuel Solutions",
+        content: "Bioenergy solution",
       },
       {
         property: "og:description",
-        content:
-          "Practical fuel transition and quality biomass supply.",
+        content: "Practical fuel transition and quality bioenergy supply.",
       },
       {
         property: "og:type",
@@ -127,27 +146,25 @@ function Page() {
   return (
     <main>
       <PageHero
-        eyebrow="Biomass fuel solutions"
+        eyebrow="Bioenergy solution"
         title="A practical pathway to renewable industrial fuel."
-        description="Conversion support and high-quality biomass fuel produced without chemical binders, adhesives, fillers or sub-standard inputs."
+        description="Industrial biomass energy solutions, engineering feasibility assessments, fuel cost analysis, conversion and co-firing support, and reliable biomass supply to help reduce fossil fuel use and carbon emissions."
         image={renewables}
       />
 
       <section className="bg-white px-5 py-20 sm:px-8 lg:py-24">
         <div className="mx-auto max-w-7xl">
           <div className="mb-12">
-            <span className="text-xs font-semibold uppercase tracking-[0.24em] text-[#f58220]">
-              Scope of work
-            </span>
-
             <h2 className="mt-3 text-3xl font-semibold tracking-tight text-[#061a34] sm:text-4xl">
-              Biomass Fuel Services
+              Bioenergy & Decarbonisation Solutions
               <span className="text-[#f58220]">.</span>
             </h2>
 
-            <p className="mt-4 max-w-2xl leading-7 text-slate-600">
-              Explore our fuel conversion, boiler upgrade and biomass
-              supply services for industrial operations.
+            <p className="mt-4 max-w-3xl leading-7 text-slate-600">
+              We help industries assess bioenergy suitability, evaluate engineering feasibility, and
+              implement practical solutions to reduce fossil fuel consumption and carbon emissions.
+              Our services cover fuel conversion, co-firing, cost analysis, bioenergy supply, and
+              feedstock integration for CBG plants.
             </p>
           </div>
 
@@ -156,34 +173,30 @@ function Page() {
       </section>
 
       {/* FUEL COMPARISON */}
-      
-<section className="bg-[#f5f7fa] px-5 py-20 sm:px-8 lg:py-24">
-  <div className="mx-auto max-w-7xl">
-    <p className="text-xs font-semibold uppercase tracking-[0.24em] text-[#f58220]">
-      Fuel comparison
-    </p>
 
-    <h2 className="mt-4 text-3xl font-semibold tracking-tight text-[#061a34] sm:text-5xl">
-      Compare operating characteristics
-      <span className="text-[#f58220]">.</span>
-    </h2>
+      <section className="bg-[#f5f7fa] px-5 py-20 sm:px-8 lg:py-24">
+        <div className="mx-auto max-w-7xl">
+          <p className="text-xs font-semibold uppercase tracking-[0.24em] text-[#f58220]">
+            Fuel comparison
+          </p>
 
-    <p className="mt-4 max-w-2xl leading-7 text-slate-600">
-      Select a fuel to explore its listed characteristics and compare
-      fuel and steam costs.
-    </p>
+          <h2 className="mt-4 text-3xl font-semibold tracking-tight text-[#061a34] sm:text-5xl">
+            Compare operating characteristics
+            <span className="text-[#f58220]">.</span>
+          </h2>
 
-    <InteractiveFuelComparison rows={rows} />
-  </div>
-</section>
+          <p className="mt-4 max-w-2xl leading-7 text-slate-600">
+            Select a fuel to explore its listed characteristics and compare fuel and steam costs.
+          </p>
 
+          <InteractiveFuelComparison rows={rows} />
+        </div>
+      </section>
 
       {/* BIOMASS ADVANTAGES */}
       <section className="bg-muted py-20">
         <div className="mx-auto max-w-[1440px] px-5 lg:px-10">
-          <p className="eyebrow text-accent">
-            Advantage of biomass pellets
-          </p>
+          <p className="eyebrow text-accent">Advantage of biomass pellets</p>
 
           <div className="mt-8 grid gap-px bg-border sm:grid-cols-2 lg:grid-cols-4">
             {advantages.map((advantage, index) => (
@@ -195,56 +208,28 @@ function Page() {
                   {String(index + 1).padStart(2, "0")}
                 </span>
 
-                <h3 className="mt-5 text-lg font-semibold">
-                  {advantage}
-                </h3>
+                <h3 className="mt-5 text-lg font-semibold">{advantage}</h3>
               </div>
             ))}
           </div>
         </div>
       </section>
 
-      <EnquiryBand service="your biomass fuel transition" />
+      <EnquiryBand service="your bioenergy transition" />
     </main>
   );
 }
 
 type FuelRow = (typeof rows)[number];
 
-function InteractiveFuelComparison({
-  rows,
-}: {
-  rows: FuelRow[];
-}) {
-  const [selectedFuel, setSelectedFuel] = useState(
-    rows[0]?.fuel ?? "",
-  );
-  const [sortBy, setSortBy] = useState<"default" | "fuel" | "cost">(
-    "default",
-  );
+function InteractiveFuelComparison({ rows }: { rows: FuelRow[] }) {
+  const [selectedFuel, setSelectedFuel] = useState(rows[0]?.fuel ?? "");
 
-  const selectedRow = rows.find(
-    (row) => row.fuel === selectedFuel,
-  );
-
-  const displayedRows = [...rows].sort((a, b) => {
-    if (sortBy === "fuel") {
-      return a.fuel.localeCompare(b.fuel);
-    }
-
-    if (sortBy === "cost") {
-      const getCost = (value: string) =>
-        Number(value.replace(/[^\d.]/g, "")) || 0;
-
-      return getCost(a.cost) - getCost(b.cost);
-    }
-
-    return rows.indexOf(a) - rows.indexOf(b);
-  });
+  const selectedRow = rows.find((row) => row.fuel === selectedFuel);
 
   return (
     <div className="mt-10">
-      {/* Interactive fuel selectors */}
+      {/* Fuel selectors */}
       <div className="mb-6 flex flex-wrap gap-3">
         {rows.map((row) => {
           const active = selectedFuel === row.fuel;
@@ -258,7 +243,7 @@ function InteractiveFuelComparison({
               className={`rounded-full border px-5 py-3 text-sm font-semibold transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#f58220] ${
                 active
                   ? "border-[#061a34] bg-[#061a34] text-white"
-                  : "border-slate-300 bg-white text-[#061a34] hover:border-[#f58220]"
+                  : "border-slate-300 bg-white text-[#061a34] hover:border-[#f58220] hover:bg-orange-50"
               }`}
             >
               {row.fuel}
@@ -267,109 +252,112 @@ function InteractiveFuelComparison({
         })}
       </div>
 
-      {/* Selected fuel details */}
-     
+      {/* Selected fuel summary */}
+      {selectedRow && (
+        <div className="mb-6 rounded-2xl border border-slate-200 bg-white p-5 sm:p-6">
+          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[#f58220]">
+            Selected fuel
+          </p>
 
-      {/* Table controls */}
-      
-      {/* Responsive comparison table */}
+          <h3 className="mt-2 text-xl font-semibold text-[#061a34]">{selectedRow.fuel}</h3>
+
+          <p className="mt-2 text-sm leading-6 text-slate-600">{selectedRow.impact}</p>
+        </div>
+      )}
+
+      {/* Comparison table */}
       <div className="overflow-x-auto rounded-2xl border border-slate-200 bg-white">
-        <table className="w-full min-w-[900px] border-collapse text-left text-sm">
+        <table className="w-full min-w-[1100px] border-collapse text-left text-sm">
           <thead>
             <tr className="bg-[#061a34] text-white">
-              {[
-                "Fuel",
-                "GCV",
-                "Ash",
-                "Moisture",
-                "Fuel cost",
-                "Steam cost",
-                "Handling",
-                "Environmental context",
-              ].map((heading) => (
-                <th
-                  key={heading}
-                  scope="col"
-                  className="p-4 font-semibold"
-                >
-                  {heading}
-                </th>
-              ))}
+              {["Particulars", "Biomass Pellets", "Biomass Briquettes", "Wood", "Coal"].map(
+                (heading) => (
+                  <th key={heading} scope="col" className="p-4 font-semibold">
+                    {heading}
+                  </th>
+                ),
+              )}
             </tr>
           </thead>
 
           <tbody>
-            {displayedRows.map((row) => {
-              const active = row.fuel === selectedFuel;
+            {[
+              {
+                label: "Gross Calorific Value (GCV)",
+                key: "gcv",
+              },
+              {
+                label: "Moisture Content",
+                key: "moisture",
+              },
+              {
+                label: "Ash Content",
+                key: "ash",
+              },
+              {
+                label: "Fuel Form",
+                key: "form",
+              },
+              {
+                label: "Handling & Storage",
+                key: "handling",
+              },
+              {
+                label: "Combustion",
+                key: "combustion",
+              },
+              {
+                label: "Environmental Profile",
+                key: "impact",
+              },
+              {
+                label: "Typical Applications",
+                key: "applications",
+              },
+            ].map((item) => (
+              <tr key={item.key} className="border-b border-slate-100 last:border-0">
+                <th scope="row" className="bg-slate-50 p-4 font-semibold text-[#061a34]">
+                  {item.label}
+                </th>
 
-              return (
-                <tr
-                  key={row.fuel}
-                  onClick={() => setSelectedFuel(row.fuel)}
-                  onKeyDown={(event) => {
-                    if (
-                      event.key === "Enter" ||
-                      event.key === " "
-                    ) {
-                      event.preventDefault();
-                      setSelectedFuel(row.fuel);
-                    }
-                  }}
-                  tabIndex={0}
-                  aria-selected={active}
-                  className={`cursor-pointer border-b border-slate-100 transition-colors duration-200 last:border-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[#f58220] ${
-                    active
-                      ? "bg-orange-50"
-                      : "hover:bg-slate-50"
-                  }`}
-                >
-                  <th
-                    scope="row"
-                    className={`p-4 font-semibold ${
-                      active ? "text-[#f58220]" : "text-[#061a34]"
-                    }`}
-                  >
-                    {row.fuel}
-                  </th>
+                {rows.map((row) => {
+                  const active = row.fuel === selectedFuel;
+                  const value = row[item.key as keyof FuelRow];
 
-                  <td className="p-4">{row.gcv}</td>
-                  <td className="p-4">{row.ash}</td>
-                  <td className="p-4">{row.moisture}</td>
-                  <td className="p-4 font-medium">{row.cost}</td>
-                  <td className="p-4 font-medium">{row.steam}</td>
-                  <td className="p-4">{row.handling}</td>
-                  <td className="p-4">{row.impact}</td>
-                </tr>
-              );
-            })}
+                  return (
+                    <td
+                      key={row.fuel}
+                      className={`p-4 leading-6 transition-colors ${
+                        active ? "bg-orange-50/70 font-medium text-[#061a34]" : "text-slate-600"
+                      }`}
+                    >
+                      {value}
+                    </td>
+                  );
+                })}
+              </tr>
+            ))}
           </tbody>
         </table>
       </div>
 
       <p className="mt-4 text-xs leading-5 text-slate-500">
-        Figures are displayed as provided in the current fuel comparison
-        data. Verify pricing, GCV basis and operating assumptions before
-        using them for purchasing or cost estimates.
+        *Indicative values only. Actual GCV, moisture and ash content depend on fuel source,
+        processing and supplier specifications. Verify technical data before making purchasing or
+        operational decisions.
       </p>
     </div>
   );
 }
 
-function BiomassServiceAccordionList({
-  items,
-}: {
-  items: BiomassService[];
-}) {
+function BiomassServiceAccordionList({ items }: { items: BiomassService[] }) {
   const [openIndex, setOpenIndex] = useState<number | null>(null);
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
   const [pointer, setPointer] = useState({ x: 24, y: 24 });
 
-  const hoveredService =
-    hoveredIndex !== null ? items[hoveredIndex] : undefined;
+  const hoveredService = hoveredIndex !== null ? items[hoveredIndex] : undefined;
 
-  function handlePointerMove(
-    event: ReactPointerEvent<HTMLDivElement>,
-  ) {
+  function handlePointerMove(event: ReactPointerEvent<HTMLDivElement>) {
     if (event.pointerType !== "mouse" && event.pointerType !== "pen") {
       return;
     }
@@ -406,18 +394,12 @@ function BiomassServiceAccordionList({
           <div
             key={service.number}
             onPointerEnter={(event) => {
-              if (
-                event.pointerType === "mouse" ||
-                event.pointerType === "pen"
-              ) {
+              if (event.pointerType === "mouse" || event.pointerType === "pen") {
                 setHoveredIndex(index);
               }
             }}
             onPointerLeave={(event) => {
-              if (
-                event.pointerType === "mouse" ||
-                event.pointerType === "pen"
-              ) {
+              if (event.pointerType === "mouse" || event.pointerType === "pen") {
                 setHoveredIndex(null);
               }
             }}
@@ -508,7 +490,6 @@ function BiomassServiceAccordionList({
               alt={hoveredService.title}
               className="h-full w-full object-cover"
             />
-
           </motion.div>
         )}
       </AnimatePresence>

@@ -1,13 +1,9 @@
-
 import { createFileRoute } from "@tanstack/react-router";
 import { AnimatePresence, motion } from "motion/react";
 import { useState } from "react";
 import type { PointerEvent as ReactPointerEvent } from "react";
 import land from "@/assets/land-boiler.jpg";
-import {
-  EnquiryBand,
-  PageHero,
-} from "@/components/site/PageShell";
+import { EnquiryBand, PageHero } from "@/components/site/PageShell";
 import { LAND_SERVICES } from "@/lib/site-data";
 
 type LandService = {
@@ -22,53 +18,44 @@ type LandService = {
  * Convert it into service objects for the interactive list.
  */
 const LAND_SERVICE_IMAGES = [
-  "/media/l1.png",
-  "/media/l2.png",
-  "/media/l3.png",
-  "/media/l4.png",
-  "/media/l5.png",
-  "/media/l6.png",
-  "/media/l7.png",
-  "/media/l8.png",
+  "/media/01.jpg",
+  "/media/02.jpg",
+  "/media/b2.png",
+  "/media/04.jpg",
+  "/media/05.jpg",
+  "/media/06.jpg",
+  "/media/08.jpg",
 ];
 
 const LAND_SERVICE_DESCRIPTIONS: Record<string, string> = {
   "Design and Engineering":
-    "Engineering support for industrial boiler systems, with solutions developed around plant requirements and operating conditions.",
+    "Engineering and design support for industrial boiler systems, tailored to plant specifications, capacity requirements and operating conditions.",
 
   "Fuel Conversion, Retrofits and Firing System Upgrades":
-    "Fuel conversion and firing-system modifications tailored to boiler configuration, fuel requirements and operational needs.",
+    "Boiler fuel conversion and firing-system modifications to accommodate fuel requirements and existing system configurations.",
 
-  "Upgrades and Conversion Services":
-    "Boiler upgrade and conversion services designed around existing equipment, plant requirements and lifecycle needs.",
+  "Upgrades and Services":
+    "Boiler modernization, component upgrades and system modifications to meet changing plant requirements and equipment needs.",
 
   "Annual Maintenance Contracts (AMC)":
-    "Planned maintenance support to help maintain equipment condition, operating reliability and service continuity.",
+    "Scheduled inspections and preventive maintenance to support equipment reliability, reduce unplanned downtime and maintain service continuity.",
 
-  "Boiler Retrofitting and Upgrades":
-    "Retrofitting and modernization options for existing boiler installations, based on equipment condition and project scope.",
+  "Boiler Supply and Spare Parts":
+    "Boiler equipment, replacement components and spare parts to support installation, maintenance and repair requirements.",
 
   "Performance Improvement Studies":
-    "Technical reviews of boiler operation to identify potential improvements in performance, energy use and efficiency.",
-
-  "Biomass & Bagasse Supply":
-    "Biomass and bagasse supply support for industrial operations requiring suitable alternative boiler fuels.",
+    "Technical assessments of boiler operation to identify performance gaps, combustion issues and opportunities for improvement.",
 
   "Performance Optimization":
-    "Operational assessment and optimization support focused on boiler performance, combustion and energy utilization.",
+    "Practical operational adjustments focused on combustion control, heat utilization and overall boiler efficiency.",
 };
 
-const LAND_SERVICE_ITEMS: LandService[] = LAND_SERVICES.map(
-  (title, index) => ({
-    number: String(index + 1).padStart(2, "0"),
-    title,
-    description:
-      LAND_SERVICE_DESCRIPTIONS[title] ??
-      "Technical services tailored to industrial boiler requirements, equipment condition and operating needs.",
-    image:
-      LAND_SERVICE_IMAGES[index % LAND_SERVICE_IMAGES.length] ?? land,
-  }),
-);
+const LAND_SERVICE_ITEMS: LandService[] = LAND_SERVICES.map((title, index) => ({
+  number: String(index + 1).padStart(2, "0"),
+  title,
+  description: LAND_SERVICE_DESCRIPTIONS[title] ?? "",
+  image: LAND_SERVICE_IMAGES[index % LAND_SERVICE_IMAGES.length] ?? land,
+}));
 
 export const Route = createFileRoute("/services/land-boiler")({
   head: () => ({
@@ -87,8 +74,7 @@ export const Route = createFileRoute("/services/land-boiler")({
       },
       {
         property: "og:description",
-        content:
-          "Industrial boiler engineering, upgrades and performance support.",
+        content: "Industrial boiler engineering, upgrades and performance support.",
       },
       {
         property: "og:type",
@@ -116,18 +102,14 @@ function Page() {
       <section className="bg-white px-5 py-20 sm:px-8 lg:py-24">
         <div className="mx-auto max-w-7xl">
           <div className="mb-12">
-            <span className="text-xs font-semibold uppercase tracking-[0.24em] text-[#f58220]">
-              Scope of work
-            </span>
-
             <h2 className="mt-3 text-3xl font-semibold tracking-tight text-[#061a34] sm:text-4xl">
               Land Boiler Services
               <span className="text-[#f58220]">.</span>
             </h2>
 
             <p className="mt-4 max-w-2xl leading-7 text-slate-600">
-              Explore our industrial boiler engineering, maintenance,
-              upgrade and performance support services.
+              Explore our industrial boiler engineering, maintenance, upgrade and performance
+              support services.
             </p>
           </div>
 
@@ -140,21 +122,14 @@ function Page() {
   );
 }
 
-function LandServiceAccordionList({
-  items,
-}: {
-  items: LandService[];
-}) {
+function LandServiceAccordionList({ items }: { items: LandService[] }) {
   const [openIndex, setOpenIndex] = useState<number | null>(null);
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
   const [pointer, setPointer] = useState({ x: 24, y: 24 });
 
-  const hoveredService =
-    hoveredIndex !== null ? items[hoveredIndex] : undefined;
+  const hoveredService = hoveredIndex !== null ? items[hoveredIndex] : undefined;
 
-  function handlePointerMove(
-    event: ReactPointerEvent<HTMLDivElement>,
-  ) {
+  function handlePointerMove(event: ReactPointerEvent<HTMLDivElement>) {
     if (event.pointerType !== "mouse" && event.pointerType !== "pen") {
       return;
     }
@@ -191,18 +166,12 @@ function LandServiceAccordionList({
           <div
             key={service.number}
             onPointerEnter={(event) => {
-              if (
-                event.pointerType === "mouse" ||
-                event.pointerType === "pen"
-              ) {
+              if (event.pointerType === "mouse" || event.pointerType === "pen") {
                 setHoveredIndex(index);
               }
             }}
             onPointerLeave={(event) => {
-              if (
-                event.pointerType === "mouse" ||
-                event.pointerType === "pen"
-              ) {
+              if (event.pointerType === "mouse" || event.pointerType === "pen") {
                 setHoveredIndex(null);
               }
             }}
@@ -262,13 +231,11 @@ function LandServiceAccordionList({
                       onClick={(event) => event.stopPropagation()}
                       className="mt-3 inline-block text-sm font-semibold text-[#061a34] underline decoration-[#f58220] underline-offset-4 transition-colors hover:text-[#f58220]"
                     >
-                      Enquire 
+                      Enquire
                     </a>
                   )}
                 </motion.div>
               </div>
-
-              
             </div>
           </div>
         );
@@ -295,7 +262,6 @@ function LandServiceAccordionList({
               alt={hoveredService.title}
               className="h-full w-full object-cover"
             />
-
           </motion.div>
         )}
       </AnimatePresence>
