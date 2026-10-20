@@ -30,27 +30,15 @@ function Sun() {
         : [object.material];
 
       materials.forEach((material) => {
+        // Preserve the model's original colors and textures.
         material.side = THREE.FrontSide;
-
-        // Reset base tint and emission back to pure default (model's original texture colors)
-        material.color = new THREE.Color("#ffffff");
-        material.emissive = new THREE.Color("#000000");
-        material.emissiveIntensity = 0;
-
-        // Ensure textures are rendered in correct sRGB color space
-        if (material.map) material.map.colorSpace = THREE.SRGBColorSpace;
-        if (material.emissiveMap) material.emissiveMap.colorSpace = THREE.SRGBColorSpace;
-
-        if (
-          material instanceof THREE.MeshStandardMaterial ||
-          material instanceof THREE.MeshPhysicalMaterial
-        ) {
-          material.roughness = 0.85;
-          // Keep envMap subtle so it doesn't leave a milky/faded film over the texture
-          material.envMapIntensity = 0.35;
-        }
-
         material.needsUpdate = true;
+
+        if (material instanceof THREE.MeshStandardMaterial ||
+            material instanceof THREE.MeshPhysicalMaterial) {
+          material.roughness = Math.min(material.roughness, 0.85);
+          material.envMapIntensity = 0.8;
+        }
       });
     });
   }, [clone]);
@@ -107,42 +95,36 @@ export default function SunScene() {
         alpha: true,
         powerPreference: "high-performance",
         toneMapping: THREE.ACESFilmicToneMapping,
-        // Kept at 0.85 to avoid overexposing the warm highlights into pale yellow
-        toneMappingExposure: 0.85,
-        outputColorSpace: THREE.SRGBColorSpace,
+        toneMappingExposure: 1,
       }}
       onPointerMissed={() => {
         document.body.style.cursor = "";
       }}
     >
-      {/* Warm, balanced ambient fill */}
-      <ambientLight intensity={0.4} color="#ffe0b2" />
+      <ambientLight intensity={0.45} color="#fff0d5" />
 
-      {/* Main warm sun key light */}
       <directionalLight
         position={[4, 5, 5]}
-        intensity={1.2}
-        color="#ffab40"
+        intensity={1.5}
+        color="#ffb45c"
       />
 
-      {/* Warm orange depth fill */}
       <pointLight
         position={[-4, -1, 3]}
-        intensity={0.6}
-        color="#ff6e40"
+        intensity={0.65}
+        color="#ff6b24"
       />
 
-      {/* Natural soft environment lightformers without cold blues */}
       <Environment resolution={256}>
         <Lightformer
-          intensity={0.8}
-          color="#ffd180"
+          intensity={1.2}
+          color="#ffd08a"
           position={[0, 5, 0]}
           scale={[10, 10, 1]}
         />
         <Lightformer
-          intensity={0.4}
-          color="#ff9e80"
+          intensity={0.65}
+          color="#4e8fc8"
           position={[-5, 1, -1]}
           rotation-y={Math.PI / 2}
           scale={[20, 2, 1]}
