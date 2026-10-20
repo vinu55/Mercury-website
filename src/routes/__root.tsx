@@ -6,6 +6,7 @@ import {
   HeadContent,
   Scripts,
 } from "@tanstack/react-router";
+import { Analytics } from "@vercel/analytics/react";
 import { useLayoutEffect, useEffect, type ReactNode } from "react";
 import appCss from "../styles.css?url";
 import { Header, Footer, WhatsAppButton } from "@/components/site/SiteChrome";
@@ -136,6 +137,7 @@ function Root() {
       <Outlet />
       <Footer />
       <WhatsAppButton />
+      <Analytics />
     </QueryClientProvider>
   );
 }

@@ -1,15 +1,10 @@
-import { useRef, useState, type FormEvent, type ReactNode } from "react";
+import { useState, type FormEvent, type ReactNode } from "react";
 
 import {
   ArrowRight,
   CheckCircle2,
-  FileText,
-  Image as ImageIcon,
   Loader2,
-  Paperclip,
   Send,
-  Upload,
-  X,
 } from "lucide-react";
 
 import emailjs from "@emailjs/browser";
@@ -30,112 +25,34 @@ import { SERVICES } from "@/lib/site-data";
 
 type FormState = "idle" | "sending" | "sent" | "error";
 
-type Attachment = {
-  file: File;
-  id: string;
-};
+const EMAILJS_SERVICE_ID = import.meta.env.VITE_EMAILJS_SERVICE_ID;
+const EMAILJS_TEMPLATE_ID = import.meta.env.VITE_EMAILJS_TEMPLATE_ID;
+const EMAILJS_PUBLIC_KEY = import.meta.env.VITE_EMAILJS_PUBLIC_KEY;
 
-const MAX_FILES = 5;
-const MAX_FILE_SIZE = 10 * 1024 * 1024;
-const ALLOWED_TYPES = ["image/jpeg", "image/png", "image/webp", "application/pdf"];
-
-function formatBytes(bytes: number) {
-  if (bytes < 1024 * 1024) {
-    return `${Math.max(1, Math.round(bytes / 1024))} KB`;
-  }
-
-  return `${(bytes / (1024 * 1024)).toFixed(2)} MB`;
-}
-
-function fileToBase64(file: File): Promise<string> {
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-
-    reader.onload = () => {
-      const result = reader.result;
-
-      if (typeof result !== "string") {
-        reject(new Error("Could not read attachment."));
-        return;
-      }
-
-      resolve(result.split(",")[1] ?? "");
-    };
-
-    reader.onerror = () => reject(new Error("Could not read attachment."));
-    reader.readAsDataURL(file);
-  });
-}
-
-export function EnquiryForm({ initialService = "" }: { initialService?: string }) {
-  const fileInputRef = useRef<HTMLInputElement>(null);
-
+export function EnquiryForm({
+  initialService = "",
+}: {
+  initialService?: string;
+}) {
   const [service, setService] = useState(initialService);
   const [state, setState] = useState<FormState>("idle");
-  const [attachments, setAttachments] = useState<Attachment[]>([]);
-  const [fileError, setFileError] = useState("");
-
-  function addFiles(fileList: FileList | null) {
-    if (!fileList) return;
-
-    const incoming = Array.from(fileList);
-    setFileError("");
-
-    setAttachments((current) => {
-      const next = [...current];
-      let error = "";
-
-      for (const file of incoming) {
-        if (!ALLOWED_TYPES.includes(file.type)) {
-          error = "Only JPG, PNG, WebP and PDF files are allowed.";
-          continue;
-        }
-
-        if (file.size === 0) {
-          error = `${file.name} is empty. Choose another file.`;
-          continue;
-        }
-
-        if (file.size > MAX_FILE_SIZE) {
-          error = `${file.name} exceeds the 10 MB per-file limit.`;
-          continue;
-        }
-
-        const duplicate = next.some(
-          ({ file: existing }) => existing.name === file.name && existing.size === file.size,
-        );
-
-        if (duplicate) continue;
-
-        if (next.length >= MAX_FILES) {
-          error = "You can attach a maximum of 5 files.";
-          break;
-        }
-
-        next.push({
-          file,
-          id: `${file.name}-${file.size}-${file.lastModified}-${Math.random()}`,
-        });
-      }
-
-      if (error) setFileError(error);
-      return next;
-    });
-
-    if (fileInputRef.current) {
-      fileInputRef.current.value = "";
-    }
-  }
-
-  function removeFile(id: string) {
-    setAttachments((current) => current.filter((item) => item.id !== id));
-    setFileError("");
-  }
 
   async function onSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
 
-    if (!service || state === "sending" || fileError) return;
+    if (!service || state === "sending") return;
+
+    if (
+      !EMAILJS_SERVICE_ID ||
+      !EMAILJS_TEMPLATE_ID ||
+      !EMAILJS_PUBLIC_KEY
+    ) {
+      console.error(
+        "EmailJS configuration is missing. Check your VITE_EMAILJS_* environment variables.",
+      );
+      setState("error");
+      return;
+    }
 
     const formElement = e.currentTarget;
     const form = new FormData(formElement);
@@ -143,11 +60,9 @@ export function EnquiryForm({ initialService = "" }: { initialService?: string }
     setState("sending");
 
     try {
-      const attachmentNames = attachments.map(({ file }) => file.name).join(", ");
-
       await emailjs.send(
-        import.meta.env.VITE_EMAILJS_SERVICE_ID,
-        import.meta.env.VITE_EMAILJS_TEMPLATE_ID,
+        EMAILJS_SERVICE_ID,
+        EMAILJS_TEMPLATE_ID,
         {
           name: String(form.get("name") || ""),
           company: String(form.get("company") || ""),
@@ -155,17 +70,14 @@ export function EnquiryForm({ initialService = "" }: { initialService?: string }
           phone: String(form.get("phone") || ""),
           service_interest: service,
           message: String(form.get("message") || ""),
-          attachments: attachmentNames || "No files attached",
         },
         {
-          publicKey: import.meta.env.VITE_EMAILJS_PUBLIC_KEY,
+          publicKey: EMAILJS_PUBLIC_KEY,
         },
       );
 
       formElement.reset();
       setService(initialService);
-      setAttachments([]);
-      setFileError("");
       setState("sent");
     } catch (error) {
       console.error("EmailJS submission failed:", error);
@@ -175,20 +87,15 @@ export function EnquiryForm({ initialService = "" }: { initialService?: string }
 
   function resetForm() {
     setService(initialService);
-    setAttachments([]);
-    setFileError("");
     setState("idle");
-
-    if (fileInputRef.current) {
-      fileInputRef.current.value = "";
-    }
   }
 
   if (state === "sent") {
     return (
-      <div className="relative flex min-h-[420px] flex-col items-center justify-center overflow-hidden rounded-2xl border border-slate-200 bg-white px-6 py-12 text-center sm:px-10">
-        <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-[#F58220] via-[#F58220] to-[#F58220]/20" />
-
+      <div
+        style={{ border: "2px solid #F58220" }}
+        className="relative flex min-h-[420px] flex-col items-center justify-center overflow-hidden rounded-2xl bg-white px-6 py-12 text-center shadow-sm sm:px-10"
+      >
         <div className="flex size-16 items-center justify-center rounded-2xl bg-emerald-50 text-emerald-600">
           <CheckCircle2 className="size-8" strokeWidth={1.7} />
         </div>
@@ -202,8 +109,8 @@ export function EnquiryForm({ initialService = "" }: { initialService?: string }
         </h2>
 
         <p className="mt-3 max-w-sm text-sm leading-6 text-slate-500">
-          Your enquiry has been received. Our team will review your requirements and get back to
-          you.
+          Your enquiry has been received. Our team will review your
+          requirements and get back to you.
         </p>
 
         <Button
@@ -220,7 +127,11 @@ export function EnquiryForm({ initialService = "" }: { initialService?: string }
   }
 
   return (
-    <form onSubmit={onSubmit} aria-label="Enquiry form" className="grid gap-6">
+    <form
+      onSubmit={onSubmit}
+      aria-label="Enquiry form"
+      className="grid gap-6"
+    >
       <div className="grid gap-5 sm:grid-cols-2">
         <Field label="Full name" htmlFor="name" required>
           <Input
@@ -298,87 +209,10 @@ export function EnquiryForm({ initialService = "" }: { initialService?: string }
         />
 
         <p className="text-xs leading-5 text-slate-400">
-          Include any relevant specifications, capacity requirements, or project details.
+          Include any relevant specifications, capacity requirements, or
+          project details.
         </p>
       </Field>
-
-      {/* File attachments */}
-      <div className="grid gap-3">
-        <div>
-          <Label htmlFor="project-attachments" className="text-[13px] font-medium text-[#061A34]">
-            Project files <span className="font-normal text-slate-400">(optional)</span>
-          </Label>
-
-          <p className="mt-1 text-xs leading-5 text-slate-500">
-            Share drawings, equipment photos, or technical specifications.
-          </p>
-        </div>
-
-        <input
-          ref={fileInputRef}
-          id="project-attachments"
-          type="file"
-          accept=".jpg,.jpeg,.png,.webp,.pdf,image/jpeg,image/png,image/webp,application/pdf"
-          multiple
-          className="sr-only"
-          onChange={(e) => addFiles(e.currentTarget.files)}
-        />
-
-        <button
-          type="button"
-          onClick={() => fileInputRef.current?.click()}
-          className="group flex min-h-32 w-full flex-col items-center justify-center rounded-xl border border-dashed border-sky-300 bg-sky-50/70 px-5 py-6 text-center transition-colors hover:border-sky-400 hover:bg-sky-100/70 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-400/40"
-        >
-          <span className="flex size-11 items-center justify-center rounded-xl border border-sky-200 bg-white text-sky-600 transition-colors group-hover:border-sky-300 group-hover:text-sky-700">
-            <Upload className="size-5" />
-          </span>
-
-          <span className="mt-3 text-sm font-medium text-[#061A34]">Click to upload files</span>
-
-          <span className="mt-1 text-xs text-slate-500">
-            JPG, PNG, WebP or PDF · 10 MB per file · 5 files maximum
-          </span>
-        </button>
-
-        {attachments.length > 0 && (
-          <div className="grid gap-2" aria-label="Selected attachments">
-            {attachments.map(({ file, id }) => (
-              <div
-                key={id}
-                className="flex min-w-0 items-center gap-3 rounded-xl border border-sky-200 bg-sky-50/50 p-3"
-              >
-                <div className="flex size-10 shrink-0 items-center justify-center rounded-lg bg-sky-100 text-sky-700">
-                  {file.type.startsWith("image/") ? (
-                    <ImageIcon className="size-5" />
-                  ) : (
-                    <FileText className="size-5" />
-                  )}
-                </div>
-
-                <div className="min-w-0 flex-1">
-                  <p className="truncate text-sm font-medium text-slate-700">{file.name}</p>
-                  <p className="mt-0.5 text-xs text-slate-400">{formatBytes(file.size)}</p>
-                </div>
-
-                <button
-                  type="button"
-                  onClick={() => removeFile(id)}
-                  aria-label={`Remove ${file.name}`}
-                  className="flex size-9 shrink-0 items-center justify-center rounded-lg text-slate-400 transition-colors hover:bg-red-50 hover:text-red-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-300"
-                >
-                  <X className="size-4" />
-                </button>
-              </div>
-            ))}
-          </div>
-        )}
-
-        {fileError && (
-          <p role="alert" className="text-sm text-red-600">
-            {fileError}
-          </p>
-        )}
-      </div>
 
       {state === "error" && (
         <div
@@ -390,7 +224,9 @@ export function EnquiryForm({ initialService = "" }: { initialService?: string }
           </div>
 
           <div>
-            <p className="text-sm font-medium text-red-800">We couldn't send your enquiry.</p>
+            <p className="text-sm font-medium text-red-800">
+              We couldn't send your enquiry.
+            </p>
             <p className="mt-1 text-sm leading-5 text-red-700">
               Please try again. You can also contact our team directly.
             </p>
@@ -440,7 +276,10 @@ function Field({
 }) {
   return (
     <div className="grid min-w-0 gap-2">
-      <Label htmlFor={htmlFor} className="text-[13px] font-medium text-[#061A34]">
+      <Label
+        htmlFor={htmlFor}
+        className="text-[13px] font-medium text-[#061A34]"
+      >
         {label}
         {required && (
           <span aria-hidden="true" className="ml-1 text-[#F58220]">

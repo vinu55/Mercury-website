@@ -45,9 +45,9 @@ const serviceImages = [
   "/media/b1.png",
   "/media/b2.png",
   "/media/b3.png",
-  "/media/bioene.png",
-  "/media/bioind.png",
-  "/media/agri.png",
+  "/media/b4.png",
+  "/media/b5.png",
+  "/media/b6.png",
 ];
 
 const biomassServices: BiomassService[] = work.map((title, index) => ({
