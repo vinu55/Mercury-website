@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
-import { useGLTF } from "@react-three/drei";
+import { Environment, Lightformer, useGLTF } from "@react-three/drei";
 import { SkeletonUtils } from "three-stdlib";
 import * as THREE from "three";
 
@@ -22,27 +22,31 @@ function Sun() {
     clone.traverse((object) => {
       if (!(object instanceof THREE.Mesh)) return;
 
-      object.castShadow = false;
-      object.receiveShadow = false;
+      object.castShadow = true;
+      object.receiveShadow = true;
 
-      // Extract the existing texture map from the imported material
-      const oldMat = Array.isArray(object.material)
-        ? object.material[0]
-        : object.material;
-      const texture = oldMat.map || oldMat.emissiveMap;
+      const materials = Array.isArray(object.material)
+        ? object.material
+        : [object.material];
 
-      if (texture) {
-        // Enforce sRGB color space so production bundlers don't desaturate it
-        texture.colorSpace = THREE.SRGBColorSpace;
-        texture.needsUpdate = true;
+      materials.forEach((material) => {
+        material.side = THREE.FrontSide;
 
-        // Replace with MeshBasicMaterial to show the exact texture colors
-        // without washed-out ambient reflections or tone-mapping loss
-        object.material = new THREE.MeshBasicMaterial({
-          map: texture,
-          side: THREE.FrontSide,
-        });
-      }
+        // 1. Force sRGB color space on all textures to prevent color desaturation
+        if (material.map) material.map.colorSpace = THREE.SRGBColorSpace;
+        if (material.emissiveMap) material.emissiveMap.colorSpace = THREE.SRGBColorSpace;
+
+        if (
+          material instanceof THREE.MeshStandardMaterial ||
+          material instanceof THREE.MeshPhysicalMaterial
+        ) {
+          // 2. Reduce envMap intensity so surrounding ambient light doesn't whiten the surface
+          material.roughness = Math.min(material.roughness, 0.85);
+          material.envMapIntensity = 0.2; 
+        }
+
+        material.needsUpdate = true;
+      });
     });
   }, [clone]);
 
@@ -93,17 +97,51 @@ export default function SunScene() {
     <Canvas
       dpr={[1, 2]}
       camera={{ position: [0, 0, 7], fov: 45 }}
-      flat // Disables ACES tone-mapping so the texture colors render at 100% true saturation
       gl={{
         antialias: true,
         alpha: true,
         powerPreference: "high-performance",
+        toneMapping: THREE.ACESFilmicToneMapping,
+        // 3. Lower exposure from 1.0 down to 0.75 - 0.8 to preserve deep fiery colors
+        toneMappingExposure: 0.75, 
         outputColorSpace: THREE.SRGBColorSpace,
       }}
       onPointerMissed={() => {
         document.body.style.cursor = "";
       }}
     >
+      {/* 4. Lower ambient and directional intensities so they don't blow out the orange tones */}
+      <ambientLight intensity={0.2} color="#ff9040" />
+
+      <directionalLight
+        position={[4, 5, 5]}
+        intensity={0.8}
+        color="#ff7b00"
+      />
+
+      <pointLight
+        position={[-4, -1, 3]}
+        intensity={0.5}
+        color="#ff4500"
+      />
+
+      {/* 5. Toned down environment lightformers so they don't flood the model with pale white/yellow */}
+      <Environment resolution={256}>
+        <Lightformer
+          intensity={0.4}
+          color="#ff8c00"
+          position={[0, 5, 0]}
+          scale={[10, 10, 1]}
+        />
+        <Lightformer
+          intensity={0.2}
+          color="#335577"
+          position={[-5, 1, -1]}
+          rotation-y={Math.PI / 2}
+          scale={[20, 2, 1]}
+        />
+      </Environment>
+
       <Sun />
     </Canvas>
   );
