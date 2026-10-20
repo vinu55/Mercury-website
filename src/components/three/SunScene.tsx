@@ -39,15 +39,15 @@ function Sun() {
           material instanceof THREE.MeshStandardMaterial ||
           material instanceof THREE.MeshPhysicalMaterial
         ) {
-          // Force pure deep crimson onto the base texture
-          material.color = new THREE.Color("#ff0a00");
-          
-          // Pure red internal emission
-          material.emissive = new THREE.Color("#ff0000");
-          material.emissiveIntensity = 1.2;
+          // 1. Overdrive base red channel to 8x intensity (R: 8.0, G: 0.0, B: 0.0)
+          material.color.setRGB(8.0, 0.0, 0.0);
 
-          // Zero out environment sheen to eliminate pale highlights completely
-          material.roughness = 0.95;
+          // 2. Overdrive emissive glow with pure crimson
+          material.emissive.setRGB(4.0, 0.0, 0.0);
+          material.emissiveIntensity = 2.5;
+
+          // 3. Kill all reflections so no ambient white or grey dilutes the red
+          material.roughness = 1.0;
           material.metalness = 0.0;
           material.envMapIntensity = 0.0;
         }
@@ -108,38 +108,30 @@ export default function SunScene() {
         antialias: true,
         alpha: true,
         powerPreference: "high-performance",
-        // LinearToneMapping does not compress or desaturate saturated primary channels
-        toneMapping: THREE.LinearToneMapping,
-        toneMappingExposure: 1.0,
+        // NoToneMapping prevents Three.js from converting intense reds into yellow/white
+        toneMapping: THREE.NoToneMapping,
         outputColorSpace: THREE.SRGBColorSpace,
       }}
       onPointerMissed={() => {
         document.body.style.cursor = "";
       }}
     >
-      {/* Dark maroon base ambient */}
-      <ambientLight intensity={0.4} color="#660000" />
+      {/* Deep dark maroon base ambient */}
+      <ambientLight intensity={0.5} color="#400000" />
 
-      {/* Extreme red key light directly from the right half */}
+      {/* Pure maximum scarlet key light on the right hemisphere */}
       <directionalLight
         position={[6, 1, 4]}
-        intensity={3.5}
+        intensity={5.0}
         color="#ff0000"
       />
 
-      {/* Point light accentuating the red hemisphere glow */}
+      {/* Side spot creating the intense red half */}
       <pointLight
-        position={[5, -1, 3]}
-        intensity={6.0}
-        distance={12}
-        color="#ff0015"
-      />
-
-      {/* Dim rim light keeping the dark left hemisphere deep crimson instead of black */}
-      <pointLight
-        position={[-5, 2, -2]}
-        intensity={0.8}
-        color="#440000"
+        position={[4, -1, 3]}
+        intensity={8.0}
+        distance={15}
+        color="#ff0000"
       />
 
       <Sun />
