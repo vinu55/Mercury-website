@@ -1,3 +1,4 @@
 *.mp4 filter=lfs diff=lfs merge=lfs -text
 *.glb filter=lfs diff=lfs merge=lfs -text
+public/models/sun.glb !filter !diff !merge text
 public/media/logo.gif filter=lfs diff=lfs merge=lfs -text
