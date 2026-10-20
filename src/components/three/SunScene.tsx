@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
-import { Environment, Lightformer, useGLTF } from "@react-three/drei";
+import { useGLTF } from "@react-three/drei";
 import { SkeletonUtils } from "three-stdlib";
 import * as THREE from "three";
 
@@ -39,13 +39,17 @@ function Sun() {
           material instanceof THREE.MeshStandardMaterial ||
           material instanceof THREE.MeshPhysicalMaterial
         ) {
-          // Tint the base material reddish-orange
-          material.color = new THREE.Color("#ff4010");
-          // Add a deep blood-orange emissive baseline glow
-          material.emissive = new THREE.Color("#4a0000");
-          material.emissiveIntensity = 0.6;
-          material.roughness = Math.min(material.roughness, 0.85);
-          material.envMapIntensity = 0.05; // Minimize white sheen from environment reflections
+          // Force pure deep crimson onto the base texture
+          material.color = new THREE.Color("#ff0a00");
+          
+          // Pure red internal emission
+          material.emissive = new THREE.Color("#ff0000");
+          material.emissiveIntensity = 1.2;
+
+          // Zero out environment sheen to eliminate pale highlights completely
+          material.roughness = 0.95;
+          material.metalness = 0.0;
+          material.envMapIntensity = 0.0;
         }
 
         material.needsUpdate = true;
@@ -104,47 +108,39 @@ export default function SunScene() {
         antialias: true,
         alpha: true,
         powerPreference: "high-performance",
-        toneMapping: THREE.ACESFilmicToneMapping,
-        toneMappingExposure: 0.8,
+        // LinearToneMapping does not compress or desaturate saturated primary channels
+        toneMapping: THREE.LinearToneMapping,
+        toneMappingExposure: 1.0,
         outputColorSpace: THREE.SRGBColorSpace,
       }}
       onPointerMissed={() => {
         document.body.style.cursor = "";
       }}
     >
-      {/* Deep dark red ambient baseline so shadows don't wash out */}
-      <ambientLight intensity={0.25} color="#8b0000" />
+      {/* Dark maroon base ambient */}
+      <ambientLight intensity={0.4} color="#660000" />
 
-      {/* Primary intense crimson key light hitting from the right */}
+      {/* Extreme red key light directly from the right half */}
       <directionalLight
-        position={[5, 2, 4]}
-        intensity={2.2}
-        color="#ff1a00"
-      />
-
-      {/* Strong side red fill light creating the extreme red half */}
-      <pointLight
-        position={[5, -2, 2]}
+        position={[6, 1, 4]}
         intensity={3.5}
-        distance={15}
         color="#ff0000"
       />
 
-      {/* Subtle deep-red rim light from behind */}
+      {/* Point light accentuating the red hemisphere glow */}
       <pointLight
-        position={[-4, 3, -3]}
-        intensity={1.0}
-        color="#cc0022"
+        position={[5, -1, 3]}
+        intensity={6.0}
+        distance={12}
+        color="#ff0015"
       />
 
-      <Environment resolution={256}>
-        <Lightformer
-          intensity={0.8}
-          color="#ff1100"
-          position={[5, 2, 0]}
-          scale={[10, 10, 1]}
-        />
-      </Environment>
+      {/* Dim rim light keeping the dark left hemisphere deep crimson instead of black */}
+      <pointLight
+        position={[-5, 2, -2]}
+        intensity={0.8}
+        color="#440000"
+      />
 
       <Sun />
     </Canvas>
