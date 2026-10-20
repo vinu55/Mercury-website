@@ -30,15 +30,39 @@ function Sun() {
         : [object.material];
 
       materials.forEach((material) => {
-        // Preserve the model's original colors and textures.
         material.side = THREE.FrontSide;
-        material.needsUpdate = true;
 
-        if (material instanceof THREE.MeshStandardMaterial ||
-            material instanceof THREE.MeshPhysicalMaterial) {
-          material.roughness = Math.min(material.roughness, 0.85);
-          material.envMapIntensity = 0.8;
+        // Reset base tint and remove any forced emissive multipliers
+        if (material.color) {
+          material.color.setRGB(1.0, 1.0, 1.0);
         }
+        if (material.emissive) {
+          material.emissive.setRGB(0.0, 0.0, 0.0);
+          material.emissiveIntensity = 0.0;
+        }
+
+        // Fix: Explicit sRGB prevents the flat, desaturated washout seen on Vercel
+        if (material.map) {
+          material.map.colorSpace = THREE.SRGBColorSpace;
+          material.map.needsUpdate = true;
+        }
+        if (material.emissiveMap) {
+          material.emissiveMap.colorSpace = THREE.SRGBColorSpace;
+          material.emissiveMap.needsUpdate = true;
+        }
+
+        if (
+          material instanceof THREE.MeshStandardMaterial ||
+          material instanceof THREE.MeshPhysicalMaterial
+        ) {
+          material.roughness = 0.85;
+          material.metalness = 0.0;
+          
+          // Moderate environment influence preserves depth and texture details
+          material.envMapIntensity = 0.4; 
+        }
+
+        material.needsUpdate = true;
       });
     });
   }, [clone]);
@@ -95,36 +119,42 @@ export default function SunScene() {
         alpha: true,
         powerPreference: "high-performance",
         toneMapping: THREE.ACESFilmicToneMapping,
-        toneMappingExposure: 1,
+        // Dialing in exposure to preserve original golden brightness without overexposure
+        toneMappingExposure: 0.9, 
+        outputColorSpace: THREE.SRGBColorSpace,
       }}
       onPointerMissed={() => {
         document.body.style.cursor = "";
       }}
     >
-      <ambientLight intensity={0.45} color="#fff0d5" />
+      {/* Warm natural ambient fill keeps shadows rich without stripping color */}
+      <ambientLight intensity={0.45} color="#ffd8a8" />
 
+      {/* Main fiery key light hits from the side to spotlight the texture detail */}
       <directionalLight
         position={[4, 5, 5]}
-        intensity={1.5}
-        color="#ffb45c"
+        intensity={1.3}
+        color="#ff9d33"
       />
 
+      {/* Edge accentuation from below */}
       <pointLight
         position={[-4, -1, 3]}
         intensity={0.65}
-        color="#ff6b24"
+        color="#ff5500"
       />
 
       <Environment resolution={256}>
         <Lightformer
-          intensity={1.2}
-          color="#ffd08a"
+          intensity={0.8}
+          color="#ffd480"
           position={[0, 5, 0]}
           scale={[10, 10, 1]}
         />
+        {/* Soft fill accent matching the original warm vibe */}
         <Lightformer
-          intensity={0.65}
-          color="#4e8fc8"
+          intensity={0.4}
+          color="#ff7a33"
           position={[-5, 1, -1]}
           rotation-y={Math.PI / 2}
           scale={[20, 2, 1]}
