@@ -54,7 +54,7 @@ export const Route = createFileRoute("/")({
       },
       {
         property: "og:description",
-        content: "Engineering energy forward across boiler, biomass and solar systems.",
+        content: "Complete Solutions for Marine, Land-Based Boilers & Thermal Equipment.",
       },
       {
         property: "og:type",
