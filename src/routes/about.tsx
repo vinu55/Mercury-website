@@ -87,7 +87,7 @@ const markets = [
 const services = [
   { label: "Marine", href: "/services/marine-boiler" },
   { label: "Industry", href: "/services/land-boiler" },
-  { label: "Biomass", href: "/services/biomass-fuel" },
+  { label: "Bioenergy", href: "/services/biomass-fuel" },
   { label: "Solar", href: "/services/solar-energy" },
   { label: "Spare parts", href: "/services/spare-parts" },
 ];
@@ -184,7 +184,7 @@ function About() {
             </p>
 
             <p className="mt-5 text-base leading-8 text-slate-600">
-              Our expertise spans Boiler Systems, Fuel Conversion, Biomass Energy, Solar Power,
+              Our expertise spans Boiler Systems, Fuel Conversion, Bioenergy, Solar Power,
               Retrofits, Maintenance, and Spare Parts. Through our integrated engineering
               capabilities and lifecycle support, we deliver reliable, efficient, and sustainable
               thermal energy solutions for diverse industrial requirements.
