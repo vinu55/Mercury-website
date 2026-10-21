@@ -7,6 +7,7 @@ import {
   Scripts,
 } from "@tanstack/react-router";
 import { Analytics } from "@vercel/analytics/react";
+import { SpeedInsights } from "@vercel/speed-insights/react"
 import { useLayoutEffect, useEffect, type ReactNode } from "react";
 import appCss from "../styles.css?url";
 import { Header, Footer, WhatsAppButton } from "@/components/site/SiteChrome";
@@ -138,6 +139,7 @@ function Root() {
       <Footer />
       <WhatsAppButton />
       <Analytics />
+      <SpeedInsights/>
     </QueryClientProvider>
   );
 }
