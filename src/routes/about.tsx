@@ -64,22 +64,22 @@ const values = [
 const markets = [
   {
     role: "Headquarters",
-    countries: ["🇮🇳 India"],
+    countries: ["🇮🇳 IND"],
     color: "#F58220",
   },
   {
     role: "Manufacturing",
-    countries: ["🇮🇳 India", "🇻🇳 Vietnam"],
+    countries: ["🇮🇳 IND", "🇻🇳 VNM"],
     color: "#0D9488",
   },
   {
     role: "Local Parties",
-    countries: ["🇮🇳 India", "🇻🇳 Vietnam", "🇲🇾 Malaysia", "🇸🇬 Singapore", "🇨🇳 China"],
+    countries: ["🇮🇳 IND", "🇻🇳 VNM", "🇲🇾 MYS", "🇸🇬 SGP", "🇨🇳 CHN"],
     color: "#294F8F",
   },
   {
     role: "BDA",
-    countries: ["🇩🇪 Germany", "🇫🇮 Finland", "🇮🇩 Indonesia", "🇸🇬 Singapore", "🇨🇳 China"],
+    countries: ["🇩🇪 DEU", "🇫🇮 FIN", "🇮🇩 IDN", "🇸🇬 SGP", "🇨🇳 CHN"],
     color: "#94A3B8",
   },
 ];
