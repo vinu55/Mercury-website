@@ -150,7 +150,7 @@ function Home() {
               className="mt-3 max-w-3xl text-3xl font-semibold leading-[1.08] tracking-tight text-white sm:text-4xl md:text-5xl lg:text-6xl"
             >
               <TypewriterText
-                text="Complete Solutions for Marine & Land-Based Boilers and Thermal Equipment"
+                text="Complete Solutions for Marine, Land-Based Boilers & Thermal Equipment"
                 delay={500}
                 className="inline"
               />
