@@ -198,25 +198,26 @@ function Home() {
       {/* =========================================================
           ABOUT + INTERACTIVE 3D SUN
       ========================================================= */}
-
-      <section
-        ref={aboutRef}
-        className="relative overflow-hidden bg-[#061a34] text-primary-foreground"
-      >
-        <div
-          className="
-            mx-auto
-            grid
-            min-h-[680px]
-            max-w-[1440px]
-            items-center
-            px-5
-            py-20
-            lg:grid-cols-[0.85fr_1.15fr]
-            lg:px-10
-            lg:py-24
-          "
-        >
+<section
+  ref={aboutRef}
+  className="relative overflow-hidden bg-[#061a34] text-primary-foreground"
+>
+  <div
+    className="
+      mx-auto
+      grid
+      min-h-0
+      max-w-[1440px]
+      items-center
+      px-5
+      pt-4
+      pb-6
+      lg:min-h-[680px]
+      lg:grid-cols-[0.85fr_1.15fr]
+      lg:px-10
+      lg:py-24
+    "
+  >
           {/* =====================================================
               LEFT — ABOUT TEXT
           ===================================================== */}
@@ -235,10 +236,10 @@ function Home() {
           MOVING ENGINEERING SERVICES TEXT
       ========================================================= */}
 
-      <section
+     <section
         aria-label="Mercury engineering capabilities"
-        className="overflow-hidden bg-[#061a34] py-7 sm:py-8"
-      >
+        className="overflow-hidden bg-[#061a34] py-2.5 sm:py-8"
+     >
         <div className="services-marquee">
           <div className="services-marquee-track">
             {[...MARQUEE_SERVICES, ...MARQUEE_SERVICES].map((service, index) => (
@@ -365,54 +366,58 @@ function ServicesParallax() {
 
   const arrowRotate = useTransform(scrollYProgress, [0, 1], [0, 180]);
 
-  const sectionHeight = horizontalDistance + viewportHeight;
+  const sectionHeight =
+    horizontalDistance +
+    (typeof window !== "undefined" && window.innerWidth < 640
+      ? viewportHeight * 0.72
+      : viewportHeight);
 
   return (
     <section
       id="solutions"
       ref={sectionRef}
       style={{
-        height: measured ? `${sectionHeight}px` : "100vh",
+        height: measured ? `${sectionHeight}px` : "72svh",
       }}
       className="relative bg-[#061a34] text-white"
     >
-      <div ref={viewportRef} className="sticky top-0 h-screen w-full overflow-hidden">
-        <div
-          className="
-            pointer-events-none
-            absolute left-0 top-0 z-30
-            px-5 pt-[18vh]
-            sm:px-8 sm:pt-[14vh]
-            lg:px-12 lg:pt-[22vh]
-          "
-        >
-          <p className="eyebrow text-accent !text-base font-semibold uppercase tracking-[0.2em] sm:!text-base sm:tracking-[0.25em]">
-            Our solutions
-          </p>
-        </div>
+     <div ref={viewportRef} className="sticky top-0 h-[72svh] sm:h-screen w-full overflow-hidden">
+  <div
+    className="
+      pointer-events-none
+      absolute left-0 top-0 z-30 w-full
+      px-5 pt-30
+      sm:px-8 sm:pt-32
+      lg:px-12 lg:pt-40
+    "
+  >
+    <p className="eyebrow text-accent !text-base font-semibold uppercase tracking-[0.2em] sm:!text-base sm:tracking-[0.25em]">
+      Our solutions
+    </p>
+  </div>
 
-        <motion.div
-          ref={trackRef}
-          style={{ x: trackX }}
-          className="
-            absolute left-0 top-1/2
-            flex w-max -translate-y-1/2
-            items-center gap-5
-            py-0
-            will-change-transform
-            sm:gap-7
-            lg:gap-10
-          "
-        >
-          {SERVICES.map((service, index) => (
-            <ServiceParallaxCard
-              key={service.href}
-              service={service}
-              index={index}
-              scrollProgress={scrollYProgress}
-            />
-          ))}
-        </motion.div>
+<motion.div
+  ref={trackRef}
+  style={{ x: trackX }}
+  className="
+    absolute left-0 top-[23vh]
+    flex w-max translate-y-0
+    items-center gap-5
+    py-0
+    will-change-transform
+    sm:top-[54%] sm:-translate-y-1/2 sm:gap-7
+    lg:top-[56%] lg:gap-10
+  "
+>
+  {SERVICES.map((service, index) => (
+    <ServiceParallaxCard
+      key={service.href}
+      service={service}
+      index={index}
+      scrollProgress={scrollYProgress}
+    />
+  ))}
+</motion.div>
 
         <div
           className="
@@ -726,36 +731,36 @@ function AboutText({
       </p>
 
       <h2
-        className="mt-5 min-h-[3.2em] max-w-xl text-4xl font-semibold leading-[1.12] tracking-tight text-white sm:min-h-[2.4em] sm:text-5xl lg:text-6xl"
-        aria-label={`${headlineText}.`}
-      >
-        <span>{hasAnimated ? headlineText : headline}</span>
-        {(hasAnimated || headline === headlineText) && <span className="text-[#f58220]">.</span>}
+  className="mt-3 min-h-0 max-w-xl text-4xl font-semibold leading-[1.12] tracking-tight text-white sm:min-h-[2.4em] sm:text-5xl lg:min-h-[3.2em] lg:text-6xl"
+  aria-label={`${headlineText}.`}
+>
+  <span>{hasAnimated ? headlineText : headline}</span>
+  {(hasAnimated || headline === headlineText) && <span className="text-[#f58220]">.</span>}
 
-        {!hasAnimated && isInView && headline !== headlineText && (
-          <span
-            aria-hidden="true"
-            className="ml-1 inline-block h-[0.8em] w-[2px] animate-pulse bg-[#f58220] align-baseline"
-          />
-        )}
-      </h2>
+  {!hasAnimated && isInView && headline !== headlineText && (
+    <span
+      aria-hidden="true"
+      className="ml-1 inline-block h-[0.8em] w-[2px] animate-pulse bg-[#f58220] align-baseline"
+    />
+  )}
+</h2>
 
-      <p
-        className="mt-7 min-h-[12rem] max-w-xl text-base leading-8 text-white/70 sm:min-h-[10rem] sm:text-lg"
-        aria-label={descriptionText}
-      >
-        {hasAnimated ? descriptionText : description}
+<p
+  className="mt-4 min-h-0 max-w-xl text-base leading-7 text-white/70 sm:min-h-[10rem] sm:text-lg sm:leading-8 lg:min-h-[12rem]"
+  aria-label={descriptionText}
+>
+  {hasAnimated ? descriptionText : description}
 
-        {!hasAnimated &&
-          headline === headlineText &&
-          isInView &&
-          description !== descriptionText && (
-            <span
-              aria-hidden="true"
-              className="ml-1 inline-block h-[0.8em] w-[2px] animate-pulse bg-[#f58220] align-baseline"
-            />
-          )}
-      </p>
+  {!hasAnimated &&
+    headline === headlineText &&
+    isInView &&
+    description !== descriptionText && (
+      <span
+        aria-hidden="true"
+        className="ml-1 inline-block h-[0.8em] w-[2px] animate-pulse bg-[#f58220] align-baseline"
+      />
+    )}
+</p>
 
       <Link
         to="/about"
@@ -824,7 +829,6 @@ function AboutText({
    Actual 3D rotation/grabbing:
    - Handled inside SunScene.tsx
 ============================================================= */
-
 function InteractiveSun({
   scrollProgress,
 }: {
@@ -854,7 +858,6 @@ function InteractiveSun({
   ========================================================= */
 
   const rotateX = useTransform(smoothY, [-1, 1], [7, -7]);
-
   const rotateY = useTransform(smoothX, [-1, 1], [-10, 10]);
 
   /* =========================================================
@@ -862,29 +865,15 @@ function InteractiveSun({
   ========================================================= */
 
   const cursorX = useTransform(smoothX, [-1, 1], [-24, 24]);
-
   const cursorY = useTransform(smoothY, [-1, 1], [-16, 16]);
 
   /* =========================================================
      SCROLL MOVEMENT
-
-     The Sun starts:
-       x = 100px
-       y = 80px
-       scale = 0.78
-
-     Then smoothly reaches:
-       x = 0
-       y = 0
-       scale = 1
   ========================================================= */
 
   const rawScrollX = useTransform(scrollProgress, [0, 0.2, 0.55, 1], [100, 65, 20, 0]);
-
   const rawScrollY = useTransform(scrollProgress, [0, 0.2, 0.55, 1], [80, 45, 12, 0]);
-
   const rawScrollScale = useTransform(scrollProgress, [0, 0.2, 0.55, 1], [0.78, 0.84, 0.94, 1]);
-
   const rawScrollOpacity = useTransform(
     scrollProgress,
     [0, 0.2, 0.45, 0.75, 1],
@@ -917,9 +906,6 @@ function InteractiveSun({
 
   /* =========================================================
      COMBINE SCROLL + CURSOR MOVEMENT
-
-     Scroll determines the large movement.
-     Cursor only adds a small movement on top.
   ========================================================= */
 
   const combinedX = useTransform(
@@ -933,18 +919,15 @@ function InteractiveSun({
   );
 
   /* =========================================================
-     POINTER
+     POINTER HANDLERS
   ========================================================= */
 
   const handlePointerMove = (event: PointerEvent<HTMLDivElement>) => {
     const rect = event.currentTarget.getBoundingClientRect();
-
     const x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
-
     const y = ((event.clientY - rect.top) / rect.height) * 2 - 1;
 
     mouseX.set(Math.max(-1, Math.min(1, x)));
-
     mouseY.set(Math.max(-1, Math.min(1, y)));
   };
 
@@ -964,13 +947,13 @@ function InteractiveSun({
       className="
         relative
         flex
-        h-[420px]
+        h-[260px]
         w-full
         items-center
         justify-center
-        sm:h-[500px]
-        lg:h-[600px]
         will-change-transform
+        sm:h-[450px]
+        lg:h-[600px]
       "
       onPointerMove={handlePointerMove}
       onPointerLeave={handlePointerLeave}
@@ -987,16 +970,16 @@ function InteractiveSun({
           w-full
           items-center
           justify-center
-          lg:translate-x-16
-          xl:translate-x-24
           will-change-transform
+          lg:-translate-y-10 lg:translate-x-16
+          xl:-translate-y-16 xl:translate-x-24
         "
       >
-        <div className="relative h-full w-full">
-          <Suspense fallback={null}>
-            <SunScene />
-          </Suspense>
-        </div>
+        <div className="relative -my-24 h-[calc(100%+192px)] w-[calc(100%+192px)] sm:my-0 sm:h-full sm:w-full">
+  <Suspense fallback={null}>
+    <SunScene />
+  </Suspense>
+</div>
       </motion.div>
     </motion.div>
   );
