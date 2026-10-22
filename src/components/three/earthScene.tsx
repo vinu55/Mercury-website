@@ -1,15 +1,20 @@
-
 import { Suspense, useMemo, useRef, useState, useEffect } from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
+import {
+  Html,
+  OrbitControls,
+  useGLTF,
+  useProgress,
+} from "@react-three/drei";
+import { SkeletonUtils } from "three-stdlib";
 import * as THREE from "three";
-import { Html, OrbitControls, useGLTF, useProgress } from "@react-three/drei";
 
 const GLOBE_PATH = "/models/earth_globe.glb";
 const GLOBE_RADIUS = 0.675;
 
 const GLOBE_ROTATION_X = 180;
 const GLOBE_ROTATION_Y = 250;
-const GLOBE_ROTATION_Z = -35;
+const GLOBE_ROTATION_Z = -45;
 
 type PartnerLocation = {
   name: string;
@@ -50,6 +55,7 @@ type GlobeModelProps = {
   focusRequest: number;
 };
 
+
 function GlobeModel({
   selected,
   labelCountry,
@@ -76,8 +82,10 @@ function GlobeModel({
     [],
   );
 
+  // Clone the model safely, following the approach used in Sun.tsx.
   const model = useMemo(() => {
-    const clone = scene.clone(true);
+    const clone = SkeletonUtils.clone(scene);
+
     const bounds = new THREE.Box3().setFromObject(clone);
     const center = bounds.getCenter(new THREE.Vector3());
     const size = bounds.getSize(new THREE.Vector3());
@@ -92,74 +100,97 @@ function GlobeModel({
     return clone;
   }, [scene]);
 
-  
-useFrame((_, delta) => {
-  const group = groupRef.current;
-  if (!group) return;
+  // Preserve the original Earth textures and material colors.
+  useEffect(() => {
+    model.traverse((object) => {
+      if (!(object instanceof THREE.Mesh)) return;
 
-  if (lastFocusRequest.current !== focusRequest) {
-    lastFocusRequest.current = focusRequest;
+      object.castShadow = true;
+      object.receiveShadow = true;
 
-    const location = initialLocations.find(
-      (item) => item.name === selected,
-    );
+      const materials = Array.isArray(object.material)
+        ? object.material
+        : [object.material];
 
-    if (location) {
-      // Get the exact 3D point used to render this country's marker.
-      const markerPosition = latLonToVector(
-        location.lat,
-        location.lon,
-        GLOBE_RADIUS * 1.025,
-      ).normalize();
+      materials.forEach((material) => {
+        material.side = THREE.FrontSide;
+        material.needsUpdate = true;
 
-      // Include the globe's original orientation.
-      const markerWorldDirection = markerPosition
-        .clone()
-        .applyQuaternion(baseQuaternion)
-        .normalize();
+        if (
+          material instanceof THREE.MeshStandardMaterial ||
+          material instanceof THREE.MeshPhysicalMaterial
+        ) {
+          material.roughness = Math.min(material.roughness, 0.85);
+          material.envMapIntensity = 0.8;
+        }
+      });
+    });
+  }, [model]);
 
-      // Move the selected marker to the center of the camera view.
-      const targetRotation = new THREE.Quaternion().setFromUnitVectors(
-        markerWorldDirection,
-        new THREE.Vector3(0, 0, 1),
+  useFrame((_, delta) => {
+    const group = groupRef.current;
+    if (!group) return;
+
+    if (lastFocusRequest.current !== focusRequest) {
+      lastFocusRequest.current = focusRequest;
+
+      const location = initialLocations.find(
+        (item) => item.name === selected,
       );
 
-      targetQuaternion.current
-        .copy(targetRotation)
-        .multiply(baseQuaternion);
+      if (location) {
+        const markerPosition = latLonToVector(
+          location.lat,
+          location.lon,
+          GLOBE_RADIUS * 1.025,
+        ).normalize();
 
-      focusProgress.current = 0;
-      pauseRemaining.current = 1.5;
+        const markerWorldDirection = markerPosition
+          .clone()
+          .applyQuaternion(baseQuaternion)
+          .normalize();
+
+        const targetRotation = new THREE.Quaternion().setFromUnitVectors(
+          markerWorldDirection,
+          new THREE.Vector3(0, 0, 1),
+        );
+
+        targetQuaternion.current
+          .copy(targetRotation)
+          .multiply(baseQuaternion);
+
+        focusProgress.current = 0;
+        pauseRemaining.current = 1.5;
+      }
     }
-  }
 
-  if (focusProgress.current < 1) {
-    focusProgress.current = Math.min(
-      1,
-      focusProgress.current + delta / 0.7,
-    );
+    const frameDelta = Math.min(delta, 0.05);
 
-    const eased =
-      focusProgress.current *
-      focusProgress.current *
-      (3 - 2 * focusProgress.current);
+    if (focusProgress.current < 1) {
+      focusProgress.current = Math.min(
+        1,
+        focusProgress.current + frameDelta / 0.7,
+      );
 
-    group.quaternion.slerp(targetQuaternion.current, eased);
-    return;
-  }
+      const eased =
+        focusProgress.current *
+        focusProgress.current *
+        (3 - 2 * focusProgress.current);
 
-  if (pauseRemaining.current > 0) {
-    pauseRemaining.current = Math.max(
-      0,
-      pauseRemaining.current - delta,
-    );
-    return;
-  }
+      group.quaternion.slerp(targetQuaternion.current, eased);
+      return;
+    }
 
-  // Continue the existing default rotation.
-  group.rotation.y += delta * 0.025;
-});
+    if (pauseRemaining.current > 0) {
+      pauseRemaining.current = Math.max(
+        0,
+        pauseRemaining.current - frameDelta,
+      );
+      return;
+    }
 
+    group.rotation.y += frameDelta * 0.025;
+  });
 
   return (
     <group ref={groupRef} quaternion={baseQuaternion}>
@@ -260,14 +291,17 @@ useFrame((_, delta) => {
 
 
 function LoadingGlobe() {
-  const { progress } = useProgress();
+  const { progress, errors } = useProgress();
 
   return (
     <Html center>
       <div className="flex flex-col items-center gap-3 whitespace-nowrap">
-        <div className="size-8 animate-spin rounded-full border-2 border-slate-300 border-t-[#F58220]" />
+        <div className="size-9 animate-spin rounded-full border-2 border-slate-300 border-t-[#F58220]" />
+
         <p className="text-xs font-medium text-[#061A34]">
-          Loading Earth… {Math.round(progress)}%
+          {errors.length > 0
+            ? "Unable to load Earth"
+            : `Loading Earth… ${Math.round(progress)}%`}
         </p>
       </div>
     </Html>
@@ -333,7 +367,7 @@ export default function EarthScene({
         <Canvas
           camera={{ position: [0, 0, 2.7], fov: 42 }}
           dpr={[1, 1.5]}
-          gl={{ alpha: true, antialias: true }}
+          gl={{ alpha: true, antialias: true, powerPreference: "high-performance" }}
         >
           <ambientLight intensity={1.7} />
           <directionalLight position={[4, 3, 5]} intensity={2.4} />
