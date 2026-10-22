@@ -257,20 +257,28 @@ useFrame((_, delta) => {
 }
 
 
+
 function LoadingGlobe() {
   return (
     <group>
       <mesh>
-        <sphereGeometry args={[GLOBE_RADIUS, 48, 48]} />
-        <meshStandardMaterial
-          color="#DCE5EF"
-          roughness={1}
-          metalness={0}
+        <sphereGeometry args={[GLOBE_RADIUS, 32, 32]} />
+        <meshBasicMaterial
+          color="#94A3B8"
+          wireframe
+          transparent
+          opacity={0.2}
         />
       </mesh>
+      <Html center>
+        <div className="whitespace-nowrap rounded-md bg-[#061A34] px-3 py-2 text-xs font-medium text-white">
+          Loading Earth...
+        </div>
+      </Html>
     </group>
   );
 }
+
 
 
 type EarthSceneProps = {
