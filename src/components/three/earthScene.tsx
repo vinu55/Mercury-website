@@ -1,8 +1,8 @@
 
 import { Suspense, useMemo, useRef, useState, useEffect } from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
-import { Html, OrbitControls, useGLTF } from "@react-three/drei";
 import * as THREE from "three";
+import { Html, OrbitControls, useGLTF, useProgress } from "@react-three/drei";
 
 const GLOBE_PATH = "/models/earth_globe.glb";
 const GLOBE_RADIUS = 0.675;
@@ -258,26 +258,22 @@ useFrame((_, delta) => {
 
 
 
+
 function LoadingGlobe() {
+  const { progress } = useProgress();
+
   return (
-    <group>
-      <mesh>
-        <sphereGeometry args={[GLOBE_RADIUS, 32, 32]} />
-        <meshBasicMaterial
-          color="#94A3B8"
-          wireframe
-          transparent
-          opacity={0.2}
-        />
-      </mesh>
-      <Html center>
-        <div className="whitespace-nowrap rounded-md bg-[#061A34] px-3 py-2 text-xs font-medium text-white">
-          Loading Earth...
-        </div>
-      </Html>
-    </group>
+    <Html center>
+      <div className="flex flex-col items-center gap-3 whitespace-nowrap">
+        <div className="size-8 animate-spin rounded-full border-2 border-slate-300 border-t-[#F58220]" />
+        <p className="text-xs font-medium text-[#061A34]">
+          Loading Earth… {Math.round(progress)}%
+        </p>
+      </div>
+    </Html>
   );
 }
+
 
 
 
