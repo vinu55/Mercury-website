@@ -32,7 +32,7 @@ function Sun() {
       materials.forEach((material) => {
         material.side = THREE.FrontSide;
 
-        // 1. Force all textures to sRGB color space to preserve deep reds
+        // Force all textures to sRGB color space
         if (material.map) {
           material.map.colorSpace = THREE.SRGBColorSpace;
           material.map.needsUpdate = true;
@@ -46,14 +46,15 @@ function Sun() {
           material instanceof THREE.MeshStandardMaterial ||
           material instanceof THREE.MeshPhysicalMaterial
         ) {
-          // 2. Reduce environmental glare so surface textures stay saturated
-          material.roughness = Math.max(material.roughness, 0.4);
-          material.envMapIntensity = 0.35; // Lowered from 0.8
+          // Multiply deep red tint over the base texture
+          material.color.set("#ff1a00");
 
-          // 3. Prevent emissive glow from clipping to white
-          if (material.emissiveIntensity !== undefined) {
-            material.emissiveIntensity = Math.min(material.emissiveIntensity, 1.2);
-          }
+          // Force intense fiery red emissive channel
+          material.emissive.set("#cc0000");
+          material.emissiveIntensity = 2.2;
+
+          material.roughness = Math.max(material.roughness, 0.5);
+          material.envMapIntensity = 0.2; // Prevent white environmental sheen
         }
 
         material.needsUpdate = true;
@@ -113,44 +114,44 @@ export default function SunScene() {
         alpha: true,
         powerPreference: "high-performance",
         toneMapping: THREE.ACESFilmicToneMapping,
-        toneMappingExposure: 0.8, // Lowered from 1.0 to stop red overblowing to white
-        outputColorSpace: THREE.SRGBColorSpace, // Enforce correct color rendering
+        toneMappingExposure: 0.75,
+        outputColorSpace: THREE.SRGBColorSpace,
       }}
       onCreated={({ gl }) => {
         gl.toneMapping = THREE.ACESFilmicToneMapping;
-        gl.toneMappingExposure = 0.8;
+        gl.toneMappingExposure = 0.75;
         gl.outputColorSpace = THREE.SRGBColorSpace;
       }}
       onPointerMissed={() => {
         document.body.style.cursor = "";
       }}
     >
-      {/* Toned down ambient and directional lighting */}
-      <ambientLight intensity={0.25} color="#ffeedd" />
+      {/* Deep saturated crimson and red lights */}
+      <ambientLight intensity={0.4} color="#ff0000" />
 
       <directionalLight
         position={[4, 5, 5]}
-        intensity={0.8} // Lowered from 1.5
-        color="#ff9944"
+        intensity={1.2}
+        color="#ff2200"
       />
 
       <pointLight
         position={[-4, -1, 3]}
-        intensity={0.5}
-        color="#ff4411"
+        intensity={0.8}
+        color="#ff0000"
       />
 
-      {/* Warm reflections instead of blue fill */}
+      {/* Saturated red environment reflections */}
       <Environment resolution={256}>
         <Lightformer
-          intensity={0.8}
-          color="#ff8833"
+          intensity={1.0}
+          color="#ff1100"
           position={[0, 5, 0]}
           scale={[10, 10, 1]}
         />
         <Lightformer
-          intensity={0.4}
-          color="#ff4400"
+          intensity={0.8}
+          color="#990000"
           position={[-5, 1, -1]}
           rotation-y={Math.PI / 2}
           scale={[20, 2, 1]}
