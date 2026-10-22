@@ -11,8 +11,10 @@ import {
   Target,
 } from "lucide-react";
 import { motion } from "motion/react";
-import worldmap from "@/assets/worldmap.png";
+import EarthScene from "@/components/three/earthScene";
 import { COMPANY } from "@/lib/site-data";
+import { useState } from "react";
+
 
 export const Route = createFileRoute("/about")({
   head: () => ({
@@ -62,25 +64,15 @@ const values = [
 ];
 
 const markets = [
-  {
-    role: "Headquarters",
-    countries: ["🇮🇳 IND"],
-    color: "#F58220",
-  },
-  {
-    role: "Manufacturing",
-    countries: ["🇮🇳 IND", "🇻🇳 VNM"],
-    color: "#0D9488",
-  },
+  { role: "Headquarters", countries: ["IND"] },
+  { role: "Manufacturing", countries: ["IND", "VNM"] },
   {
     role: "Local Parties",
-    countries: ["🇮🇳 IND", "🇻🇳 VNM", "🇲🇾 MYS", "🇸🇬 SGP", "🇨🇳 CHN"],
-    color: "#294F8F",
+    countries: ["IND", "VNM", "MYS", "SGP", "CHN"],
   },
   {
     role: "BDA",
-    countries: ["🇩🇪 DEU", "🇫🇮 FIN", "🇮🇩 IDN", "🇸🇬 SGP", "🇨🇳 CHN"],
-    color: "#94A3B8",
+    countries: ["DEU", "FIN", "IDN", "SGP", "CHN"],
   },
 ];
 
@@ -98,6 +90,8 @@ const fadeUp = {
 };
 
 function About() {
+  const [activeCountry, setActiveCountry] = useState("IND");
+  const [activeMarket, setActiveMarket] = useState<string[]>(["IND"]);
   return (
     <main className="overflow-hidden bg-white text-[#10233F]">
       {/* HERO */}
@@ -342,130 +336,105 @@ function About() {
         </div>
       </section>
 
+      
       {/* GLOBAL PRESENCE */}
+     
+{/* GLOBAL PRESENCE */}
 
-      {/* GLOBAL PRESENCE — BORDERLESS MAP + TEXT ANIMATION */}
-      <section className="overflow-hidden bg-[#F5F7FA] py-14 sm:py-20">
-        <div className="mx-auto max-w-[1440px] px-5 sm:px-10 lg:px-16">
-          {/* Heading */}
-          <motion.div
-            initial={{ opacity: 0, y: 24 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, amount: 0.3 }}
-            transition={{ duration: 0.7, ease: "easeOut" }}
-          >
-            <p className="text-xs font-semibold uppercase tracking-[0.22em] text-[#F58220]">
-              Global presence
-            </p>
+<section className="overflow-hidden bg-[#F5F7FA] py-14 sm:py-20">
+  <div className="mx-auto max-w-[1440px] px-5 sm:px-10 lg:px-16">
+    <motion.div
+      initial={{ opacity: 0, y: 24 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, amount: 0.3 }}
+      transition={{ duration: 0.7, ease: "easeOut" }}
+    >
+      <p className="text-xs font-semibold uppercase tracking-[0.22em] text-[#F58220]">
+        Global presence
+      </p>
 
-            <h2 className="mt-3 text-3xl font-semibold tracking-tight text-[#10233F] sm:text-5xl">
-              Connected across markets
-              <motion.span
-                className="inline-block text-[#F58220]"
-                initial={{ opacity: 0, y: -8 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: 0.3, duration: 0.5 }}
+      <h2 className="mt-3 text-3xl font-semibold tracking-tight text-[#10233F] sm:text-5xl">
+        Connected across markets
+        <span className="text-[#F58220]">.</span>
+      </h2>
+
+      <p className="mt-4 max-w-2xl text-sm leading-7 text-slate-500 sm:text-base">
+        Explore our international network by selecting a market below.
+      </p>
+    </motion.div>
+
+    {/* Centered interactive globe */}
+    <div className="mt-4">
+      <EarthScene focusCountries={activeMarket} />
+    </div>
+
+{/* Clickable market cards */}
+<div className="mt-6 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
+  {markets.map((market, index) => {
+    const isActive =
+      activeMarket.length === market.countries.length &&
+      market.countries.every((code) => activeMarket.includes(code));
+
+    return (
+      <motion.div
+        key={market.role}
+        initial={{ opacity: 0, y: 16 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true, amount: 0.15 }}
+        transition={{ duration: 0.45, delay: index * 0.08 }}
+        whileHover={{ y: -3 }}
+        className={`rounded-xl border p-4 transition-all duration-300 sm:p-5 ${
+          isActive
+            ? "border-[#F58220] bg-[#061A34] text-white shadow-md shadow-[#061A34]/10"
+            : "border-slate-200 bg-white text-[#061A34] hover:border-[#F58220]/60"
+        }`}
+      >
+        {/* Market name */}
+        <button
+          type="button"
+          onClick={() => setActiveMarket(market.countries)}
+          aria-pressed={isActive}
+          className="w-full text-left"
+        >
+          <h3 className="text-sm font-semibold">{market.role}</h3>
+        </button>
+
+        {/* Country short-code buttons */}
+        <div className="mt-3 flex flex-wrap gap-2">
+          {market.countries.map((country) => {
+            const isCountryActive =
+              activeMarket.length === 1 &&
+              activeMarket[0] === country;
+
+            return (
+              <button
+                key={country}
+                type="button"
+                onClick={() => setActiveMarket([country])}
+                aria-pressed={isCountryActive}
+                aria-label={`Show ${country} on the globe`}
+                className={`rounded-md border px-3 py-1.5 text-xs font-semibold transition-colors ${
+                  isCountryActive
+                    ? "border-[#F58220] bg-[#F58220] text-white"
+                    : isActive
+                      ? "border-white/30 text-white hover:border-[#F58220] hover:text-[#F58220]"
+                      : "border-slate-200 bg-white text-slate-600 hover:border-[#F58220] hover:text-[#061A34]"
+                }`}
               >
-                .
-              </motion.span>
-            </h2>
-
-            <motion.p
-              initial={{ opacity: 0 }}
-              whileInView={{ opacity: 1 }}
-              viewport={{ once: true }}
-              transition={{ delay: 0.25, duration: 0.8 }}
-              className="mt-4 max-w-2xl text-sm leading-7 text-slate-500 sm:text-base"
-            >
-              A growing international network supporting engineering, manufacturing and energy
-              solutions across markets.
-            </motion.p>
-          </motion.div>
-
-          <div className="mt-8 grid items-center gap-8 lg:grid-cols-[4fr_1fr] lg:gap-10">
-            {/* Free-floating map — no border or card */}
-            <motion.div
-              initial={{ opacity: 0, scale: 0.97 }}
-              whileInView={{ opacity: 1, scale: 1 }}
-              viewport={{ once: true, amount: 0.15 }}
-              transition={{ duration: 0.9, ease: "easeOut" }}
-              className="relative flex min-h-[240px] items-center justify-center sm:min-h-[360px] lg:min-h-[460px]"
-            >
-              <motion.img
-                src={worldmap}
-                alt="World map showing Mercury Energy Solutions' international presence"
-                loading="lazy"
-                className="h-auto max-h-[480px] w-full object-contain"
-                whileHover={{ scale: 1.025 }}
-                transition={{ duration: 0.5, ease: "easeOut" }}
-              />
-
-              {/* Subtle animated accent */}
-            </motion.div>
-
-            {/* Animated market details */}
-            <div className="grid grid-cols-2 gap-x-4 gap-y-6 lg:grid-cols-1 lg:gap-y-7">
-              {markets.map((market, index) => (
-                <motion.div
-                  key={market.role}
-                  initial={{ opacity: 0, x: 18 }}
-                  whileInView={{ opacity: 1, x: 0 }}
-                  viewport={{ once: true, amount: 0.3 }}
-                  transition={{
-                    delay: index * 0.12,
-                    duration: 0.55,
-                    ease: "easeOut",
-                  }}
-                  whileHover={{ x: 4 }}
-                  className="group min-w-0 cursor-default"
-                >
-                  <div className="flex items-center gap-2.5">
-                    <motion.span
-                      className="size-2.5 shrink-0 rounded-full"
-                      style={{ backgroundColor: market.color }}
-                      animate={{
-                        scale: [1, 1.2, 1],
-                        opacity: [0.8, 1, 0.8],
-                      }}
-                      transition={{
-                        duration: 2.4,
-                        repeat: Infinity,
-                        delay: index * 0.3,
-                        ease: "easeInOut",
-                      }}
-                    />
-
-                    <h3 className="text-sm font-semibold text-[#10233F] transition-colors duration-300 group-hover:text-[#F58220]">
-                      {market.role}
-                    </h3>
-                  </div>
-
-                  <motion.p
-                    className="mt-2 pl-5 text-xs leading-6 text-slate-500 sm:text-sm"
-                    initial={{ opacity: 0.65 }}
-                    whileHover={{ opacity: 1 }}
-                    transition={{ duration: 0.25 }}
-                  >
-                    {market.countries.join(" · ")}
-                  </motion.p>
-
-                  <motion.div
-                    className="ml-5 mt-2 h-px origin-left bg-[#F58220]"
-                    initial={{ scaleX: 0 }}
-                    whileInView={{ scaleX: 1 }}
-                    viewport={{ once: true }}
-                    transition={{
-                      delay: 0.35 + index * 0.12,
-                      duration: 0.6,
-                    }}
-                  />
-                </motion.div>
-              ))}
-            </div>
-          </div>
+                {country}
+              </button>
+            );
+          })}
         </div>
-      </section>
+      </motion.div>
+    );
+  })}
+</div>
+  </div>
+</section>
+
+
+
 
       {/* FIND US — SINGLE MAP EMBED */}
 
