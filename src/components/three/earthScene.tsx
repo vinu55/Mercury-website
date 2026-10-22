@@ -9,7 +9,7 @@ import {
 import { SkeletonUtils } from "three-stdlib";
 import * as THREE from "three";
 
-const GLOBE_PATH = "/models/earth_globe.glb";
+const GLOBE_PATH = "/models/earth_globe-optimized.glb";
 const GLOBE_RADIUS = 0.675;
 
 const GLOBE_ROTATION_X = 180;
@@ -378,14 +378,14 @@ export default function EarthScene({
           />
 
           <Suspense fallback={<LoadingGlobe />}>
-            <GlobeModel
-              selected={selected}
-              labelCountry={labelCountry}
-              onSelectCountry={selectCountry}
-              groupRef={groupRef}
-              focusRequest={focusRequest}
-            />
-          </Suspense>
+  <GlobeModel
+    selected={selected}
+    labelCountry={labelCountry}
+    onSelectCountry={selectCountry}
+    groupRef={groupRef}
+    focusRequest={focusRequest}
+  />
+</Suspense>
 
           <OrbitControls
             enablePan={false}
@@ -404,4 +404,3 @@ export default function EarthScene({
   );
 }
 
-useGLTF.preload(GLOBE_PATH);
