@@ -90,7 +90,6 @@ const fadeUp = {
 };
 
 function About() {
-  const [activeCountry, setActiveCountry] = useState("IND");
   const [activeMarket, setActiveMarket] = useState<string[]>(["IND"]);
   return (
     <main className="overflow-hidden bg-white text-[#10233F]">

@@ -256,19 +256,22 @@ useFrame((_, delta) => {
   );
 }
 
+
 function LoadingGlobe() {
   return (
-    <mesh>
-      <sphereGeometry args={[GLOBE_RADIUS, 32, 32]} />
-      <meshBasicMaterial
-        color="#94A3B8"
-        wireframe
-        transparent
-        opacity={0.2}
-      />
-    </mesh>
+    <group>
+      <mesh>
+        <sphereGeometry args={[GLOBE_RADIUS, 48, 48]} />
+        <meshStandardMaterial
+          color="#DCE5EF"
+          roughness={1}
+          metalness={0}
+        />
+      </mesh>
+    </group>
   );
 }
+
 
 type EarthSceneProps = {
   focusCountries?: string[];
