@@ -420,16 +420,16 @@ function ServicesParallax() {
 </motion.div>
 
         <div
-          className="
-            pointer-events-none
-            absolute bottom-7 left-0 z-30 w-full
-            px-5 sm:px-8 lg:px-12
-          "
-        >
-          <div className="mx-auto flex max-w-[1440px] items-center justify-between">
-            <p className="text-[10px] uppercase tracking-[0.22em] text-white/40 sm:text-xs">
-              Scroll to explore
-            </p>
+  className="
+    pointer-events-none
+    absolute bottom-5 left-0 z-30 w-full
+    px-5 sm:bottom-7 sm:px-8 lg:px-12
+  "
+>
+  <div className="mx-auto flex max-w-[1440px] items-center justify-between">
+    <p className="text-[10px] uppercase tracking-[0.22em] text-white/40 sm:text-xs">
+      Scroll to explore
+    </p>
 
             <div className="flex items-center gap-3">
               <div className="h-px w-20 overflow-hidden bg-white/15 sm:w-32">
@@ -503,7 +503,7 @@ function ServiceParallaxCard({
         opacity: cardOpacity,
       }}
       className="
-  h-[42vh]
+  h-[30vh]
   min-h-[200px]
   w-[82vw]
   max-w-[1080px]
