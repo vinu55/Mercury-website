@@ -4,6 +4,17 @@ import { Environment, Lightformer, useGLTF } from "@react-three/drei";
 import { SkeletonUtils } from "three-stdlib";
 import * as THREE from "three";
 
+// Filter out vendor-level THREE.Clock deprecation warnings from the console
+if (typeof window !== "undefined") {
+  const originalWarn = console.warn;
+  console.warn = (...args) => {
+    if (typeof args[0] === "string" && args[0].includes("THREE.Clock")) {
+      return;
+    }
+    originalWarn(...args);
+  };
+}
+
 function Sun() {
   const group = useRef<THREE.Group>(null);
   const { scene } = useGLTF("/models/sun.glb");
@@ -15,8 +26,15 @@ function Sun() {
   const responsiveScale = THREE.MathUtils.clamp(
     canvasWidth * 0.00025,
     0.035,
-    0.26,
+    0.26
   );
+
+  // Restore pointer styling on unmount
+  useEffect(() => {
+    return () => {
+      document.body.style.cursor = "";
+    };
+  }, []);
 
   useEffect(() => {
     clone.traverse((object) => {
@@ -30,14 +48,14 @@ function Sun() {
         : [object.material];
 
       materials.forEach((material) => {
+        if (!material) return;
         material.side = THREE.FrontSide;
 
-        // 1. Force all textures to sRGB color space to preserve deep reds
-        if (material.map) {
+        if (material.map && material.map.image) {
           material.map.colorSpace = THREE.SRGBColorSpace;
           material.map.needsUpdate = true;
         }
-        if (material.emissiveMap) {
+        if (material.emissiveMap && material.emissiveMap.image) {
           material.emissiveMap.colorSpace = THREE.SRGBColorSpace;
           material.emissiveMap.needsUpdate = true;
         }
@@ -46,11 +64,9 @@ function Sun() {
           material instanceof THREE.MeshStandardMaterial ||
           material instanceof THREE.MeshPhysicalMaterial
         ) {
-          // 2. Reduce environmental glare so surface textures stay saturated
           material.roughness = Math.max(material.roughness, 0.4);
-          material.envMapIntensity = 0.35; // Lowered from 0.8
+          material.envMapIntensity = 0.35;
 
-          // 3. Prevent emissive glow from clipping to white
           if (material.emissiveIntensity !== undefined) {
             material.emissiveIntensity = Math.min(material.emissiveIntensity, 1.2);
           }
@@ -73,13 +89,13 @@ function Sun() {
     current.rotation.x = THREE.MathUtils.lerp(
       current.rotation.x,
       hovered ? state.pointer.y * 0.16 : 0,
-      easing,
+      easing
     );
 
     current.rotation.z = THREE.MathUtils.lerp(
       current.rotation.z,
       hovered ? -state.pointer.x * 0.16 : 0,
-      easing,
+      easing
     );
   });
 
@@ -113,24 +129,18 @@ export default function SunScene() {
         alpha: true,
         powerPreference: "high-performance",
         toneMapping: THREE.ACESFilmicToneMapping,
-        toneMappingExposure: 0.8, // Lowered from 1.0 to stop red overblowing to white
-        outputColorSpace: THREE.SRGBColorSpace, // Enforce correct color rendering
-      }}
-      onCreated={({ gl }) => {
-        gl.toneMapping = THREE.ACESFilmicToneMapping;
-        gl.toneMappingExposure = 0.8;
-        gl.outputColorSpace = THREE.SRGBColorSpace;
+        toneMappingExposure: 0.8,
+        outputColorSpace: THREE.SRGBColorSpace,
       }}
       onPointerMissed={() => {
         document.body.style.cursor = "";
       }}
     >
-      {/* Toned down ambient and directional lighting */}
       <ambientLight intensity={0.25} color="#ffeedd" />
 
       <directionalLight
         position={[4, 5, 5]}
-        intensity={0.8} // Lowered from 1.5
+        intensity={0.8}
         color="#ff9944"
       />
 
@@ -140,7 +150,6 @@ export default function SunScene() {
         color="#ff4411"
       />
 
-      {/* Warm reflections instead of blue fill */}
       <Environment resolution={256}>
         <Lightformer
           intensity={0.8}
