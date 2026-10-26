@@ -101,15 +101,16 @@ export const Route = createRootRouteWithContext<{
 function Root() {
   const { queryClient } = Route.useRouteContext();
 
-  // Clean up page-reveal elements safely without breaking React DOM reconciliation
+  // Clean up page-reveal elements during browser navigation safely
   useEffect(() => {
     const cleanupReveal = () => {
       document.querySelectorAll("[data-page-reveal]").forEach((element) => {
+        // Only remove if it has a parent and is not actively being unmounted by React
         if (element.parentNode) {
           try {
             element.parentNode.removeChild(element);
           } catch {
-            // Ignore if already handled
+            // Ignore if already unmounted
           }
         }
       });
@@ -127,7 +128,6 @@ function Root() {
       window.removeEventListener("pagehide", cleanupReveal);
     };
   }, []);
-
   // Preserve the existing scroll-restoration behavior.
   useLayoutEffect(() => {
     window.history.scrollRestoration = "manual";
