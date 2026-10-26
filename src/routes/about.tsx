@@ -13,8 +13,7 @@ import {
 import { motion } from "motion/react";
 import EarthScene from "@/components/three/earthScene";
 import { COMPANY } from "@/lib/site-data";
-import { useState } from "react";
-
+import { useState, useEffect, Suspense } from "react";
 
 export const Route = createFileRoute("/about")({
   head: () => ({
@@ -28,7 +27,8 @@ export const Route = createFileRoute("/about")({
       { property: "og:title", content: "About Mercury Energy Solutions" },
       {
         property: "og:description",
-        content: "Engineering expertise. Reliable energy systems. Long-term partnerships.",
+        content:
+          "Engineering expertise. Reliable energy systems. Long-term partnerships.",
       },
       { property: "og:type", content: "website" },
     ],
@@ -40,7 +40,8 @@ const values = [
   {
     number: "01",
     title: "Integrity",
-    description: "Honest decisions, transparent communication and accountability.",
+    description:
+      "Honest decisions, transparent communication and accountability.",
     Icon: ShieldCheck,
   },
   {
@@ -58,7 +59,8 @@ const values = [
   {
     number: "04",
     title: "Excellence",
-    description: "Continuous improvement and a commitment to getting it right.",
+    description:
+      "Continuous improvement and a commitment to getting it right.",
     Icon: Sparkles,
   },
 ];
@@ -91,10 +93,14 @@ const fadeUp = {
 
 function About() {
   const [activeMarket, setActiveMarket] = useState<string[]>(["IND"]);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
   return (
     <main className="overflow-hidden bg-white text-[#10233F]">
-      {/* HERO */}
-
       {/* HERO — MUTED BACKGROUND VIDEO */}
       <section className="relative isolate flex min-h-[440px] items-end overflow-hidden bg-[#061A34] sm:min-h-[520px] lg:min-h-[600px]">
         <video
@@ -123,7 +129,7 @@ function About() {
           </p>
 
           <h1 className="max-w-4xl text-4xl font-semibold leading-[1.08] tracking-tight text-white sm:text-6xl lg:text-7xl">
-            Built on Trust<span className="text-[#F58220]">,</span>
+            Built on Trust,
             <br />
             <span className="text-white">
               Driven by Engineering<span className="text-[#F58220]">.</span>
@@ -143,7 +149,10 @@ function About() {
       </section>
 
       {/* WHO WE ARE */}
-      <section id="who-we-are" className="scroll-mt-20 px-5 py-20 sm:px-10 sm:py-28 lg:px-16">
+      <section
+        id="who-we-are"
+        className="scroll-mt-20 px-5 py-20 sm:px-10 sm:py-28 lg:px-16"
+      >
         <div className="mx-auto grid max-w-[1280px] gap-10 lg:grid-cols-[0.8fr_1.2fr] lg:gap-24">
           <motion.div
             variants={fadeUp}
@@ -171,16 +180,18 @@ function About() {
             className="self-center"
           >
             <p className="text-base leading-8 text-slate-600">
-              Mercury Energy Solutions Private Limited provides comprehensive Design, Engineering,
-              Manufacturing, Supply, Installation Commissioning, and Services for Boilers and
-              Thermal Equipment across Marine and Land-Based Applications.
+              Mercury Energy Solutions Private Limited provides comprehensive
+              Design, Engineering, Manufacturing, Supply, Installation
+              Commissioning, and Services for Boilers and Thermal Equipment
+              across Marine and Land-Based Applications.
             </p>
 
             <p className="mt-5 text-base leading-8 text-slate-600">
-              Our expertise spans Boiler Systems, Fuel Conversion, Bioenergy, Solar Power,
-              Retrofits, Maintenance, and Spare Parts. Through our integrated engineering
-              capabilities and lifecycle support, we deliver reliable, efficient, and sustainable
-              thermal energy solutions for diverse industrial requirements.
+              Our expertise spans Boiler Systems, Fuel Conversion, Bioenergy,
+              Solar Power, Retrofits, Maintenance, and Spare Parts. Through our
+              integrated engineering capabilities and lifecycle support, we
+              deliver reliable, efficient, and sustainable thermal energy
+              solutions for diverse industrial requirements.
             </p>
 
             <div className="mt-7 flex flex-wrap gap-2.5">
@@ -244,8 +255,9 @@ function About() {
               </h3>
 
               <p className="mt-3 text-sm leading-7 text-slate-600 transition-colors duration-500 group-hover:text-white/90">
-                To transform marine and industrial thermal systems through engineering excellence,
-                intelligent technologies and sustainable energy solutions.
+                To transform marine and industrial thermal systems through
+                engineering excellence, intelligent technologies and
+                sustainable energy solutions.
               </p>
             </motion.article>
 
@@ -267,9 +279,10 @@ function About() {
               </h3>
 
               <p className="mt-3 text-sm leading-7 text-slate-600 transition-colors duration-500 group-hover:text-white/90">
-                To deliver trusted engineering, quality equipment, and innovative, sustainable
-                solutions—every time—enhancing reliability, productivity, and long-term value for
-                marine, industrial, and energy-sector customers worldwide.
+                To deliver trusted engineering, quality equipment, and
+                innovative, sustainable solutions—every time—enhancing
+                reliability, productivity, and long-term value for marine,
+                industrial, and energy-sector customers worldwide.
               </p>
             </motion.article>
           </div>
@@ -335,107 +348,106 @@ function About() {
         </div>
       </section>
 
-      
       {/* GLOBAL PRESENCE */}
-     
-{/* GLOBAL PRESENCE */}
+      <section className="overflow-hidden bg-[#F5F7FA] py-14 sm:py-20">
+        <div className="mx-auto max-w-[1440px] px-5 sm:px-10 lg:px-16">
+          <motion.div
+            initial={{ opacity: 0, y: 24 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, amount: 0.3 }}
+            transition={{ duration: 0.7, ease: "easeOut" }}
+          >
+            <p className="text-xs font-semibold uppercase tracking-[0.22em] text-[#F58220]">
+              Global presence
+            </p>
 
-<section className="overflow-hidden bg-[#F5F7FA] py-14 sm:py-20">
-  <div className="mx-auto max-w-[1440px] px-5 sm:px-10 lg:px-16">
-    <motion.div
-      initial={{ opacity: 0, y: 24 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, amount: 0.3 }}
-      transition={{ duration: 0.7, ease: "easeOut" }}
-    >
-      <p className="text-xs font-semibold uppercase tracking-[0.22em] text-[#F58220]">
-        Global presence
-      </p>
+            <h2 className="mt-3 text-3xl font-semibold tracking-tight text-[#10233F] sm:text-5xl">
+              Connected across markets
+              <span className="text-[#F58220]">.</span>
+            </h2>
 
-      <h2 className="mt-3 text-3xl font-semibold tracking-tight text-[#10233F] sm:text-5xl">
-        Connected across markets
-        <span className="text-[#F58220]">.</span>
-      </h2>
+            <p className="mt-4 max-w-2xl text-sm leading-7 text-slate-500 sm:text-base">
+              Explore our international network by selecting a market below.
+            </p>
+          </motion.div>
 
-      <p className="mt-4 max-w-2xl text-sm leading-7 text-slate-500 sm:text-base">
-        Explore our international network by selecting a market below.
-      </p>
-    </motion.div>
-
-    {/* Centered interactive globe */}
-    <div className="mt-4">
-      <EarthScene focusCountries={activeMarket} />
-    </div>
-
-{/* Clickable market cards */}
-<div className="mt-6 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
-  {markets.map((market, index) => {
-    const isActive =
-      activeMarket.length === market.countries.length &&
-      market.countries.every((code) => activeMarket.includes(code));
-
-    return (
-      <motion.div
-        key={market.role}
-        initial={{ opacity: 0, y: 16 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true, amount: 0.15 }}
-        transition={{ duration: 0.45, delay: index * 0.08 }}
-        whileHover={{ y: -3 }}
-        className={`rounded-xl border p-4 transition-all duration-300 sm:p-5 ${
-          isActive
-            ? "border-[#F58220] bg-[#061A34] text-white shadow-md shadow-[#061A34]/10"
-            : "border-slate-200 bg-white text-[#061A34] hover:border-[#F58220]/60"
-        }`}
-      >
-        {/* Market name */}
-        <button
-          type="button"
-          onClick={() => setActiveMarket(market.countries)}
-          aria-pressed={isActive}
-          className="w-full text-left"
-        >
-          <h3 className="text-sm font-semibold">{market.role}</h3>
-        </button>
-
-        {/* Country short-code buttons */}
-        <div className="mt-3 flex flex-wrap gap-2">
-          {market.countries.map((country) => {
-            const isCountryActive =
-              activeMarket.length === 1 &&
-              activeMarket[0] === country;
-
-            return (
-              <button
-                key={country}
-                type="button"
-                onClick={() => setActiveMarket([country])}
-                aria-pressed={isCountryActive}
-                aria-label={`Show ${country} on the globe`}
-                className={`rounded-md border px-3 py-1.5 text-xs font-semibold transition-colors ${
-                  isCountryActive
-                    ? "border-[#F58220] bg-[#F58220] text-white"
-                    : isActive
-                      ? "border-white/30 text-white hover:border-[#F58220] hover:text-[#F58220]"
-                      : "border-slate-200 bg-white text-slate-600 hover:border-[#F58220] hover:text-[#061A34]"
-                }`}
+          {/* Centered interactive globe with mount guard and Suspense */}
+          <div className="mt-4 min-h-[360px] sm:min-h-[440px] md:min-h-[520px] lg:min-h-[600px]">
+            {mounted && (
+              <Suspense
+                fallback={
+                  <div className="flex h-full min-h-[360px] w-full items-center justify-center sm:min-h-[440px] md:min-h-[520px] lg:min-h-[600px]">
+                    <div className="size-9 animate-spin rounded-full border-2 border-slate-300 border-t-[#F58220]" />
+                  </div>
+                }
               >
-                {country}
-              </button>
-            );
-          })}
+                <EarthScene focusCountries={activeMarket} />
+              </Suspense>
+            )}
+          </div>
+
+          {/* Clickable market cards */}
+          <div className="mt-6 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
+            {markets.map((market, index) => {
+              const isActive =
+                activeMarket.length === market.countries.length &&
+                market.countries.every((code) => activeMarket.includes(code));
+
+              return (
+                <motion.div
+                  key={market.role}
+                  initial={{ opacity: 0, y: 16 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true, amount: 0.15 }}
+                  transition={{ duration: 0.45, delay: index * 0.08 }}
+                  whileHover={{ y: -3 }}
+                  className={`rounded-xl border p-4 transition-all duration-300 sm:p-5 ${
+                    isActive
+                      ? "border-[#F58220] bg-[#061A34] text-white shadow-md shadow-[#061A34]/10"
+                      : "border-slate-200 bg-white text-[#061A34] hover:border-[#F58220]/60"
+                  }`}
+                >
+                  <button
+                    type="button"
+                    onClick={() => setActiveMarket(market.countries)}
+                    aria-pressed={isActive}
+                    className="w-full text-left"
+                  >
+                    <h3 className="text-sm font-semibold">{market.role}</h3>
+                  </button>
+
+                  <div className="mt-3 flex flex-wrap gap-2">
+                    {market.countries.map((country) => {
+                      const isCountryActive =
+                        activeMarket.length === 1 &&
+                        activeMarket[0] === country;
+
+                      return (
+                        <button
+                          key={country}
+                          type="button"
+                          onClick={() => setActiveMarket([country])}
+                          aria-pressed={isCountryActive}
+                          aria-label={`Show ${country} on the globe`}
+                          className={`rounded-md border px-3 py-1.5 text-xs font-semibold transition-colors ${
+                            isCountryActive
+                              ? "border-[#F58220] bg-[#F58220] text-white"
+                              : isActive
+                                ? "border-white/30 text-white hover:border-[#F58220] hover:text-[#F58220]"
+                                : "border-slate-200 bg-white text-slate-600 hover:border-[#F58220] hover:text-[#061A34]"
+                          }`}
+                        >
+                          {country}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </motion.div>
+              );
+            })}
+          </div>
         </div>
-      </motion.div>
-    );
-  })}
-</div>
-  </div>
-</section>
-
-
-
-
-      {/* FIND US — SINGLE MAP EMBED */}
+      </section>
 
       {/* FIND US — OFFICE DETAILS LEFT, MAP RIGHT */}
       <section
@@ -477,9 +489,13 @@ function About() {
                 India · Headquarters
               </p>
 
-              <h3 className="mt-3 text-xl font-semibold text-white">Mercury Energy Solutions</h3>
+              <h3 className="mt-3 text-xl font-semibold text-white">
+                Mercury Energy Solutions
+              </h3>
 
-              <p className="mt-4 text-sm leading-7 text-white/70">{COMPANY.office}</p>
+              <p className="mt-4 text-sm leading-7 text-white/70">
+                {COMPANY.office}
+              </p>
 
               <a
                 href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
@@ -520,7 +536,7 @@ function About() {
         </div>
       </section>
 
-      {/* FINAL CTA — MINIMAL, NO WHITE CARD */}
+      {/* FINAL CTA */}
       <section className="bg-gradient-to-br from-[#eef3f8] via-[#f8fafc] to-[#e9eff6] px-5 py-16 sm:px-10 sm:py-20 lg:px-16">
         <motion.div
           initial={{ opacity: 0, y: 18 }}
@@ -540,7 +556,8 @@ function About() {
             </h2>
 
             <p className="mt-3 max-w-xl text-sm leading-7 text-slate-600">
-              Connect with our team to discuss your engineering and energy requirements.
+              Connect with our team to discuss your engineering and energy
+              requirements.
             </p>
           </div>
 

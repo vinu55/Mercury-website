@@ -10,6 +10,29 @@ import { useLayoutEffect, useEffect, type ReactNode } from "react";
 import appCss from "../styles.css?url";
 import { Header, Footer, WhatsAppButton } from "@/components/site/SiteChrome";
 
+// Global DOM unmount patch: prevents async 3D loaders (Draco/Three.js) 
+// and router transitions from throwing "NotFoundError: Failed to execute 'removeChild' on 'Node'"
+if (typeof window !== "undefined") {
+  const originalRemoveChild = Node.prototype.removeChild;
+  Node.prototype.removeChild = function <T extends Node>(child: T): T {
+    if (child.parentNode !== this) {
+      return child;
+    }
+    return originalRemoveChild.call(this, child) as T;
+  };
+
+  const originalInsertBefore = Node.prototype.insertBefore;
+  Node.prototype.insertBefore = function <T extends Node>(
+    newNode: T,
+    referenceNode: Node | null
+  ): T {
+    if (referenceNode && referenceNode.parentNode !== this) {
+      return newNode;
+    }
+    return originalInsertBefore.call(this, newNode, referenceNode) as T;
+  };
+}
+
 export const Route = createRootRouteWithContext<{
   queryClient: QueryClient;
 }>()({
@@ -86,7 +109,7 @@ function Root() {
           try {
             element.parentNode.removeChild(element);
           } catch {
-            // Suppress error if React or another listener already unmounted it
+            // Ignore if already handled
           }
         }
       });

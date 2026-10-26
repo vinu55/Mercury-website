@@ -55,7 +55,6 @@ type GlobeModelProps = {
   focusRequest: number;
 };
 
-
 function GlobeModel({
   selected,
   labelCountry,
@@ -82,7 +81,6 @@ function GlobeModel({
     [],
   );
 
-  // Clone the model safely, following the approach used in Sun.tsx.
   const model = useMemo(() => {
     const clone = SkeletonUtils.clone(scene);
 
@@ -100,7 +98,6 @@ function GlobeModel({
     return clone;
   }, [scene]);
 
-  // Preserve the original Earth textures and material colors.
   useEffect(() => {
     model.traverse((object) => {
       if (!(object instanceof THREE.Mesh)) return;
@@ -287,9 +284,6 @@ function GlobeModel({
   );
 }
 
-
-
-
 function LoadingGlobe() {
   const { progress, errors } = useProgress();
 
@@ -308,9 +302,6 @@ function LoadingGlobe() {
   );
 }
 
-
-
-
 type EarthSceneProps = {
   focusCountries?: string[];
 };
@@ -319,10 +310,7 @@ export default function EarthScene({
   focusCountries = [],
 }: EarthSceneProps) {
   const [selected, setSelected] = useState<string | null>(null);
-
-  // FIX: Declare the missing label state.
   const [labelCountry, setLabelCountry] = useState<string | null>(null);
-
   const [focusRequest, setFocusRequest] = useState(0);
   const groupRef = useRef<THREE.Group>(null);
   const previousFocus = useRef("");
@@ -333,7 +321,6 @@ export default function EarthScene({
     setFocusRequest((current) => current + 1);
   }
 
-  // Hide the country label after two seconds.
   useEffect(() => {
     if (!labelCountry) return;
 
@@ -344,7 +331,6 @@ export default function EarthScene({
     return () => window.clearTimeout(timer);
   }, [labelCountry]);
 
-  // Focus a country selected from the market cards.
   useEffect(() => {
     const code = focusCountries[0] ?? "";
 
@@ -378,14 +364,14 @@ export default function EarthScene({
           />
 
           <Suspense fallback={<LoadingGlobe />}>
-  <GlobeModel
-    selected={selected}
-    labelCountry={labelCountry}
-    onSelectCountry={selectCountry}
-    groupRef={groupRef}
-    focusRequest={focusRequest}
-  />
-</Suspense>
+            <GlobeModel
+              selected={selected}
+              labelCountry={labelCountry}
+              onSelectCountry={selectCountry}
+              groupRef={groupRef}
+              focusRequest={focusRequest}
+            />
+          </Suspense>
 
           <OrbitControls
             enablePan={false}
@@ -404,3 +390,4 @@ export default function EarthScene({
   );
 }
 
+useGLTF.preload(GLOBE_PATH);
