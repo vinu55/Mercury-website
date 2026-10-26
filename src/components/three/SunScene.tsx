@@ -1,50 +1,78 @@
+
 import { useEffect, useMemo, useRef, useState } from "react";
-import { Canvas, useFrame } from "@react-three/fiber";
+import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import { useGLTF } from "@react-three/drei";
 import { SkeletonUtils } from "three-stdlib";
 import * as THREE from "three";
 
-const SUN_PATH = "/models/sun.glb";
-const DRACO_PATH = "/draco/";
-
 function Sun() {
   const group = useRef<THREE.Group>(null);
-  // Pass the local draco path as the second argument
-  const { scene } = useGLTF(SUN_PATH, DRACO_PATH);
+  const { scene } = useGLTF("/models/sun.glb");
+  const clone = useMemo(() => SkeletonUtils.clone(scene), [scene]);
   const [hovered, setHovered] = useState(false);
 
-  // Normalize and auto-center the geometry to (0, 0, 0)
-  const model = useMemo(() => {
-    const clone = SkeletonUtils.clone(scene);
-    const box = new THREE.Box3().setFromObject(clone);
-    const center = box.getCenter(new THREE.Vector3());
-    const size = box.getSize(new THREE.Vector3());
-    const maxDim = Math.max(size.x, size.y, size.z);
+  const { width: canvasWidth } = useThree((state) => state.size);
 
-    if (maxDim > 0) {
-      const scale = 2.4 / maxDim;
-      clone.scale.setScalar(scale);
-      clone.position.copy(center).multiplyScalar(-scale);
+  const responsiveScale = useMemo(() => {
+    if (canvasWidth < 768) {
+      return 0.18;
     }
-    return clone;
-  }, [scene]);
+
+    return THREE.MathUtils.clamp(
+      canvasWidth * 0.00065,
+      0.18,
+      0.75
+    );
+  }, [canvasWidth]);
+
+  useEffect(() => {
+    return () => {
+      document.body.style.cursor = "";
+    };
+  }, []);
+
+  useEffect(() => {
+    clone.traverse((object) => {
+      if (!(object instanceof THREE.Mesh)) return;
+
+      object.castShadow = true;
+      object.receiveShadow = true;
+
+      // Preserve the model's original materials and textures.
+      // Do not overwrite material colours, roughness,
+      // emissive intensity, or texture color spaces.
+    });
+  }, [clone]);
 
   useFrame((state, delta) => {
     const current = group.current;
     if (!current) return;
+
     const frameDelta = Math.min(delta, 0.05);
-    current.rotation.y -= frameDelta * (hovered ? 0.45 : 0.16);
+    const easing = 1 - Math.exp(-3 * frameDelta);
+
+    current.rotation.y -= frameDelta * (hovered ? 0.55 : 0.18);
+
     current.rotation.x = THREE.MathUtils.lerp(
       current.rotation.x,
-      hovered ? state.pointer.y * 0.2 : 0,
-      0.1
+      hovered ? state.pointer.y * 0.16 : 0,
+      easing
+    );
+
+    current.rotation.z = THREE.MathUtils.lerp(
+      current.rotation.z,
+      hovered ? -state.pointer.x * 0.16 : 0,
+      easing
     );
   });
 
   return (
     <group
       ref={group}
-      onPointerEnter={() => {
+      scale={responsiveScale}
+      position={[0, 0, 0]}
+      onPointerEnter={(event) => {
+        event.stopPropagation();
         setHovered(true);
         document.body.style.cursor = "grab";
       }}
@@ -53,7 +81,7 @@ function Sun() {
         document.body.style.cursor = "";
       }}
     >
-      <primitive object={model} />
+      <primitive object={clone} />
     </group>
   );
 }
@@ -61,17 +89,24 @@ function Sun() {
 export default function SunScene() {
   return (
     <Canvas
-      dpr={[1, 1.5]}
-      camera={{ position: [0, 0, 4.5], fov: 45 }}
-      gl={{ alpha: true, antialias: true, powerPreference: "high-performance" }}
+      dpr={[1, 2]}
+      camera={{ position: [0, 0, 7], fov: 45 }}
+      gl={{
+        antialias: true,
+        alpha: true,
+        powerPreference: "high-performance",
+        outputColorSpace: THREE.SRGBColorSpace,
+      }}
+      onPointerMissed={() => {
+        document.body.style.cursor = "";
+      }}
     >
-      <ambientLight intensity={2.2} />
-      <directionalLight position={[5, 5, 5]} intensity={2.8} />
-      <pointLight position={[-4, -3, -2]} intensity={2.5} color="#f58220" />
+      <ambientLight intensity={0.8} />
+      <directionalLight position={[4, 5, 5]} intensity={1.2} />
+
       <Sun />
     </Canvas>
   );
 }
 
-// Preload using the local draco path
-useGLTF.preload(SUN_PATH, DRACO_PATH);
+useGLTF.preload("/models/sun.glb");
