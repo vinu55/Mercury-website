@@ -117,16 +117,21 @@ function Home() {
       >
         {/* Full-screen responsive video */}
         <video
-          autoPlay
-          muted
-          loop
-          playsInline
-          preload="auto"
-          aria-hidden="true"
-          className="absolute inset-0 z-0 h-full w-full object-cover object-center"
-        >
-          <source src="/media/intro.mp4" type="video/mp4" />
-        </video>
+  autoPlay
+  loop
+  muted
+  playsInline
+  preload="auto"
+  className="h-full w-full object-cover"
+  style={{
+    transform: "translateZ(0)",
+    backfaceVisibility: "hidden",
+    WebkitBackfaceVisibility: "hidden",
+    imageRendering: "-webkit-optimize-contrast"
+  }}
+>
+  <source src="/media/intro.mp4" type="video/mp4" />
+</video>
 
         {/* Hero content */}
         <div className="absolute inset-x-0 bottom-8 z-20 mx-auto max-w-[1440px] px-5 sm:bottom-14 sm:px-10 lg:bottom-16 lg:px-16">
