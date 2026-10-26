@@ -6,13 +6,9 @@ import {
   HeadContent,
   Scripts,
 } from "@tanstack/react-router";
-import { Analytics } from "@vercel/analytics/react";
-import { SpeedInsights } from "@vercel/speed-insights/react";
 import { useLayoutEffect, useEffect, type ReactNode } from "react";
 import appCss from "../styles.css?url";
 import { Header, Footer, WhatsAppButton } from "@/components/site/SiteChrome";
-
-const GA_MEASUREMENT_ID = "G-634PT1VCFL";
 
 export const Route = createRootRouteWithContext<{
   queryClient: QueryClient;
@@ -82,26 +78,6 @@ export const Route = createRootRouteWithContext<{
 function Root() {
   const { queryClient } = Route.useRouteContext();
 
-  // Google Analytics
-  useEffect(() => {
-    if (document.querySelector('script[data-google-analytics="true"]')) {
-      return;
-    }
-
-    const script = document.createElement("script");
-    script.async = true;
-    script.src = `https://www.googletagmanager.com/gtag/js?id=${GA_MEASUREMENT_ID}`;
-    script.dataset["googleAnalytics"] = "true";
-    document.head.appendChild(script);
-
-    window.dataLayer = window.dataLayer || [];
-    window.gtag = function (...args: unknown[]) {
-      window.dataLayer.push(args);
-    };
-
-    window.gtag("js", new Date());
-    window.gtag("config", GA_MEASUREMENT_ID);
-  }, []);
 
   // Clean up page-reveal elements during browser navigation.
   useEffect(() => {
@@ -134,8 +110,6 @@ function Root() {
       <Outlet />
       <Footer />
       <WhatsAppButton />
-      <Analytics />
-      <SpeedInsights />
     </QueryClientProvider>
   );
 }
