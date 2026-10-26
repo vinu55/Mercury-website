@@ -19,77 +19,41 @@ const SUN_PATH = "/models/sun.glb";
 
 function Sun() {
   const group = useRef<THREE.Group>(null);
-  const { scene } = useGLTF(SUN_PATH);
-  const clone = useMemo(() => SkeletonUtils.clone(scene), [scene]);
+  const { scene } = useGLTF("/models/sun.glb");
   const [hovered, setHovered] = useState(false);
 
-  const { width: canvasWidth } = useThree((state) => state.size);
+  // Normalize and auto-center the Sun mesh to (0, 0, 0)
+  const model = useMemo(() => {
+    const clone = SkeletonUtils.clone(scene);
+    const box = new THREE.Box3().setFromObject(clone);
+    const center = box.getCenter(new THREE.Vector3());
+    const size = box.getSize(new THREE.Vector3());
+    const maxDim = Math.max(size.x, size.y, size.z);
 
-  const responsiveScale = useMemo(() => {
-    if (canvasWidth < 768) {
-      return 0.18;
+    if (maxDim > 0) {
+      const scale = 2.4 / maxDim;
+      clone.scale.setScalar(scale);
+      clone.position.copy(center).multiplyScalar(-scale);
     }
-
-    return THREE.MathUtils.clamp(
-      canvasWidth * 0.00065,
-      0.18,
-      0.75
-    );
-  }, [canvasWidth]);
-
-  useEffect(() => {
-    return () => {
-      document.body.style.cursor = "";
-    };
-  }, []);
-
-  useEffect(() => {
-    clone.traverse((object) => {
-      if (!(object instanceof THREE.Mesh)) return;
-
-      object.castShadow = true;
-      object.receiveShadow = true;
-
-      const materials = Array.isArray(object.material)
-        ? object.material
-        : [object.material];
-
-      materials.forEach((material) => {
-        material.side = THREE.FrontSide;
-        material.needsUpdate = true;
-      });
-    });
-  }, [clone]);
+    return clone;
+  }, [scene]);
 
   useFrame((state, delta) => {
     const current = group.current;
     if (!current) return;
-
     const frameDelta = Math.min(delta, 0.05);
-    const easing = 1 - Math.exp(-3 * frameDelta);
-
-    current.rotation.y -= frameDelta * (hovered ? 0.55 : 0.18);
-
+    current.rotation.y -= frameDelta * (hovered ? 0.45 : 0.16);
     current.rotation.x = THREE.MathUtils.lerp(
       current.rotation.x,
-      hovered ? state.pointer.y * 0.16 : 0,
-      easing
-    );
-
-    current.rotation.z = THREE.MathUtils.lerp(
-      current.rotation.z,
-      hovered ? -state.pointer.x * 0.16 : 0,
-      easing
+      hovered ? state.pointer.y * 0.2 : 0,
+      0.1
     );
   });
 
   return (
     <group
       ref={group}
-      scale={responsiveScale}
-      position={[0, 0, 0]}
-      onPointerEnter={(event) => {
-        event.stopPropagation();
+      onPointerEnter={() => {
         setHovered(true);
         document.body.style.cursor = "grab";
       }}
@@ -98,7 +62,7 @@ function Sun() {
         document.body.style.cursor = "";
       }}
     >
-      <primitive object={clone} />
+      <primitive object={model} />
     </group>
   );
 }
@@ -107,7 +71,7 @@ export default function SunScene() {
   return (
     <Canvas
       dpr={[1, 1.5]}
-      camera={{ position: [0, 0, 7], fov: 45 }}
+      camera={{ position: [0, 0, 4.5], fov: 45 }}
       gl={{
         antialias: true,
         alpha: true,
@@ -118,8 +82,10 @@ export default function SunScene() {
         document.body.style.cursor = "";
       }}
     >
-      <ambientLight intensity={0.9} />
-      <directionalLight position={[4, 5, 5]} intensity={1.4} />
+      {/* Increased ambient & warm directional lights to ensure visibility */}
+      <ambientLight intensity={1.8} />
+      <directionalLight position={[5, 5, 5]} intensity={2.5} color="#fff4e6" />
+      <pointLight position={[-4, -3, -2]} intensity={2.0} color="#f58220" />
 
       <Sun />
     </Canvas>
