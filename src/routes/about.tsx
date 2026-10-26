@@ -66,15 +66,15 @@ const values = [
 ];
 
 const markets = [
-  { role: "Headquarters", countries: ["IND"] },
-  { role: "Manufacturing", countries: ["IND", "VNM"] },
+  { role: "Headquarters", countries: ["India"] },
+  { role: "Manufacturing", countries: ["India", "Vietnam"] },
   {
-    role: "Local Parties",
-    countries: ["IND", "VNM", "MYS", "SGP", "CHN"],
+    role: "Local Partners",
+    countries: ["India", "Vietnam", "Malaysia", "Singapore", "China"],
   },
   {
     role: "BDA",
-    countries: ["DEU", "FIN", "IDN", "SGP", "CHN"],
+    countries: ["Germany", "Finland", "Indonesia", "Singapore", "China"],
   },
 ];
 
@@ -251,7 +251,7 @@ function About() {
               </div>
 
               <h3 className="mt-6 text-xl font-semibold text-slate-900 transition-colors duration-500 group-hover:text-white">
-                Our vision <span className="text-[#F58220]">.</span>
+                Our vision<span className="text-[#F58220]">.</span>
               </h3>
 
               <p className="mt-3 text-sm leading-7 text-slate-600 transition-colors duration-500 group-hover:text-white/90">
@@ -275,7 +275,7 @@ function About() {
               </div>
 
               <h3 className="mt-6 text-xl font-semibold text-slate-900 transition-colors duration-500 group-hover:text-white">
-                Our mission <span className="text-[#F58220]">.</span>
+                Our mission<span className="text-[#F58220]">.</span>
               </h3>
 
               <p className="mt-3 text-sm leading-7 text-slate-600 transition-colors duration-500 group-hover:text-white/90">
@@ -485,7 +485,7 @@ function About() {
                 <MapPin size={23} />
               </div>
 
-              <p className="mt-7 text-xs font-semibold uppercase tracking-[0.18em] text-[#F58220]">
+              <p className="mt-7 inline-block rounded-md bg-[#061A34] px-3 py-2 text-xs font-semibold uppercase tracking-[0.18em] text-white">
                 India · Headquarters
               </p>
 

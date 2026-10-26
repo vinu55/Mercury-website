@@ -152,7 +152,7 @@ function Home() {
 
             <h1
               aria-label="Complete Solutions for Marine and Land-Based Boilers and Thermal Equipment."
-              className="mt-3 max-w-3xl text-3xl font-semibold leading-[1.08] tracking-tight text-white sm:text-4xl md:text-5xl lg:text-6xl"
+              className="mt-3 max-w-3xl text-3xl font-semibold leading-[1.08] tracking-tight text-white sm:text-4xl md:text-4xl lg:text-5xl xl:text-5xl"
             >
               <TypewriterText
                 text="Complete Solutions for Marine, Land-Based Boilers & Thermal Equipment"
@@ -222,7 +222,7 @@ function Home() {
       pt-4
       pb-6
       lg:min-h-[680px]
-      lg:grid-cols-[0.85fr_1.15fr]
+      lg:grid-cols-[1.15fr_0.85fr]
       lg:px-10
       lg:py-24
     "
@@ -303,318 +303,266 @@ function Home() {
    OUR SOLUTIONS — SMOOTH HORIZONTAL SCROLL
 ============================================================= */
 
-function ServicesParallax() {
-  const sectionRef = useRef<HTMLElement>(null);
-  const viewportRef = useRef<HTMLDivElement>(null);
-  const trackRef = useRef<HTMLDivElement>(null);
 
-  const [horizontalDistance, setHorizontalDistance] = useState(0);
-  const [viewportHeight, setViewportHeight] = useState(
-    typeof window !== "undefined" ? window.innerHeight : 800,
-  );
-  const [measured, setMeasured] = useState(false);
 
-  useLayoutEffect(() => {
-    const measure = () => {
-      const viewport = viewportRef.current;
-      const track = trackRef.current;
 
-      if (!viewport || !track) return;
 
-      const viewportWidth = viewport.clientWidth;
-      const firstCard = track.firstElementChild as HTMLElement | null;
-      const lastCard = track.lastElementChild as HTMLElement | null;
+const serviceImages = [
+  marineboiler,
+  boiler,
+  biomass,
+  solarpanel,
+  spareparts,
+];
 
-      if (!firstCard || !lastCard) return;
+const descriptions = [
+  "Reliable marine boiler systems engineered for demanding vessel operations and long-term performance.",
+  "Efficient industrial boiler solutions built for dependable performance and demanding applications.",
+  "Sustainable biomass systems designed to deliver efficient and reliable thermal energy.",
+  "Practical solar solutions supporting energy efficiency and more sustainable operations.",
+  "Quality spare parts and dependable support to keep your equipment running smoothly.",
+];
 
-      const firstCardWidth = firstCard.getBoundingClientRect().width;
-      const lastCardWidth = lastCard.getBoundingClientRect().width;
 
-      const startPadding = Math.max(0, (viewportWidth - firstCardWidth) / 2);
-      const endPadding = Math.max(0, (viewportWidth - lastCardWidth) / 2);
-
-      track.style.paddingLeft = `${startPadding}px`;
-      track.style.paddingRight = `${endPadding}px`;
-
-      const distance = Math.max(0, track.scrollWidth - viewportWidth);
-
-      setHorizontalDistance(distance);
-      setViewportHeight(window.innerHeight);
-      setMeasured(true);
-    };
-
-    measure();
-
-    const observer = new ResizeObserver(measure);
-
-    if (viewportRef.current) observer.observe(viewportRef.current);
-    if (trackRef.current) observer.observe(trackRef.current);
-
-    window.addEventListener("resize", measure);
-
-    return () => {
-      observer.disconnect();
-      window.removeEventListener("resize", measure);
-    };
-  }, []);
-
-  const { scrollYProgress } = useScroll({
-    target: sectionRef,
-    offset: ["start start", "end end"],
-  });
-
-  // Keep all Motion hooks at the component's top level.
-  const trackX = useTransform(scrollYProgress, [0, 1], [0, -horizontalDistance]);
-
-  const arrowRotate = useTransform(scrollYProgress, [0, 1], [0, 180]);
-
-  const sectionHeight =
-    horizontalDistance +
-    (typeof window !== "undefined" && window.innerWidth < 640
-      ? viewportHeight * 0.72
-      : viewportHeight);
-
-  return (
-    <section
-      id="solutions"
-      ref={sectionRef}
-      style={{
-        height: measured ? `${sectionHeight}px` : "72svh",
-      }}
-      className="relative bg-[#061a34] text-white"
-    >
-      <div
-        ref={viewportRef}
-        className="sticky top-0 h-[72svh] sm:h-screen landscape:h-screen w-full overflow-hidden"
-      >
-        {/* 1. HEADING: Reduced padding in landscape mode */}
-        <div
-          className="
-            pointer-events-none
-            absolute left-0 top-0 z-30 w-full
-            px-5 pt-8
-            landscape:pt-4 landscape:px-8
-            sm:px-8 sm:pt-28
-            lg:px-12 lg:pt-36
-          "
-        >
-          <p className="eyebrow text-accent !text-xs sm:!text-base font-semibold uppercase tracking-[0.2em] sm:tracking-[0.25em]">
-            Our solutions
-          </p>
-        </div>
-
-        {/* 2. CARD TRACK: Shifted down to create a clear gap from the heading */}
-        <motion.div
-          ref={trackRef}
-          style={{ x: trackX }}
-          className="
-            absolute left-0
-            top-[22vh]
-            flex w-max translate-y-0
-            items-center gap-5
-            py-0
-            will-change-transform
-            landscape:top-[52%] landscape:-translate-y-1/2 landscape:gap-6
-            sm:top-[54%] sm:-translate-y-1/2 sm:gap-7
-            lg:top-[56%] lg:gap-10
-          "
-        >
-          {SERVICES.map((service, index) => (
-            <ServiceParallaxCard
-              key={service.href}
-              service={service}
-              index={index}
-              scrollProgress={scrollYProgress}
-            />
-          ))}
-        </motion.div>
-
-        {/* Bottom controls */}
-        <div
-          className="
-            pointer-events-none
-            absolute bottom-3 sm:bottom-7 left-0 z-30 w-full
-            px-5 landscape:px-8 sm:px-8 lg:px-12
-          "
-        >
-          <div className="mx-auto flex max-w-[1440px] items-center justify-between">
-            <p className="text-[10px] uppercase tracking-[0.22em] text-white/40 sm:text-xs">
-              Scroll to explore
-            </p>
-
-            <div className="flex items-center gap-3">
-              <div className="h-px w-20 overflow-hidden bg-white/15 sm:w-32">
-                <motion.div
-                  style={{
-                    scaleX: scrollYProgress,
-                    transformOrigin: "left",
-                  }}
-                  className="h-full w-full bg-[#f58220]"
-                />
-              </div>
-
-              <motion.div style={{ rotate: arrowRotate }}>
-                <ArrowRight className="size-4 text-white/50" />
-              </motion.div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-  );
-}
 
 /* =============================================================
-   SERVICE CARD
+   SERVICE SCROLL CARD
 ============================================================= */
 
-function ServiceParallaxCard({
+
+
+
+function ServiceScrollCard({
   service,
   index,
-  scrollProgress,
 }: {
   service: (typeof SERVICES)[number];
   index: number;
-  scrollProgress: ReturnType<typeof useScroll>["scrollYProgress"];
 }) {
-  const img =
-    index === 0
-      ? marineboiler
-      : index === 1
-        ? boiler
-        : index === 2
-          ? biomass
-          : index === 3
-            ? solarpanel
-            : spareparts;
+  const cardRef = useRef<HTMLElement>(null);
 
-  const cardStart = index * 0.18;
-  const cardEnd = Math.min(cardStart + 0.28, 1);
+  const { scrollYProgress } = useScroll({
+    target: cardRef,
+    offset: ["start end", "end start"],
+  });
 
-  const cardScale = useTransform(
-    scrollProgress,
-    [Math.max(0, cardStart - 0.12), cardStart, cardEnd, Math.min(1, cardEnd + 0.12)],
-    [0.94, 1, 1, 0.94],
+  const scale = useTransform(
+    scrollYProgress,
+    [0, 0.5, 1],
+    [0.97, 1, 0.97],
   );
 
-  const cardOpacity = useTransform(
-    scrollProgress,
-    [Math.max(0, cardStart - 0.1), cardStart, cardEnd, Math.min(1, cardEnd + 0.1)],
-    [0.72, 1, 1, 0.72],
+  const opacity = useTransform(
+    scrollYProgress,
+    [0, 0.15, 0.85, 1],
+    [0.8, 1, 1, 0.8],
   );
 
-  const imageX = useTransform(scrollProgress, [0, 1], [index * -25, index * 25]);
-
-  const imageScale = useTransform(scrollProgress, [0, 1], [1.08, 1.16]);
+  const image = serviceImages[index % serviceImages.length];
 
   return (
-    <motion.div
-      style={{
-        scale: cardScale,
-        opacity: cardOpacity,
-      }}
+    <motion.article
+      ref={cardRef}
+      style={{ scale, opacity }}
       className="
-        h-[30vh]
-        min-h-[170px]
-        landscape:h-[50vh]
-        landscape:min-h-[180px]
-        w-[82vw]
-        landscape:w-[50vw]
-        max-w-[1080px]
-        shrink-0
-        will-change-transform
-        sm:h-[45vh]
-        lg:h-[48vh]
-        lg:w-[40vw]
+        group relative mx-auto w-full min-w-0 max-w-5xl
+        overflow-hidden rounded-2xl sm:rounded-3xl
+        border border-white/10 bg-[#061a34]
+        shadow-[0_16px_45px_rgba(0,0,0,0.2)]
       "
     >
+      {/* Entire image is clickable */}
       <Link
         to={service.href}
+        aria-label={`View ${service.title} services`}
         className="
-          group
-          relative
-          block
-          h-full
-          w-full
-          overflow-hidden
-          rounded-[30px]
-          bg-white
-          sm:rounded-[34px]
-          lg:rounded-[40px]
-        "
+  group/image relative isolate block
+  h-[190px] w-full overflow-hidden
+  rounded-2xl
+  focus-visible:outline-none
+  focus-visible:ring-2 focus-visible:ring-inset
+  focus-visible:ring-[#f58220]
+  sm:h-[300px]
+  sm:rounded-3xl
+  md:h-[360px]
+  lg:h-[440px]
+  xl:h-[480px]
+"
       >
-        {/* Image */}
-        <motion.img
-          src={img}
+        <img
+          src={image}
           alt={service.title}
           loading={index === 0 ? "eager" : "lazy"}
-          style={{
-            x: index === 4 ? 0 : imageX,
-            scale: index === 4 ? 1 : imageScale,
-          }}
-          className={`
-    absolute
-    inset-0
-    h-full
-    w-full
-    ${index === 4 ? "object-contain p-0" : "object-contain p-8 sm:p-10 lg:p-14"}
-  `}
+          className="
+            absolute inset-0 block h-full w-full
+            object-cover object-center
+            transition-transform duration-700 ease-out
+            group-hover/image:scale-[1.03]
+          "
         />
 
-        {/* Service Name + Button */}
         <div
+          aria-hidden="true"
           className="
-            absolute
-            inset-x-6
-            bottom-6
-            z-10
-            sm:inset-x-8
-            sm:bottom-8
-            lg:inset-x-10
-            lg:bottom-10
+            pointer-events-none absolute inset-0
+            bg-gradient-to-t from-[#061a34]/25 to-transparent
           "
-        >
-          <div className="max-w-3xl">
-            <span
-              className="
-    mt-6
-    inline-flex
-    items-center
-    gap-3
-    rounded-full
-    border
-    border-[#294f8f]
-    bg-[#294f8f]
-    px-5
-    py-3
-    text-sm
-    font-semibold
-    text-white
-    shadow-sm
-    transition-all
-    duration-300
-    group-hover:border-[#f58220]
-    group-hover:bg-[#f58220]
-    group-hover:text-white
-    group-hover:shadow-lg
-  "
-            >
-              Explore service
-              <ArrowRight
-                className="
-      size-4
-      transition-transform
-      duration-300
-      group-hover:translate-x-1
-    "
-              />
-            </span>
-          </div>
-        </div>
+        />
       </Link>
-    </motion.div>
+
+      {/* Separate animated arrow link */}
+      <Link
+        to={service.href}
+        aria-label={`Explore ${service.title}`}
+        className="
+          group/button absolute bottom-2 right-2 z-10
+          flex size-10 items-center justify-center
+          rounded-full bg-[#f58220] text-white
+          shadow-[0_6px_20px_rgba(245,130,32,0.35)]
+          transition-all duration-300 ease-out
+          hover:scale-110 hover:bg-[#ff963d]
+          hover:shadow-[0_10px_28px_rgba(245,130,32,0.5)]
+          focus-visible:outline-none
+          focus-visible:ring-2 focus-visible:ring-white
+          sm:bottom-6 sm:right-6 sm:size-[76px]
+          md:size-[84px]
+        "
+      >
+        <span
+          aria-hidden="true"
+          className="
+            pointer-events-none absolute inset-[-3px]
+            rounded-full border-2 border-transparent
+            border-t-white border-r-white/70
+            animate-spin [animation-duration:2.5s]
+            motion-reduce:animate-none
+          "
+        />
+
+        <ArrowRight
+          className="
+            size-5 transition-transform duration-300 ease-out
+            group-hover/button:rotate-[-45deg]
+            sm:size-8
+          "
+        />
+
+        <span className="sr-only">Explore service</span>
+      </Link>
+    </motion.article>
   );
 }
+
+
+
+
+/* =============================================================
+   SERVICES SECTION + RIGHT-SIDE NAVIGATION
+============================================================= */
+
+
+function ServicesParallax() {
+  const [activeService, setActiveService] = useState(0);
+  const [isVisible, setIsVisible] = useState(false);
+  const sectionRef = useRef<HTMLElement>(null);
+
+  useEffect(() => {
+    const section = sectionRef.current;
+    if (!section) return;
+
+    let frame = 0;
+
+    const updateNavigation = () => {
+      cancelAnimationFrame(frame);
+
+      frame = requestAnimationFrame(() => {
+        const sectionRect = section.getBoundingClientRect();
+
+        setIsVisible(
+          sectionRect.top < window.innerHeight &&
+          sectionRect.bottom > 0
+        );
+
+        const cards = SERVICES.map((_, index) =>
+          document.getElementById(`service-${index}`)
+        ).filter(Boolean) as HTMLElement[];
+
+        const viewportCenter = window.innerHeight / 2;
+        let nearestIndex = 0;
+        let nearestDistance = Infinity;
+
+        cards.forEach((card, index) => {
+          const rect = card.getBoundingClientRect();
+          const cardCenter = rect.top + rect.height / 2;
+          const distance = Math.abs(cardCenter - viewportCenter);
+
+          if (distance < nearestDistance) {
+            nearestDistance = distance;
+            nearestIndex = index;
+          }
+        });
+
+        setActiveService(nearestIndex);
+      });
+    };
+
+    updateNavigation();
+
+    window.addEventListener("scroll", updateNavigation, {
+      passive: true,
+    });
+    window.addEventListener("resize", updateNavigation);
+
+    return () => {
+      cancelAnimationFrame(frame);
+      window.removeEventListener("scroll", updateNavigation);
+      window.removeEventListener("resize", updateNavigation);
+    };
+  }, []);
+
+  return (
+    <>
+      <section
+  id="solutions"
+  className="
+    relative w-full min-w-0 overflow-x-clip
+    bg-[#061a34] px-3 py-10 text-white
+    sm:px-6 sm:py-14
+    lg:px-12 lg:py-20
+  "
+>
+        <div className="mx-auto max-w-7xl">
+          {/* Section heading */}
+          <div className="mb-8 sm:mb-12">
+            <p className="eyebrow text-accent !text-base font-semibold uppercase tracking-[0.2em] sm:!text-base lg:!text-lg sm:tracking-[0.25em]">
+              Our Solutions
+            </p>
+          </div>
+
+          {/* Service cards */}
+          <div className="flex min-w-0 flex-col gap-8 sm:gap-12 lg:gap-16">
+  {SERVICES.map((service, index) => (
+    <div
+      key={service.href}
+      id={`service-${index}`}
+      className="w-full min-w-0 scroll-mt-24"
+    >
+      <ServiceScrollCard
+        service={service}
+        index={index}
+      />
+    </div>
+  ))}
+</div>
+        </div>
+      </section>
+
+      {/* Dots-only navigation */}
+      
+    </>
+  );
+}
+
 
 /* =========================================================
    TYPEWRITER TEXT
@@ -734,151 +682,143 @@ function AboutText({
 
   const opacity = useTransform(scrollProgress, [0, 0.25, 0.65, 1], [0, 0.35, 0.85, 1]);
 
-  return (
-    <motion.div
-      ref={inViewRef}
-      style={{ x, opacity }}
-      className="relative z-20 w-full max-w-2xl lg:pr-8 lg:translate-x-4"
+  
+return (
+  <motion.div
+    ref={inViewRef}
+    style={{ x, opacity }}
+    className="relative z-20 w-full max-w-2xl lg:max-w-none lg:pr-8 lg:translate-x-4"
+  >
+    <p className="eyebrow text-accent !text-base font-semibold uppercase tracking-[0.2em] sm:!text-base lg:!text-lg sm:tracking-[0.25em]">
+      About Mercury
+    </p>
+
+    <h2
+      className="
+        mt-3 max-w-3xl text-3xl font-semibold leading-[1.08] tracking-tight text-white sm:text-4xl md:text-4xl lg:text-5xl xl:text-5xl
+      "
+      
+      aria-label={`${headlineText}.`}
     >
-      <p className="eyebrow text-accent !text-base font-semibold uppercase tracking-[0.2em] sm:!text-base sm:tracking-[0.25em]">
-        About Mercury
-      </p>
+      <span>{hasAnimated ? headlineText : headline}</span>
+      {(hasAnimated || headline === headlineText) && (
+        <span className="text-[#f58220]">.</span>
+      )}
 
-      <h2
-  className="
-    mt-2
-    landscape:mt-1
-    sm:mt-3
-    min-h-0
-    landscape:min-h-0
-    sm:min-h-[2.4em]
-    lg:min-h-[3.2em]
-    max-w-xl
-    text-2xl
-    landscape:text-2xl
-    sm:text-5xl
-    lg:text-6xl
-    font-semibold
-    leading-[1.12]
-    tracking-tight
-    text-white
-  "
-  aria-label={`${headlineText}.`}
->
-  <span>{hasAnimated ? headlineText : headline}</span>
-  {(hasAnimated || headline === headlineText) && <span className="text-[#f58220]">.</span>}
+      {!hasAnimated && isInView && headline !== headlineText && (
+        <span
+          aria-hidden="true"
+          className="ml-1 inline-block h-[0.8em] w-[2px] animate-pulse bg-[#f58220] align-baseline"
+        />
+      )}
+    </h2>
 
-  {!hasAnimated && isInView && headline !== headlineText && (
-    <span
-      aria-hidden="true"
-      className="ml-1 inline-block h-[0.8em] w-[2px] animate-pulse bg-[#f58220] align-baseline"
-    />
-  )}
-</h2>
+    <p
+      className="
+        mt-2
+        landscape:mt-2
+        sm:mt-4
+        min-h-0
+        landscape:min-h-0
+        sm:min-h-[10rem]
+        lg:min-h-[12rem]
+        max-w-xl
+        text-xs
+        landscape:text-xs
+        sm:text-lg
+        lg:text-xl
+        leading-5
+        landscape:leading-5
+        sm:leading-8
+        lg:leading-9
+        text-white/70
+      "
+      aria-label={descriptionText}
+    >
+      {hasAnimated ? descriptionText : description}
 
-<p
-  className="
-    mt-2
-    landscape:mt-2
-    sm:mt-4
-    min-h-0
-    landscape:min-h-0
-    sm:min-h-[10rem]
-    lg:min-h-[12rem]
-    max-w-xl
-    text-xs
-    landscape:text-xs
-    sm:text-lg
-    leading-5
-    landscape:leading-5
-    sm:leading-8
-    text-white/70
-  "
-  aria-label={descriptionText}
->
-  {hasAnimated ? descriptionText : description}
+      {!hasAnimated &&
+        headline === headlineText &&
+        isInView &&
+        description !== descriptionText && (
+          <span
+            aria-hidden="true"
+            className="ml-1 inline-block h-[0.8em] w-[2px] animate-pulse bg-[#f58220] align-baseline"
+          />
+        )}
+    </p>
 
-  {!hasAnimated &&
-    headline === headlineText &&
-    isInView &&
-    description !== descriptionText && (
-      <span
-        aria-hidden="true"
-        className="ml-1 inline-block h-[0.8em] w-[2px] animate-pulse bg-[#f58220] align-baseline"
-      />
-    )}
-</p>
+    <Link
+      to="/about"
+      onClick={(e) => {
+        e.preventDefault();
 
-      <Link
-        to="/about"
-        onClick={(e) => {
-          e.preventDefault();
+        if (document.getElementById("page-transition-overlay")) return;
 
-          if (document.getElementById("page-transition-overlay")) return;
+        const button = e.currentTarget;
+        const rect = button.getBoundingClientRect();
+        const x = rect.left + rect.width / 2;
+        const y = rect.top + rect.height / 2;
 
-          const button = e.currentTarget;
-          const rect = button.getBoundingClientRect();
-          const x = rect.left + rect.width / 2;
-          const y = rect.top + rect.height / 2;
+        const overlay = document.createElement("div");
+        overlay.id = "page-transition-overlay";
 
-          const overlay = document.createElement("div");
-          overlay.id = "page-transition-overlay";
+        Object.assign(overlay.style, {
+          position: "fixed",
+          inset: "0",
+          background: "#f58220",
+          zIndex: "99999",
+          clipPath: `circle(0px at ${x}px ${y}px)`,
+          transition: "clip-path 850ms cubic-bezier(0.76, 0, 0.24, 1)",
+          pointerEvents: "none",
+        });
 
-          Object.assign(overlay.style, {
-            position: "fixed",
-            inset: "0",
-            background: "#f58220",
-            zIndex: "99999",
-            clipPath: `circle(0px at ${x}px ${y}px)`,
-            transition: "clip-path 850ms cubic-bezier(0.76, 0, 0.24, 1)",
-            pointerEvents: "none",
+        document.body.appendChild(overlay);
+
+        const radius = Math.hypot(
+          Math.max(x, window.innerWidth - x),
+          Math.max(y, window.innerHeight - y)
+        );
+
+        requestAnimationFrame(() => {
+          requestAnimationFrame(() => {
+            overlay.style.clipPath = `circle(${radius}px at ${x}px ${y}px)`;
           });
+        });
 
-          document.body.appendChild(overlay);
-
-          const radius = Math.hypot(
-  Math.max(x, window.innerWidth - x),
-  Math.max(y, window.innerHeight - y)
+        setTimeout(() => {
+          overlay.remove();
+          window.location.assign("/about");
+        }, 850);
+      }}
+      aria-label="Discover our approach"
+      className="
+        mt-4
+        landscape:mt-3
+        sm:mt-8
+        inline-flex
+        h-10
+        w-10
+        landscape:h-10
+        landscape:w-10
+        sm:h-12
+        sm:w-12
+        items-center
+        justify-center
+        rounded-full
+        bg-[#f58220]
+        text-white
+        transition-transform
+        duration-300
+        hover:scale-110
+        active:scale-95
+      "
+    >
+      <ArrowRight className="size-4 sm:size-5 transition-transform duration-300 group-hover:translate-x-1" />
+    </Link>
+  </motion.div>
 );
 
-          requestAnimationFrame(() => {
-            requestAnimationFrame(() => {
-              overlay.style.clipPath = `circle(${radius}px at ${x}px ${y}px)`;
-            });
-          });
-
-          setTimeout(() => {
-            overlay.remove();
-            window.location.assign("/about");
-          }, 850);
-        }}
-       aria-label="Discover our approach"
-  className="
-    mt-4
-    landscape:mt-3
-    sm:mt-8
-    inline-flex
-    h-10
-    w-10
-    landscape:h-10
-    landscape:w-10
-    sm:h-12
-    sm:w-12
-    items-center
-    justify-center
-    rounded-full
-    bg-[#f58220]
-    text-white
-    transition-transform
-    duration-300
-    hover:scale-110
-    active:scale-95
-  "
->
-  <ArrowRight className="size-4 sm:size-5 transition-transform duration-300 group-hover:translate-x-1" />
-      </Link>
-    </motion.div>
-  );
 }
 
 /* =============================================================

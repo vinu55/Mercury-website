@@ -1,3 +1,4 @@
+
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import { Environment, Lightformer, useGLTF } from "@react-three/drei";
@@ -21,13 +22,22 @@ function Sun() {
   const clone = useMemo(() => SkeletonUtils.clone(scene), [scene]);
   const [hovered, setHovered] = useState(false);
 
-  const canvasWidth = useThree((state) => state.size.width);
+  // Responsive sizing based on both canvas width and height
+  const { width: canvasWidth, height: canvasHeight } = useThree(
+  (state) => state.size
+);
 
-  const responsiveScale = THREE.MathUtils.clamp(
-    canvasWidth * 0.00025,
-    0.035,
-    0.26
+const responsiveScale = useMemo(() => {
+  if (canvasWidth < 768) {
+    return 0.18;
+  }
+
+  return THREE.MathUtils.clamp(
+    canvasWidth * 0.00065,
+    0.18,
+    0.75
   );
+}, [canvasWidth]);
 
   // Restore pointer styling on unmount
   useEffect(() => {
@@ -55,6 +65,7 @@ function Sun() {
           material.map.colorSpace = THREE.SRGBColorSpace;
           material.map.needsUpdate = true;
         }
+
         if (material.emissiveMap && material.emissiveMap.image) {
           material.emissiveMap.colorSpace = THREE.SRGBColorSpace;
           material.emissiveMap.needsUpdate = true;
@@ -68,7 +79,10 @@ function Sun() {
           material.envMapIntensity = 0.35;
 
           if (material.emissiveIntensity !== undefined) {
-            material.emissiveIntensity = Math.min(material.emissiveIntensity, 1.2);
+            material.emissiveIntensity = Math.min(
+              material.emissiveIntensity,
+              1.2
+            );
           }
         }
 
@@ -157,6 +171,7 @@ export default function SunScene() {
           position={[0, 5, 0]}
           scale={[10, 10, 1]}
         />
+
         <Lightformer
           intensity={0.4}
           color="#ff4400"

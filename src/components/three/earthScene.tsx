@@ -37,14 +37,14 @@ type PartnerLocation = {
 };
 
 const initialLocations: PartnerLocation[] = [
-  { name: "India", flag: "🇮🇳", lat: -28.05, lon: -138.76, color: "#FF7A00", code: "IND" },
-  { name: "Vietnam", flag: "🇻🇳", lat: -34.42, lon: -177.49, color: "#FFD000", code: "VNM" },
-  { name: "Indonesia", flag: "🇮🇩", lat: -21.96, lon: 170.08, color: "#FFD000", code: "IDN" },
-  { name: "China", flag: "🇨🇳", lat: -50.92, lon: -149.77, color: "#FFD000", code: "CHN" },
-  { name: "Malaysia", flag: "🇲🇾", lat: -23.97, lon: -173.1, color: "#FFD000", code: "MYS" },
-  { name: "Singapore", flag: "🇸🇬", lat: -21.54, lon: -175.81, color: "#FFD000", code: "SGP" },
-  { name: "Germany", flag: "🇩🇪", lat: -33.43, lon: -68.35, color: "#FFD000", code: "DEU" },
-  { name: "Finland", flag: "🇫🇮", lat: -47.13, lon: -68.69, color: "#FFD000", code: "FIN" },
+  { name: "India", flag: "🇮🇳", lat: -28.05, lon: -138.76, color: "#FF7A00", code: "India" },
+  { name: "Vietnam", flag: "🇻🇳", lat: -34.42, lon: -177.49, color: "#FFD000", code: "Vietnam" },
+  { name: "Indonesia", flag: "🇮🇩", lat: -21.96, lon: 170.08, color: "#FFD000", code: "Indonesia" },
+  { name: "China", flag: "🇨🇳", lat: -50.92, lon: -149.77, color: "#FFD000", code: "China" },
+  { name: "Malaysia", flag: "🇲🇾", lat: -23.97, lon: -173.1, color: "#FFD000", code: "Malaysia" },
+  { name: "Singapore", flag: "🇸🇬", lat: -21.54, lon: -175.81, color: "#FFD000", code: "Singapore" },
+  { name: "Germany", flag: "🇩🇪", lat: -33.43, lon: -68.35, color: "#FFD000", code: "Germany" },
+  { name: "Finland", flag: "🇫🇮", lat: -47.13, lon: -68.69, color: "#FFD000", code: "Finland" },
 ];
 
 function latLonToVector(lat: number, lon: number, radius: number) {
@@ -56,6 +56,28 @@ function latLonToVector(lat: number, lon: number, radius: number) {
     radius * Math.cos(phi),
     radius * Math.sin(phi) * Math.sin(theta),
   );
+}
+
+// Compute initial rotation facing India directly
+function getIndiaTargetQuaternion(baseQuat: THREE.Quaternion) {
+  const india = initialLocations.find((loc) => loc.name === "India")!;
+  const markerPosition = latLonToVector(
+    india.lat,
+    india.lon,
+    GLOBE_RADIUS * 1.025,
+  ).normalize();
+
+  const markerWorldDirection = markerPosition
+    .clone()
+    .applyQuaternion(baseQuat)
+    .normalize();
+
+  const targetRotation = new THREE.Quaternion().setFromUnitVectors(
+    markerWorldDirection,
+    new THREE.Vector3(0, 0, 1),
+  );
+
+  return targetRotation.multiply(baseQuat);
 }
 
 type GlobeModelProps = {
@@ -74,10 +96,6 @@ function GlobeModel({
   focusRequest,
 }: GlobeModelProps) {
   const { scene } = useGLTF(GLOBE_PATH);
-  const targetQuaternion = useRef(new THREE.Quaternion());
-  const focusProgress = useRef(1);
-  const pauseRemaining = useRef(0);
-  const lastFocusRequest = useRef(focusRequest);
 
   const baseQuaternion = useMemo(
     () =>
@@ -91,6 +109,15 @@ function GlobeModel({
       ),
     [],
   );
+
+  const indiaDefaultQuaternion = useMemo(
+    () => getIndiaTargetQuaternion(baseQuaternion),
+    [baseQuaternion],
+  );
+
+  const targetQuaternion = useRef(indiaDefaultQuaternion.clone());
+  const focusProgress = useRef(1);
+  const lastFocusRequest = useRef(focusRequest);
 
   const model = useMemo(() => {
     const clone = SkeletonUtils.clone(scene);
@@ -135,6 +162,13 @@ function GlobeModel({
     });
   }, [model]);
 
+  // Set initial position to India on load
+  useEffect(() => {
+    if (groupRef.current) {
+      groupRef.current.quaternion.copy(indiaDefaultQuaternion);
+    }
+  }, [indiaDefaultQuaternion, groupRef]);
+
   useFrame((_, delta) => {
     const group = groupRef.current;
     if (!group) return;
@@ -168,12 +202,12 @@ function GlobeModel({
           .multiply(baseQuaternion);
 
         focusProgress.current = 0;
-        pauseRemaining.current = 1.5;
       }
     }
 
     const frameDelta = Math.min(delta, 0.05);
 
+    // Smooth transition when a location card is clicked
     if (focusProgress.current < 1) {
       focusProgress.current = Math.min(
         1,
@@ -186,25 +220,16 @@ function GlobeModel({
         (3 - 2 * focusProgress.current);
 
       group.quaternion.slerp(targetQuaternion.current, eased);
-      return;
     }
-
-    if (pauseRemaining.current > 0) {
-      pauseRemaining.current = Math.max(
-        0,
-        pauseRemaining.current - frameDelta,
-      );
-      return;
-    }
-
-    group.rotation.y += frameDelta * 0.025;
+    // Auto-rotation disabled so India stays focused
   });
 
   return (
-    <group ref={groupRef} quaternion={baseQuaternion}>
+    <group ref={groupRef} quaternion={indiaDefaultQuaternion}>
       <primitive object={model} />
 
       {initialLocations.map((location) => {
+        // Fixed operator syntax
         const position = latLonToVector(
           location.lat,
           location.lon,
@@ -302,7 +327,6 @@ function LoadingGlobe() {
     <Html center>
       <div className="flex flex-col items-center gap-3 whitespace-nowrap">
         <div className="size-9 animate-spin rounded-full border-2 border-slate-300 border-t-[#F58220]" />
-
         <p className="text-xs font-medium text-[#061A34]">
           {errors.length > 0
             ? "Unable to load Earth"
@@ -320,8 +344,9 @@ type EarthSceneProps = {
 export default function EarthScene({
   focusCountries = [],
 }: EarthSceneProps) {
-  const [selected, setSelected] = useState<string | null>(null);
-  const [labelCountry, setLabelCountry] = useState<string | null>(null);
+  // India selected and labeled by default on initial render
+  const [selected, setSelected] = useState<string | null>("India");
+  const [labelCountry, setLabelCountry] = useState<string | null>("India");
   const [focusRequest, setFocusRequest] = useState(0);
   const groupRef = useRef<THREE.Group>(null);
   const previousFocus = useRef("");
@@ -337,7 +362,7 @@ export default function EarthScene({
 
     const timer = window.setTimeout(() => {
       setLabelCountry(null);
-    }, 2000);
+    }, 2800);
 
     return () => window.clearTimeout(timer);
   }, [labelCountry]);
@@ -359,46 +384,47 @@ export default function EarthScene({
   }, [focusCountries]);
 
   return (
-    <section className="mx-auto w-full">
-      <div className="relative mx-auto h-[360px] w-full max-w-[1200px] overflow-hidden touch-none sm:h-[440px] md:h-[520px] lg:h-[600px]">
-        <Canvas
-          camera={{ position: [0, 0, 2.7], fov: 42 }}
-          dpr={[1, 1.5]}
-          gl={{ alpha: true, antialias: true, powerPreference: "high-performance" }}
-        >
-          <ambientLight intensity={1.7} />
-          <directionalLight position={[4, 3, 5]} intensity={2.4} />
-          <pointLight
-            position={[-3, -2, -3]}
-            color="#294F8F"
-            intensity={3}
-          />
+  <section className="mx-auto w-full">
+    {/* 
+      - Mobile: Fixed ~420px to 460px 
+      - Tablet/Desktop (md/lg/xl): Expands up to 640px - 720px
+    */}
+    <div className="relative mx-auto h-[420px] w-[420px] max-w-full overflow-hidden sm:h-[460px] sm:w-[460px] md:h-[560px] md:w-[560px] lg:h-[650px] lg:w-[650px] xl:h-[720px] xl:w-[720px]">
+      <Canvas
+        camera={{ position: [0, 0, 2.7], fov: 42 }}
+        dpr={[1, 1.5]}
+        gl={{ alpha: true, antialias: true, powerPreference: "high-performance" }}
+      >
+        <ambientLight intensity={1.7} />
+        <directionalLight position={[4, 3, 5]} intensity={2.4} />
+        <pointLight
+          position={[-3, -2, -3]}
+          color="#294F8F"
+          intensity={3}
+        />
 
-          <Suspense fallback={<LoadingGlobe />}>
-            <GlobeModel
-              selected={selected}
-              labelCountry={labelCountry}
-              onSelectCountry={selectCountry}
-              groupRef={groupRef}
-              focusRequest={focusRequest}
-            />
-          </Suspense>
-
-          <OrbitControls
-            enablePan={false}
-            enableRotate
-            enableZoom
-            minDistance={1.8}
-            maxDistance={4.8}
-            rotateSpeed={0.55}
-            zoomSpeed={0.7}
-            enableDamping
-            dampingFactor={0.08}
+        <Suspense fallback={<LoadingGlobe />}>
+          <GlobeModel
+            selected={selected}
+            labelCountry={labelCountry}
+            onSelectCountry={selectCountry}
+            groupRef={groupRef}
+            focusRequest={focusRequest}
           />
-        </Canvas>
-      </div>
-    </section>
-  );
+        </Suspense>
+
+        <OrbitControls
+          enablePan={false}
+          enableRotate
+          enableZoom={false} // Still prevents unwanted scroll zooming
+          rotateSpeed={0.55}
+          enableDamping
+          dampingFactor={0.08}
+        />
+      </Canvas>
+    </div>
+  </section>
+);
 }
 
 useGLTF.preload(GLOBE_PATH);

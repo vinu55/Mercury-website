@@ -62,11 +62,11 @@ const contactItems = [
     detail: "Contact our Europe team",
   },
   {
-    label: "South Europe",
+    label: "South East Asia",
     value: "+84 39 244 1615",
     href: "tel:+84392441615",
     icon: Phone,
-    detail: "Contact our South Europe team",
+    detail: "Contact our South East Asia team",
   },
   {
     label: "Email",
