@@ -49,7 +49,7 @@ export const Route = createRootRouteWithContext<{
   }),
 
   shellComponent: ({ children }: { children: ReactNode }) => (
-    <html lang="en">
+    <html lang="en" translate="no" className="notranslate">
       <head>
         <HeadContent />
       </head>
@@ -78,11 +78,18 @@ export const Route = createRootRouteWithContext<{
 function Root() {
   const { queryClient } = Route.useRouteContext();
 
-
-  // Clean up page-reveal elements during browser navigation.
+  // Clean up page-reveal elements safely without breaking React DOM reconciliation
   useEffect(() => {
     const cleanupReveal = () => {
-      document.querySelectorAll("[data-page-reveal]").forEach((element) => element.remove());
+      document.querySelectorAll("[data-page-reveal]").forEach((element) => {
+        if (element.parentNode) {
+          try {
+            element.parentNode.removeChild(element);
+          } catch {
+            // Suppress error if React or another listener already unmounted it
+          }
+        }
+      });
     };
 
     window.addEventListener("pageshow", cleanupReveal);
