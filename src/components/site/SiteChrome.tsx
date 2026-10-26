@@ -462,8 +462,6 @@ export function Header() {
             </div>
           </div>
         </div>
-
-        <div className="h-1 shrink-0 bg-gradient-to-r from-[#f58220] via-[#f58220]/40 to-transparent" />
       </motion.div>
     </SheetContent>
   </Sheet>
