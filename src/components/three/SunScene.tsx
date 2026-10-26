@@ -1,13 +1,25 @@
-
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import { useGLTF } from "@react-three/drei";
 import { SkeletonUtils } from "three-stdlib";
 import * as THREE from "three";
 
+// Silence Three.js Clock deprecation warning
+if (typeof window !== "undefined") {
+  const originalWarn = console.warn;
+  console.warn = (...args) => {
+    if (typeof args[0] === "string" && (args[0].includes("THREE.Clock") || args[0].includes("deprecated"))) {
+      return;
+    }
+    originalWarn(...args);
+  };
+}
+
+const SUN_PATH = "/models/sun.glb";
+
 function Sun() {
   const group = useRef<THREE.Group>(null);
-  const { scene } = useGLTF("/models/sun.glb");
+  const { scene } = useGLTF(SUN_PATH);
   const clone = useMemo(() => SkeletonUtils.clone(scene), [scene]);
   const [hovered, setHovered] = useState(false);
 
@@ -38,9 +50,14 @@ function Sun() {
       object.castShadow = true;
       object.receiveShadow = true;
 
-      // Preserve the model's original materials and textures.
-      // Do not overwrite material colours, roughness,
-      // emissive intensity, or texture color spaces.
+      const materials = Array.isArray(object.material)
+        ? object.material
+        : [object.material];
+
+      materials.forEach((material) => {
+        material.side = THREE.FrontSide;
+        material.needsUpdate = true;
+      });
     });
   }, [clone]);
 
@@ -89,7 +106,7 @@ function Sun() {
 export default function SunScene() {
   return (
     <Canvas
-      dpr={[1, 2]}
+      dpr={[1, 1.5]}
       camera={{ position: [0, 0, 7], fov: 45 }}
       gl={{
         antialias: true,
@@ -101,12 +118,12 @@ export default function SunScene() {
         document.body.style.cursor = "";
       }}
     >
-      <ambientLight intensity={0.8} />
-      <directionalLight position={[4, 5, 5]} intensity={1.2} />
+      <ambientLight intensity={0.9} />
+      <directionalLight position={[4, 5, 5]} intensity={1.4} />
 
       <Sun />
     </Canvas>
   );
 }
 
-useGLTF.preload("/models/sun.glb");
+useGLTF.preload(SUN_PATH);
