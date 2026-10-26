@@ -4,7 +4,7 @@ import { Environment, Lightformer, useGLTF } from "@react-three/drei";
 import { SkeletonUtils } from "three-stdlib";
 import * as THREE from "three";
 
-// Filter out vendor-level THREE.Clock deprecation warnings from the console
+// Filter out vendor-level THREE.Clock deprecation warnings
 if (typeof window !== "undefined") {
   const originalWarn = console.warn;
   console.warn = (...args) => {
@@ -15,21 +15,42 @@ if (typeof window !== "undefined") {
   };
 }
 
+const SUN_PATH = "/models/sun.glb";
+const DRACO_PATH = "/draco/";
+
 function Sun() {
   const group = useRef<THREE.Group>(null);
-  const { scene } = useGLTF("/models/sun.glb");
-  const clone = useMemo(() => SkeletonUtils.clone(scene), [scene]);
+  
+  // 1. Pass local draco path
+  const { scene } = useGLTF(SUN_PATH, DRACO_PATH);
   const [hovered, setHovered] = useState(false);
+
+  // 2. Clone and center the bounding box to (0,0,0)
+  const clone = useMemo(() => {
+    const cloned = SkeletonUtils.clone(scene);
+    const box = new THREE.Box3().setFromObject(cloned);
+    const center = box.getCenter(new THREE.Vector3());
+    const size = box.getSize(new THREE.Vector3());
+    const maxDim = Math.max(size.x, size.y, size.z);
+
+    if (maxDim > 0) {
+      // Normalize model to a standard dimension of ~2.4 units
+      const scaleMultiplier = 2.4 / maxDim;
+      cloned.scale.setScalar(scaleMultiplier);
+      cloned.position.copy(center).multiplyScalar(-scaleMultiplier);
+    }
+    return cloned;
+  }, [scene]);
 
   const canvasWidth = useThree((state) => state.size.width);
 
-  const responsiveScale = THREE.MathUtils.clamp(
-    canvasWidth * 0.00025,
-    0.035,
-    0.26
-  );
+  // 3. Normalized responsive scale
+  const responsiveScale = useMemo(() => {
+    if (canvasWidth < 640) return 0.85;
+    if (canvasWidth < 1024) return 1.05;
+    return 1.25;
+  }, [canvasWidth]);
 
-  // Restore pointer styling on unmount
   useEffect(() => {
     return () => {
       document.body.style.cursor = "";
@@ -65,10 +86,10 @@ function Sun() {
           material instanceof THREE.MeshPhysicalMaterial
         ) {
           material.roughness = Math.max(material.roughness, 0.4);
-          material.envMapIntensity = 0.35;
+          material.envMapIntensity = 0.8;
 
           if (material.emissiveIntensity !== undefined) {
-            material.emissiveIntensity = Math.min(material.emissiveIntensity, 1.2);
+            material.emissiveIntensity = Math.max(material.emissiveIntensity || 1, 1.2);
           }
         }
 
@@ -84,7 +105,7 @@ function Sun() {
     const frameDelta = Math.min(delta, 0.05);
     const easing = 1 - Math.exp(-3 * frameDelta);
 
-    current.rotation.y -= frameDelta * (hovered ? 0.55 : 0.18);
+    current.rotation.y -= frameDelta * (hovered ? 0.45 : 0.16);
 
     current.rotation.x = THREE.MathUtils.lerp(
       current.rotation.x,
@@ -103,7 +124,6 @@ function Sun() {
     <group
       ref={group}
       scale={responsiveScale}
-      position={[0, 0, 0]}
       onPointerEnter={(event) => {
         event.stopPropagation();
         setHovered(true);
@@ -123,27 +143,27 @@ export default function SunScene() {
   return (
     <div className="relative h-full w-full" key="sun-canvas-container">
       <Canvas
-        dpr={[1, 2]}
-        camera={{ position: [0, 0, 7], fov: 45 }}
+        dpr={[1, 1.5]}
+        camera={{ position: [0, 0, 4.5], fov: 45 }}
         gl={{
           antialias: true,
           alpha: true,
           powerPreference: "high-performance",
           toneMapping: THREE.ACESFilmicToneMapping,
-          toneMappingExposure: 0.8,
+          toneMappingExposure: 1.1,
           outputColorSpace: THREE.SRGBColorSpace,
         }}
         onPointerMissed={() => {
           document.body.style.cursor = "";
         }}
       >
-        <ambientLight intensity={0.25} color="#ffeedd" />
-        <directionalLight position={[4, 5, 5]} intensity={0.8} color="#ff9944" />
-        <pointLight position={[-4, -1, 3]} intensity={0.5} color="#ff4411" />
+        <ambientLight intensity={1.8} color="#ffeedd" />
+        <directionalLight position={[4, 5, 5]} intensity={2.5} color="#ff9944" />
+        <pointLight position={[-4, -1, 3]} intensity={2.0} color="#ff4411" />
 
         <Environment resolution={256}>
-          <Lightformer intensity={0.8} color="#ff8833" position={[0, 5, 0]} scale={[10, 10, 1]} />
-          <Lightformer intensity={0.4} color="#ff4400" position={[-5, 1, -1]} rotation-y={Math.PI / 2} scale={[20, 2, 1]} />
+          <Lightformer intensity={1.5} color="#ff8833" position={[0, 5, 0]} scale={[10, 10, 1]} />
+          <Lightformer intensity={1.0} color="#ff4400" position={[-5, 1, -1]} rotation-y={Math.PI / 2} scale={[20, 2, 1]} />
         </Environment>
 
         <Sun />
@@ -152,4 +172,4 @@ export default function SunScene() {
   );
 }
 
-useGLTF.preload("/models/sun.glb");
+useGLTF.preload(SUN_PATH, DRACO_PATH);
