@@ -1,20 +1,9 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
-import { Environment, Lightformer, useGLTF } from "@react-three/drei";
+import { useGLTF } from "@react-three/drei";
 import { SkeletonUtils } from "three-stdlib";
 import * as THREE from "three";
-
-// Filter out vendor-level THREE.Clock deprecation warnings from the console
-if (typeof window !== "undefined") {
-  const originalWarn = console.warn;
-  console.warn = (...args) => {
-    if (typeof args[0] === "string" && args[0].includes("THREE.Clock")) {
-      return;
-    }
-    originalWarn(...args);
-  };
-}
 
 function Sun() {
   const group = useRef<THREE.Group>(null);
@@ -22,24 +11,20 @@ function Sun() {
   const clone = useMemo(() => SkeletonUtils.clone(scene), [scene]);
   const [hovered, setHovered] = useState(false);
 
-  // Responsive sizing based on both canvas width and height
-  const { width: canvasWidth, height: canvasHeight } = useThree(
-  (state) => state.size
-);
+  const { width: canvasWidth } = useThree((state) => state.size);
 
-const responsiveScale = useMemo(() => {
-  if (canvasWidth < 768) {
-    return 0.18;
-  }
+  const responsiveScale = useMemo(() => {
+    if (canvasWidth < 768) {
+      return 0.18;
+    }
 
-  return THREE.MathUtils.clamp(
-    canvasWidth * 0.00065,
-    0.18,
-    0.75
-  );
-}, [canvasWidth]);
+    return THREE.MathUtils.clamp(
+      canvasWidth * 0.00065,
+      0.18,
+      0.75
+    );
+  }, [canvasWidth]);
 
-  // Restore pointer styling on unmount
   useEffect(() => {
     return () => {
       document.body.style.cursor = "";
@@ -53,41 +38,9 @@ const responsiveScale = useMemo(() => {
       object.castShadow = true;
       object.receiveShadow = true;
 
-      const materials = Array.isArray(object.material)
-        ? object.material
-        : [object.material];
-
-      materials.forEach((material) => {
-        if (!material) return;
-        material.side = THREE.FrontSide;
-
-        if (material.map && material.map.image) {
-          material.map.colorSpace = THREE.SRGBColorSpace;
-          material.map.needsUpdate = true;
-        }
-
-        if (material.emissiveMap && material.emissiveMap.image) {
-          material.emissiveMap.colorSpace = THREE.SRGBColorSpace;
-          material.emissiveMap.needsUpdate = true;
-        }
-
-        if (
-          material instanceof THREE.MeshStandardMaterial ||
-          material instanceof THREE.MeshPhysicalMaterial
-        ) {
-          material.roughness = Math.max(material.roughness, 0.4);
-          material.envMapIntensity = 0.35;
-
-          if (material.emissiveIntensity !== undefined) {
-            material.emissiveIntensity = Math.min(
-              material.emissiveIntensity,
-              1.2
-            );
-          }
-        }
-
-        material.needsUpdate = true;
-      });
+      // Preserve the model's original materials and textures.
+      // Do not overwrite material colours, roughness,
+      // emissive intensity, or texture color spaces.
     });
   }, [clone]);
 
@@ -142,44 +95,14 @@ export default function SunScene() {
         antialias: true,
         alpha: true,
         powerPreference: "high-performance",
-        toneMapping: THREE.ACESFilmicToneMapping,
-        toneMappingExposure: 0.8,
         outputColorSpace: THREE.SRGBColorSpace,
       }}
       onPointerMissed={() => {
         document.body.style.cursor = "";
       }}
     >
-      <ambientLight intensity={0.25} color="#ffeedd" />
-
-      <directionalLight
-        position={[4, 5, 5]}
-        intensity={0.8}
-        color="#ff9944"
-      />
-
-      <pointLight
-        position={[-4, -1, 3]}
-        intensity={0.5}
-        color="#ff4411"
-      />
-
-      <Environment resolution={256}>
-        <Lightformer
-          intensity={0.8}
-          color="#ff8833"
-          position={[0, 5, 0]}
-          scale={[10, 10, 1]}
-        />
-
-        <Lightformer
-          intensity={0.4}
-          color="#ff4400"
-          position={[-5, 1, -1]}
-          rotation-y={Math.PI / 2}
-          scale={[20, 2, 1]}
-        />
-      </Environment>
+      <ambientLight intensity={0.8} />
+      <directionalLight position={[4, 5, 5]} intensity={1.2} />
 
       <Sun />
     </Canvas>
