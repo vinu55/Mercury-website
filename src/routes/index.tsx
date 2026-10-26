@@ -211,6 +211,10 @@ function Home() {
     className="
       mx-auto
       grid
+      grid-cols-1
+      landscape:grid-cols-[1.1fr_0.9fr]
+      landscape:items-center
+      landscape:min-h-[380px]
       min-h-0
       max-w-[1440px]
       items-center
@@ -223,20 +227,13 @@ function Home() {
       lg:py-24
     "
   >
-          {/* =====================================================
-              LEFT — ABOUT TEXT
-          ===================================================== */}
+    {/* LEFT — ABOUT TEXT */}
+    <AboutText scrollProgress={aboutScrollProgress} />
 
-          <AboutText scrollProgress={aboutScrollProgress} />
-
-          {/* =====================================================
-              RIGHT — 3D SUN
-          ===================================================== */}
-
-          <InteractiveSun scrollProgress={aboutScrollProgress} />
-        </div>
-      </section>
-
+    {/* RIGHT — 3D SUN */}
+    <InteractiveSun scrollProgress={aboutScrollProgress} />
+  </div>
+</section>
       {/* =========================================================
           MOVING ENGINEERING SERVICES TEXT
       ========================================================= */}
@@ -386,55 +383,64 @@ function ServicesParallax() {
       }}
       className="relative bg-[#061a34] text-white"
     >
-     <div ref={viewportRef} className="sticky top-0 h-[72svh] sm:h-screen w-full overflow-hidden">
-  <div
-    className="
-      pointer-events-none
-      absolute left-0 top-0 z-30 w-full
-      px-5 pt-30
-      sm:px-8 sm:pt-32
-      lg:px-12 lg:pt-40
-    "
-  >
-    <p className="eyebrow text-accent !text-base font-semibold uppercase tracking-[0.2em] sm:!text-base sm:tracking-[0.25em]">
-      Our solutions
-    </p>
-  </div>
-
-<motion.div
-  ref={trackRef}
-  style={{ x: trackX }}
-  className="
-    absolute left-0 top-[23vh]
-    flex w-max translate-y-0
-    items-center gap-5
-    py-0
-    will-change-transform
-    sm:top-[54%] sm:-translate-y-1/2 sm:gap-7
-    lg:top-[56%] lg:gap-10
-  "
->
-  {SERVICES.map((service, index) => (
-    <ServiceParallaxCard
-      key={service.href}
-      service={service}
-      index={index}
-      scrollProgress={scrollYProgress}
-    />
-  ))}
-</motion.div>
-
+      <div
+        ref={viewportRef}
+        className="sticky top-0 h-[72svh] sm:h-screen landscape:h-screen w-full overflow-hidden"
+      >
+        {/* 1. HEADING: Reduced padding in landscape mode */}
         <div
-  className="
-    pointer-events-none
-    absolute bottom-5 left-0 z-30 w-full
-    px-5 sm:bottom-7 sm:px-8 lg:px-12
-  "
->
-  <div className="mx-auto flex max-w-[1440px] items-center justify-between">
-    <p className="text-[10px] uppercase tracking-[0.22em] text-white/40 sm:text-xs">
-      Scroll to explore
-    </p>
+          className="
+            pointer-events-none
+            absolute left-0 top-0 z-30 w-full
+            px-5 pt-8
+            landscape:pt-4 landscape:px-8
+            sm:px-8 sm:pt-28
+            lg:px-12 lg:pt-36
+          "
+        >
+          <p className="eyebrow text-accent !text-xs sm:!text-base font-semibold uppercase tracking-[0.2em] sm:tracking-[0.25em]">
+            Our solutions
+          </p>
+        </div>
+
+        {/* 2. CARD TRACK: Shifted down to create a clear gap from the heading */}
+        <motion.div
+          ref={trackRef}
+          style={{ x: trackX }}
+          className="
+            absolute left-0
+            top-[22vh]
+            flex w-max translate-y-0
+            items-center gap-5
+            py-0
+            will-change-transform
+            landscape:top-[52%] landscape:-translate-y-1/2 landscape:gap-6
+            sm:top-[54%] sm:-translate-y-1/2 sm:gap-7
+            lg:top-[56%] lg:gap-10
+          "
+        >
+          {SERVICES.map((service, index) => (
+            <ServiceParallaxCard
+              key={service.href}
+              service={service}
+              index={index}
+              scrollProgress={scrollYProgress}
+            />
+          ))}
+        </motion.div>
+
+        {/* Bottom controls */}
+        <div
+          className="
+            pointer-events-none
+            absolute bottom-3 sm:bottom-7 left-0 z-30 w-full
+            px-5 landscape:px-8 sm:px-8 lg:px-12
+          "
+        >
+          <div className="mx-auto flex max-w-[1440px] items-center justify-between">
+            <p className="text-[10px] uppercase tracking-[0.22em] text-white/40 sm:text-xs">
+              Scroll to explore
+            </p>
 
             <div className="flex items-center gap-3">
               <div className="h-px w-20 overflow-hidden bg-white/15 sm:w-32">
@@ -508,16 +514,19 @@ function ServiceParallaxCard({
         opacity: cardOpacity,
       }}
       className="
-  h-[30vh]
-  min-h-[200px]
-  w-[82vw]
-  max-w-[1080px]
-  shrink-0
-  will-change-transform
-  sm:h-[45vh]
-  lg:h-[48vh]
-  lg:w-[40vw]
-"
+        h-[30vh]
+        min-h-[170px]
+        landscape:h-[50vh]
+        landscape:min-h-[180px]
+        w-[82vw]
+        landscape:w-[50vw]
+        max-w-[1080px]
+        shrink-0
+        will-change-transform
+        sm:h-[45vh]
+        lg:h-[48vh]
+        lg:w-[40vw]
+      "
     >
       <Link
         to={service.href}
@@ -736,7 +745,24 @@ function AboutText({
       </p>
 
       <h2
-  className="mt-3 min-h-0 max-w-xl text-4xl font-semibold leading-[1.12] tracking-tight text-white sm:min-h-[2.4em] sm:text-5xl lg:min-h-[3.2em] lg:text-6xl"
+  className="
+    mt-2
+    landscape:mt-1
+    sm:mt-3
+    min-h-0
+    landscape:min-h-0
+    sm:min-h-[2.4em]
+    lg:min-h-[3.2em]
+    max-w-xl
+    text-2xl
+    landscape:text-2xl
+    sm:text-5xl
+    lg:text-6xl
+    font-semibold
+    leading-[1.12]
+    tracking-tight
+    text-white
+  "
   aria-label={`${headlineText}.`}
 >
   <span>{hasAnimated ? headlineText : headline}</span>
@@ -751,7 +777,23 @@ function AboutText({
 </h2>
 
 <p
-  className="mt-4 min-h-0 max-w-xl text-base leading-7 text-white/70 sm:min-h-[10rem] sm:text-lg sm:leading-8 lg:min-h-[12rem]"
+  className="
+    mt-2
+    landscape:mt-2
+    sm:mt-4
+    min-h-0
+    landscape:min-h-0
+    sm:min-h-[10rem]
+    lg:min-h-[12rem]
+    max-w-xl
+    text-xs
+    landscape:text-xs
+    sm:text-lg
+    leading-5
+    landscape:leading-5
+    sm:leading-8
+    text-white/70
+  "
   aria-label={descriptionText}
 >
   {hasAnimated ? descriptionText : description}
@@ -795,9 +837,9 @@ function AboutText({
           document.body.appendChild(overlay);
 
           const radius = Math.hypot(
-            Math.max(x, window.innerWidth - x),
-            Math.max(y, window.innerHeight - y),
-          );
+  Math.max(x, window.innerWidth - x),
+  Math.max(y, window.innerHeight - y)
+);
 
           requestAnimationFrame(() => {
             requestAnimationFrame(() => {
@@ -810,10 +852,30 @@ function AboutText({
             window.location.assign("/about");
           }, 850);
         }}
-        aria-label="Discover our approach"
-        className="mt-8 inline-flex h-12 w-12 items-center justify-center rounded-full bg-[#f58220] text-white transition-transform duration-300 hover:scale-110 active:scale-95"
-      >
-        <ArrowRight className="size-5 transition-transform duration-300 group-hover:translate-x-1" />
+       aria-label="Discover our approach"
+  className="
+    mt-4
+    landscape:mt-3
+    sm:mt-8
+    inline-flex
+    h-10
+    w-10
+    landscape:h-10
+    landscape:w-10
+    sm:h-12
+    sm:w-12
+    items-center
+    justify-center
+    rounded-full
+    bg-[#f58220]
+    text-white
+    transition-transform
+    duration-300
+    hover:scale-110
+    active:scale-95
+  "
+>
+  <ArrowRight className="size-4 sm:size-5 transition-transform duration-300 group-hover:translate-x-1" />
       </Link>
     </motion.div>
   );
@@ -952,13 +1014,15 @@ function InteractiveSun({
       className="
         relative
         flex
-        h-[260px]
+        /* Keep it compact on landscape phones */
+        h-[240px]
+        landscape:h-[280px]
+        sm:h-[450px]
+        lg:h-[600px]
         w-full
         items-center
         justify-center
         will-change-transform
-        sm:h-[450px]
-        lg:h-[600px]
       "
       onPointerMove={handlePointerMove}
       onPointerLeave={handlePointerLeave}
@@ -976,15 +1040,16 @@ function InteractiveSun({
           items-center
           justify-center
           will-change-transform
+          landscape:translate-x-0 landscape:translate-y-0
           lg:-translate-y-10 lg:translate-x-16
           xl:-translate-y-16 xl:translate-x-24
         "
       >
-        <div className="relative -my-24 h-[calc(100%+192px)] w-[calc(100%+192px)] sm:my-0 sm:h-full sm:w-full">
-  <Suspense fallback={null}>
-    <SunScene />
-  </Suspense>
-</div>
+        <div className="relative -my-12 landscape:my-0 h-[calc(100%+96px)] landscape:h-full w-[calc(100%+96px)] landscape:w-full sm:my-0 sm:h-full sm:w-full">
+          <Suspense fallback={null}>
+            <SunScene />
+          </Suspense>
+        </div>
       </motion.div>
     </motion.div>
   );
