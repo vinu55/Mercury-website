@@ -1,28 +1,19 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import { Canvas, useFrame, useThree } from "@react-three/fiber";
+import { Canvas, useFrame } from "@react-three/fiber";
 import { useGLTF } from "@react-three/drei";
 import { SkeletonUtils } from "three-stdlib";
 import * as THREE from "three";
 
-// Silence Three.js Clock deprecation warning
-if (typeof window !== "undefined") {
-  const originalWarn = console.warn;
-  console.warn = (...args) => {
-    if (typeof args[0] === "string" && (args[0].includes("THREE.Clock") || args[0].includes("deprecated"))) {
-      return;
-    }
-    originalWarn(...args);
-  };
-}
-
 const SUN_PATH = "/models/sun.glb";
+const DRACO_PATH = "/draco/";
 
 function Sun() {
   const group = useRef<THREE.Group>(null);
-  const { scene } = useGLTF("/models/sun.glb");
+  // Pass the local draco path as the second argument
+  const { scene } = useGLTF(SUN_PATH, DRACO_PATH);
   const [hovered, setHovered] = useState(false);
 
-  // Normalize and auto-center the Sun mesh to (0, 0, 0)
+  // Normalize and auto-center the geometry to (0, 0, 0)
   const model = useMemo(() => {
     const clone = SkeletonUtils.clone(scene);
     const box = new THREE.Box3().setFromObject(clone);
@@ -72,24 +63,15 @@ export default function SunScene() {
     <Canvas
       dpr={[1, 1.5]}
       camera={{ position: [0, 0, 4.5], fov: 45 }}
-      gl={{
-        antialias: true,
-        alpha: true,
-        powerPreference: "high-performance",
-        outputColorSpace: THREE.SRGBColorSpace,
-      }}
-      onPointerMissed={() => {
-        document.body.style.cursor = "";
-      }}
+      gl={{ alpha: true, antialias: true, powerPreference: "high-performance" }}
     >
-      {/* Increased ambient & warm directional lights to ensure visibility */}
-      <ambientLight intensity={1.8} />
-      <directionalLight position={[5, 5, 5]} intensity={2.5} color="#fff4e6" />
-      <pointLight position={[-4, -3, -2]} intensity={2.0} color="#f58220" />
-
+      <ambientLight intensity={2.2} />
+      <directionalLight position={[5, 5, 5]} intensity={2.8} />
+      <pointLight position={[-4, -3, -2]} intensity={2.5} color="#f58220" />
       <Sun />
     </Canvas>
   );
 }
 
-useGLTF.preload(SUN_PATH);
+// Preload using the local draco path
+useGLTF.preload(SUN_PATH, DRACO_PATH);
