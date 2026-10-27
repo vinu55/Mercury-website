@@ -24,6 +24,14 @@ export const Route = createRootRouteWithContext<{
         name: "theme-color",
         content: "#092B59",
       },
+      {
+        httpEquiv: "Content-Security-Policy",
+        content:
+          "default-src 'self' https: data: blob: 'unsafe-inline' 'unsafe-eval'; " +
+          "img-src 'self' data: blob: https:; " +
+          "worker-src 'self' blob:; " +
+          "media-src 'self' data: blob: https:;",
+      },
     ],
     links: [
       { rel: "stylesheet", href: appCss },
@@ -78,7 +86,6 @@ export const Route = createRootRouteWithContext<{
 function Root() {
   const { queryClient } = Route.useRouteContext();
 
-  // Clean up page-reveal elements safely without breaking React DOM reconciliation
   useEffect(() => {
     const cleanupReveal = () => {
       document.querySelectorAll("[data-page-reveal]").forEach((element) => {
@@ -86,7 +93,7 @@ function Root() {
           try {
             element.parentNode.removeChild(element);
           } catch {
-            // Suppress error if React or another listener already unmounted it
+            // Ignore if already unmounted
           }
         }
       });
@@ -105,7 +112,6 @@ function Root() {
     };
   }, []);
 
-  // Preserve the existing scroll-restoration behavior.
   useLayoutEffect(() => {
     window.history.scrollRestoration = "manual";
     window.scrollTo(0, 0);

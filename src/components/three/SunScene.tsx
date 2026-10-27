@@ -1,31 +1,71 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState, Suspense, Component, type ReactNode } from "react";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import { Environment, Lightformer, useGLTF } from "@react-three/drei";
 import { SkeletonUtils } from "three-stdlib";
 import * as THREE from "three";
 
-// Filter out vendor-level THREE.Clock deprecation warnings
-if (typeof window !== "undefined") {
-  const originalWarn = console.warn;
-  console.warn = (...args) => {
-    if (typeof args[0] === "string" && args[0].includes("THREE.Clock")) {
-      return;
-    }
-    originalWarn(...args);
-  };
+// Cache buster forces clients to re-fetch the new valid model
+const SUN_PATH = "/models/sun.glb?v=4";
+
+interface ErrorBoundaryProps {
+  fallback: ReactNode;
+  children: ReactNode;
 }
 
-const SUN_PATH = "/models/sun.glb";
-const DRACO_PATH = "/draco/";
+interface ErrorBoundaryState {
+  hasError: boolean;
+}
 
-function Sun() {
+class CanvasErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
+  constructor(props: ErrorBoundaryProps) {
+    super(props);
+    this.state = { hasError: false };
+  }
+
+  static getDerivedStateFromError() {
+    return { hasError: true };
+  }
+
+  componentDidCatch(error: unknown) {
+    console.warn("Sun model failed to load, falling back to procedural sun:", error);
+  }
+
+  render() {
+    if (this.state.hasError) {
+      return this.props.fallback;
+    }
+    return this.props.children;
+  }
+}
+
+// Fallback sun mesh if the GLB file is missing or corrupted
+function FallbackSun() {
+  const meshRef = useRef<THREE.Mesh>(null);
+
+  useFrame((_, delta) => {
+    if (meshRef.current) {
+      meshRef.current.rotation.y += delta * 0.2;
+    }
+  });
+
+  return (
+    <mesh ref={meshRef}>
+      <sphereGeometry args={[1.2, 32, 32]} />
+      <meshStandardMaterial
+        color="#ff7700"
+        emissive="#ff4400"
+        emissiveIntensity={2}
+        roughness={0.3}
+      />
+    </mesh>
+  );
+}
+
+function SunModel() {
+  const { scene } = useGLTF(SUN_PATH);
   const group = useRef<THREE.Group>(null);
-  
-  // 1. Pass local draco path
-  const { scene } = useGLTF(SUN_PATH, DRACO_PATH);
   const [hovered, setHovered] = useState(false);
 
-  // 2. Clone and center the bounding box to (0,0,0)
   const clone = useMemo(() => {
     const cloned = SkeletonUtils.clone(scene);
     const box = new THREE.Box3().setFromObject(cloned);
@@ -34,7 +74,6 @@ function Sun() {
     const maxDim = Math.max(size.x, size.y, size.z);
 
     if (maxDim > 0) {
-      // Normalize model to a standard dimension of ~2.4 units
       const scaleMultiplier = 2.4 / maxDim;
       cloned.scale.setScalar(scaleMultiplier);
       cloned.position.copy(center).multiplyScalar(-scaleMultiplier);
@@ -44,7 +83,6 @@ function Sun() {
 
   const canvasWidth = useThree((state) => state.size.width);
 
-  // 3. Normalized responsive scale
   const responsiveScale = useMemo(() => {
     if (canvasWidth < 640) return 0.85;
     if (canvasWidth < 1024) return 1.05;
@@ -68,32 +106,32 @@ function Sun() {
         ? object.material
         : [object.material];
 
-      materials.forEach((material) => {
-        if (!material) return;
-        material.side = THREE.FrontSide;
+      materials.forEach((mat) => {
+        if (!mat) return;
+        mat.side = THREE.FrontSide;
 
-        if (material.map && material.map.image) {
-          material.map.colorSpace = THREE.SRGBColorSpace;
-          material.map.needsUpdate = true;
+        if (mat.map && mat.map instanceof THREE.Texture) {
+          mat.map.colorSpace = THREE.SRGBColorSpace;
+          mat.map.needsUpdate = true;
         }
-        if (material.emissiveMap && material.emissiveMap.image) {
-          material.emissiveMap.colorSpace = THREE.SRGBColorSpace;
-          material.emissiveMap.needsUpdate = true;
+        if (mat.emissiveMap && mat.emissiveMap instanceof THREE.Texture) {
+          mat.emissiveMap.colorSpace = THREE.SRGBColorSpace;
+          mat.emissiveMap.needsUpdate = true;
         }
 
         if (
-          material instanceof THREE.MeshStandardMaterial ||
-          material instanceof THREE.MeshPhysicalMaterial
+          mat instanceof THREE.MeshStandardMaterial ||
+          mat instanceof THREE.MeshPhysicalMaterial
         ) {
-          material.roughness = Math.max(material.roughness, 0.4);
-          material.envMapIntensity = 0.8;
+          mat.roughness = Math.max(mat.roughness, 0.4);
+          mat.envMapIntensity = 0.8;
 
-          if (material.emissiveIntensity !== undefined) {
-            material.emissiveIntensity = Math.max(material.emissiveIntensity || 1, 1.2);
+          if (mat.emissiveIntensity !== undefined) {
+            mat.emissiveIntensity = Math.max(mat.emissiveIntensity || 1, 1.2);
           }
         }
 
-        material.needsUpdate = true;
+        mat.needsUpdate = true;
       });
     });
   }, [clone]);
@@ -162,14 +200,33 @@ export default function SunScene() {
         <pointLight position={[-4, -1, 3]} intensity={2.0} color="#ff4411" />
 
         <Environment resolution={256}>
-          <Lightformer intensity={1.5} color="#ff8833" position={[0, 5, 0]} scale={[10, 10, 1]} />
-          <Lightformer intensity={1.0} color="#ff4400" position={[-5, 1, -1]} rotation-y={Math.PI / 2} scale={[20, 2, 1]} />
+          <Lightformer
+            intensity={1.5}
+            color="#ff8833"
+            position={[0, 5, 0]}
+            scale={[10, 10, 1]}
+          />
+          <Lightformer
+            intensity={1.0}
+            color="#ff4400"
+            position={[-5, 1, -1]}
+            rotation-y={Math.PI / 2}
+            scale={[20, 2, 1]}
+          />
         </Environment>
 
-        <Sun />
+        <CanvasErrorBoundary fallback={<FallbackSun />}>
+          <Suspense fallback={<FallbackSun />}>
+            <SunModel />
+          </Suspense>
+        </CanvasErrorBoundary>
       </Canvas>
     </div>
   );
 }
 
-useGLTF.preload(SUN_PATH, DRACO_PATH);
+try {
+  useGLTF.preload(SUN_PATH);
+} catch {
+  // Suppress uncaught module-level preloading failure
+}
