@@ -63,15 +63,13 @@ function Sun() {
   }, [clone]);
 
   useFrame((state, delta) => {
-  // delta = elapsed time since previous frame (equivalent to clock.getDelta())
-  // state.clock.getElapsedTime() is managed automatically by R3F's internal ticker
-  const current = group.current;
-  if (!current) return;
+    const current = group.current;
+    if (!current) return;
 
-  const frameDelta = Math.min(delta, 0.05);
-  const easing = 1 - Math.exp(-3 * frameDelta);
+    const frameDelta = Math.min(delta, 0.05);
+    const easing = 1 - Math.exp(-3 * frameDelta);
 
-  current.rotation.y -= frameDelta * (hovered ? 0.55 : 0.18);
+    current.rotation.y -= frameDelta * (hovered ? 0.55 : 0.18);
 
     current.rotation.x = THREE.MathUtils.lerp(
       current.rotation.x,

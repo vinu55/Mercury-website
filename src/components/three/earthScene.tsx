@@ -12,7 +12,7 @@ import * as THREE from "three";
 // Silence Three.js Clock deprecation warning in vendor chunks
 if (typeof window !== "undefined") {
   const originalWarn = console.warn;
-  console.warn = (...args) => {
+  console.warn = (...args: unknown[]) => {
     if (typeof args[0] === "string" && args[0].includes("THREE.Clock")) {
       return;
     }
