@@ -116,7 +116,6 @@ function Home() {
         className="relative isolate h-[100svh] min-h-[600px] w-full overflow-hidden bg-black text-white"
       >
         {/* Full-screen responsive video */}
-        {/* Full-screen responsive video */}
 <video
   autoPlay
   loop
