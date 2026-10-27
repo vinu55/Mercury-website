@@ -1,11 +1,30 @@
-import { useEffect, useMemo, useRef, useState, Suspense, Component, type ReactNode } from "react";
+import {
+  Component,
+  Suspense,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+  type ReactNode,
+} from "react";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import { Environment, Lightformer, useGLTF } from "@react-three/drei";
 import { SkeletonUtils } from "three-stdlib";
 import * as THREE from "three";
 
 // Cache buster forces clients to re-fetch the new valid model
-const SUN_PATH = "/models/sun.glb?v=4";
+const SUN_PATH = "/models/sun.glb?v=5";
+
+// Filter out vendor-level THREE.Clock deprecation warnings
+if (typeof window !== "undefined") {
+  const originalWarn = console.warn;
+  console.warn = (...args) => {
+    if (typeof args[0] === "string" && args[0].includes("THREE.Clock")) {
+      return;
+    }
+    originalWarn(...args);
+  };
+}
 
 interface ErrorBoundaryProps {
   fallback: ReactNode;
@@ -17,20 +36,19 @@ interface ErrorBoundaryState {
 }
 
 class CanvasErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
-  constructor(props: ErrorBoundaryProps) {
-    super(props);
-    this.state = { hasError: false };
-  }
+  override state: ErrorBoundaryState = {
+    hasError: false,
+  };
 
-  static getDerivedStateFromError() {
+  static getDerivedStateFromError(): ErrorBoundaryState {
     return { hasError: true };
   }
 
-  componentDidCatch(error: unknown) {
+  override componentDidCatch(error: unknown) {
     console.warn("Sun model failed to load, falling back to procedural sun:", error);
   }
 
-  render() {
+  override render() {
     if (this.state.hasError) {
       return this.props.fallback;
     }
@@ -38,7 +56,7 @@ class CanvasErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySta
   }
 }
 
-// Fallback sun mesh if the GLB file is missing or corrupted
+// Procedural fallback rendered inside Three.js Canvas if .glb fails to load
 function FallbackSun() {
   const meshRef = useRef<THREE.Mesh>(null);
 
@@ -54,8 +72,8 @@ function FallbackSun() {
       <meshStandardMaterial
         color="#ff7700"
         emissive="#ff4400"
-        emissiveIntensity={2}
-        roughness={0.3}
+        emissiveIntensity={1.8}
+        roughness={0.4}
       />
     </mesh>
   );
@@ -66,6 +84,7 @@ function SunModel() {
   const group = useRef<THREE.Group>(null);
   const [hovered, setHovered] = useState(false);
 
+  // Clone and center the bounding box to (0,0,0)
   const clone = useMemo(() => {
     const cloned = SkeletonUtils.clone(scene);
     const box = new THREE.Box3().setFromObject(cloned);
@@ -95,6 +114,7 @@ function SunModel() {
     };
   }, []);
 
+  // Safe material traversal: checks texture existence before applying settings
   useEffect(() => {
     clone.traverse((object) => {
       if (!(object instanceof THREE.Mesh)) return;
@@ -228,5 +248,5 @@ export default function SunScene() {
 try {
   useGLTF.preload(SUN_PATH);
 } catch {
-  // Suppress uncaught module-level preloading failure
+  // Suppress module-level preloading failure
 }
