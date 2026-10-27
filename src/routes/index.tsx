@@ -116,7 +116,8 @@ function Home() {
         className="relative isolate h-[100svh] min-h-[600px] w-full overflow-hidden bg-black text-white"
       >
         {/* Full-screen responsive video */}
-        <video
+        {/* Full-screen responsive video */}
+<video
   autoPlay
   loop
   muted
@@ -124,10 +125,10 @@ function Home() {
   preload="auto"
   className="h-full w-full object-cover"
   style={{
-    transform: "translateZ(0)",
+    transform: "translate3d(0, 0, 0)",
     backfaceVisibility: "hidden",
     WebkitBackfaceVisibility: "hidden",
-    imageRendering: "-webkit-optimize-contrast"
+    imageRendering: "crisp-edges",
   }}
 >
   <source src="/media/intro.mp4" type="video/mp4" />
