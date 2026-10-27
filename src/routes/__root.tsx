@@ -9,6 +9,7 @@ import {
 import { useLayoutEffect, useEffect, type ReactNode } from "react";
 import appCss from "../styles.css?url";
 import { Header, Footer, WhatsAppButton } from "@/components/site/SiteChrome";
+// Lazy-load the 3D Canvas component
 
 export const Route = createRootRouteWithContext<{
   queryClient: QueryClient;

@@ -34,7 +34,7 @@ const MARQUEE_SERVICES = [
   "BIO ENERGY",
 ];
 
-
+const SunScene = lazy(() => import("@/components/three/SunScene"));
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -987,6 +987,7 @@ function InteractiveSun({
       >
         <div className="relative -my-12 landscape:my-0 h-[calc(100%+96px)] landscape:h-full w-[calc(100%+96px)] landscape:w-full sm:my-0 sm:h-full sm:w-full">
           <Suspense fallback={null}>
+            <SunScene />
           </Suspense>
         </div>
       </motion.div>
