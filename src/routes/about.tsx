@@ -514,24 +514,25 @@ function About() {
             </motion.div>
 
             {/* RIGHT — MAP */}
-            <motion.div
-              initial={{ opacity: 0, x: 18 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true, amount: 0.2 }}
-              transition={{ duration: 0.6 }}
-              className="relative min-h-[320px] overflow-hidden rounded-2xl border border-white/10 bg-[#102d4c] sm:min-h-[400px] lg:min-h-[440px]"
-            >
-              <iframe
-                title="Mercury Energy Solutions office in Pune, India"
-                src={`https://maps.google.com/maps?q=${encodeURIComponent(
-                  COMPANY.office,
-                )}&z=14&output=embed`}
-                className="absolute inset-0 h-full w-full border-0"
-                loading="lazy"
-                referrerPolicy="no-referrer-when-downgrade"
-                allowFullScreen
-              />
-            </motion.div>
+            {/* RIGHT — MAP */}
+<motion.div
+  initial={{ opacity: 0, x: 18 }}
+  whileInView={{ opacity: 1, x: 0 }}
+  viewport={{ once: true, amount: 0.2 }}
+  transition={{ duration: 0.6 }}
+  className="relative min-h-[320px] overflow-hidden rounded-2xl border border-white/10 bg-[#102d4c] sm:min-h-[400px] lg:min-h-[440px]"
+>
+  <iframe
+    title="Mercury Energy Solutions office in Pune, India"
+    src={`https://maps.google.com/maps?q=${encodeURIComponent(
+      COMPANY.office
+    )}&t=&z=14&ie=UTF8&iwloc=&output=embed`}
+    className="absolute inset-0 h-full w-full border-0"
+    loading="lazy"
+    referrerPolicy="no-referrer-when-downgrade"
+    allowFullScreen
+  />
+</motion.div>
           </div>
         </div>
       </section>
