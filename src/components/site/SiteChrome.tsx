@@ -414,17 +414,17 @@ export function Header() {
 
             {/* Case Study, Career, Updates */}
             {[
-              { label: "Case Study", to: "/case-study" },
-              { label: "Career", to: "/careers" },
-              { label: "Updates", to: "/updates" },
-            ].map((item) => (
+  { label: "Case Study", to: "/case-study", Icon: FileText },
+  { label: "Career", to: "/careers", Icon: BriefcaseBusiness },
+  { label: "Updates", to: "/updates", Icon: Bell },
+].map((item) => (
               <SheetClose asChild key={item.to}>
                 <Link
                   to={item.to}
                   onClick={closeMobileMenu}
                   className="group flex min-h-[60px] items-center gap-4 border-b border-white/10 py-4 text-xl font-medium transition-colors hover:text-[#f58220]"
                 >
-                  <ArrowDownRight className="size-5 text-white/45 transition-colors group-hover:text-[#f58220]" />
+                  <item.Icon className="size-5 text-white/45 transition-colors group-hover:text-[#f58220]" />
                   <span>{item.label}</span>
                   <ArrowDownRight className="ml-auto size-5 text-white/30 transition-transform group-hover:translate-x-1 group-hover:text-[#f58220]" />
                 </Link>
