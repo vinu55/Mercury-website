@@ -55,12 +55,12 @@ export const Route = createRootRouteWithContext<{
       },
       // Added instant preloads for high-priority first-visit assets
       {
-        rel: "preload",
-        href: "/models/sun.glb",
-        as: "fetch",
-        type: "model/gltf-binary",
-        crossOrigin: "anonymous",
-      },
+  rel: "preload",
+  href: "/media/intro.mp4",
+  as: "video",
+  type: "video/mp4",
+  crossOrigin: "anonymous",
+},
       {
         rel: "preload",
         href: "/media/intro.mp4",
