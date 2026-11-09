@@ -75,6 +75,9 @@ export const Route = createRootRouteWithContext<{
     <html lang="en" translate="no" className="notranslate">
       <head>
         <HeadContent />
+        {/* Force instant parallel preloading before JS execution */}
+        <link rel="preload" href="/models/sun.glb" as="fetch" type="model/gltf-binary" crossOrigin="anonymous" />
+        <link rel="preload" href="/media/intro.mp4" as="video" type="video/mp4" crossOrigin="anonymous" />
       </head>
       <body>
         {children}

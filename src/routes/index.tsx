@@ -73,7 +73,7 @@ export const Route = createFileRoute("/")({
 function Home() {
   const heroRef = useRef<HTMLElement>(null);
   const aboutRef = useRef<HTMLElement>(null);
-
+  const videoRef = useRef<HTMLVideoElement>(null);
   useLayoutEffect(() => {
     window.history.scrollRestoration = "manual";
     window.scrollTo(0, 0);
@@ -117,18 +117,16 @@ function Home() {
       >
         {/* Full-screen responsive video optimized for instant loading */}
         <video
+          ref={videoRef}
           autoPlay
-          loop
           muted
+          loop
           playsInline
-          preload="metadata"
+          webkit-playsinline="true"
+          preload="auto"
+          {...{ fetchPriority: "high" }}
           poster="/media/intro-poster.jpg"
-          className="absolute inset-0 h-full w-full object-cover"
-          style={{
-            transform: "translate3d(0, 0, 0)",
-            backfaceVisibility: "hidden",
-            WebkitBackfaceVisibility: "hidden",
-          }}
+          className="absolute inset-0 h-full w-full object-cover bg-black"
         >
           <source src="/media/intro.mp4" type="video/mp4" />
           Your browser does not support the video tag.
