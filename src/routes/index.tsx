@@ -111,9 +111,9 @@ function Home() {
     CINEMATIC HERO — TYPEWRITER ANIMATION
 ========================================================= */}
 
-      <section
+     <section
         ref={heroRef}
-        className="relative isolate h-[100svh] min-h-[600px] w-full overflow-hidden bg-black text-white"
+        className="relative isolate h-[100svh] min-h-[600px] w-full overflow-hidden bg-[#061a34] text-white"
       >
         {/* Full-screen responsive video optimized for instant loading */}
         <video
@@ -126,8 +126,13 @@ function Home() {
           preload="auto"
           {...{ fetchPriority: "high" }}
           poster="/media/intro-poster.jpg"
-          className="absolute inset-0 h-full w-full object-cover bg-black"
-          style={{ objectFit: "cover" }}
+          className="absolute inset-0 h-full w-full object-cover bg-[#061a34]"
+          style={{ objectFit: "cover", backgroundColor: "#061a34" }}
+          onLoadedData={() => {
+            if (videoRef.current) {
+              videoRef.current.play().catch(() => {});
+            }
+          }}
         >
           <source src="/media/intro.mp4" type="video/mp4" />
           Your browser does not support the video tag.
