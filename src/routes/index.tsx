@@ -396,17 +396,27 @@ function ServiceScrollCard({
   xl:h-[480px]
 "
       >
-        <img
-          src={image}
-          alt={service.title}
-          loading={index === 0 ? "eager" : "lazy"}
-          className="
-            absolute inset-0 block h-full w-full
-            object-cover object-center
-            transition-transform duration-700 ease-out
-            group-hover/image:scale-[1.03]
-          "
-        />
+        <picture className="absolute inset-0 block h-full w-full">
+          {image && (
+            <source
+              srcSet={image.replace(/\.(png|jpg|jpeg)$/i, ".webp")}
+              type="image/webp"
+            />
+          )}
+          <img
+            src={image || ""}
+            alt={service.title}
+            loading={index === 0 ? "eager" : "lazy"}
+            fetchPriority={index === 0 ? "high" : "auto"}
+            decoding="async"
+            className="
+              absolute inset-0 block h-full w-full
+              object-cover object-center
+              transition-transform duration-700 ease-out
+              group-hover/image:scale-[1.03]
+            "
+          />
+        </picture>
 
         <div
           aria-hidden="true"
