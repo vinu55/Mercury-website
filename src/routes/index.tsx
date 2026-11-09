@@ -115,23 +115,30 @@ function Home() {
         ref={heroRef}
         className="relative isolate h-[100svh] min-h-[600px] w-full overflow-hidden bg-black text-white"
       >
-        {/* Full-screen responsive video */}
-<video
-  autoPlay
-  loop
-  muted
-  playsInline
-  preload="auto"
-  className="h-full w-full object-cover"
-  style={{
-    transform: "translate3d(0, 0, 0)",
-    backfaceVisibility: "hidden",
-    WebkitBackfaceVisibility: "hidden",
-    imageRendering: "crisp-edges",
-  }}
->
-  <source src="/media/intro.mp4" type="video/mp4" />
-</video>
+        {/* Full-screen responsive video optimized for instant loading */}
+        <video
+          autoPlay
+          loop
+          muted
+          playsInline
+          preload="metadata"
+          poster="/media/intro-poster.jpg"
+          className="absolute inset-0 h-full w-full object-cover"
+          style={{
+            transform: "translate3d(0, 0, 0)",
+            backfaceVisibility: "hidden",
+            WebkitBackfaceVisibility: "hidden",
+          }}
+        >
+          <source src="/media/intro.mp4" type="video/mp4" />
+          Your browser does not support the video tag.
+        </video>
+
+        {/* Darkening overlay gradient for instant text legibility before video decodes */}
+        <div 
+          aria-hidden="true" 
+          className="absolute inset-0 bg-black/30 pointer-events-none z-10" 
+        />
 
         {/* Hero content */}
         <div className="absolute inset-x-0 bottom-8 z-20 mx-auto max-w-[1440px] px-5 sm:bottom-14 sm:px-10 lg:bottom-16 lg:px-16">

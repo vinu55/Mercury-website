@@ -12,15 +12,18 @@ function Sun() {
   const clone = useMemo(() => SkeletonUtils.clone(scene), [scene]);
   const [hovered, setHovered] = useState(false);
 
-  const canvasWidth = useThree((state) => state.size.width);
+  const { gl, size } = useThree();
 
   const responsiveScale = THREE.MathUtils.clamp(
-    canvasWidth * 0.00025,
-    0.035,
-    0.26,
+    size.width * 0.0003,
+    0.045,
+    0.3,
   );
 
   useEffect(() => {
+    // Enable max anisotropy so textures don't blur out at oblique angles on laptops/phones
+    const maxAnisotropy = gl.capabilities.getMaxAnisotropy();
+
     clone.traverse((object) => {
       if (!(object instanceof THREE.Mesh)) return;
 
@@ -33,53 +36,58 @@ function Sun() {
 
       materials.forEach((material) => {
         if (!material) return;
-        material.side = THREE.FrontSide;
+        material.side = THREE.DoubleSide;
 
-        // Force sRGB on textures if present and loaded
-        if (material.map && material.map.image) {
-          material.map.colorSpace = THREE.SRGBColorSpace;
-          material.map.needsUpdate = true;
-        }
-        if (material.emissiveMap && material.emissiveMap.image) {
-          material.emissiveMap.colorSpace = THREE.SRGBColorSpace;
-          material.emissiveMap.needsUpdate = true;
-        }
+        // Force sRGB color space & enhance texture filtering for clarity
+        const configureTexture = (tex: THREE.Texture | null) => {
+          if (!tex) return;
+          tex.colorSpace = THREE.SRGBColorSpace;
+          tex.generateMipmaps = true;
+          tex.minFilter = THREE.LinearMipmapLinearFilter;
+          tex.magFilter = THREE.LinearFilter;
+          tex.anisotropy = maxAnisotropy;
+          tex.needsUpdate = true;
+        };
+
+        configureTexture(material.map);
+        configureTexture(material.emissiveMap);
 
         if (
           material instanceof THREE.MeshStandardMaterial ||
           material instanceof THREE.MeshPhysicalMaterial
         ) {
-          material.roughness = Math.max(material.roughness, 0.4);
-          material.envMapIntensity = 0.35;
+          // Allow full surface detail without aggressive blur/roughness clamping
+          material.roughness = Math.min(material.roughness, 0.35);
+          material.envMapIntensity = 1.0; // Boost reflections
 
           if (material.emissiveIntensity !== undefined) {
-            material.emissiveIntensity = Math.min(material.emissiveIntensity, 1.2);
+            material.emissiveIntensity = Math.max(material.emissiveIntensity, 1.4);
           }
         }
 
         material.needsUpdate = true;
       });
     });
-  }, [clone]);
+  }, [clone, gl]);
 
   useFrame((state, delta) => {
     const current = group.current;
     if (!current) return;
 
     const frameDelta = Math.min(delta, 0.05);
-    const easing = 1 - Math.exp(-3 * frameDelta);
+    const easing = 1 - Math.exp(-4 * frameDelta);
 
-    current.rotation.y -= frameDelta * (hovered ? 0.55 : 0.18);
+    current.rotation.y -= frameDelta * (hovered ? 0.45 : 0.15);
 
     current.rotation.x = THREE.MathUtils.lerp(
       current.rotation.x,
-      hovered ? state.pointer.y * 0.16 : 0,
+      hovered ? state.pointer.y * 0.2 : 0,
       easing,
     );
 
     current.rotation.z = THREE.MathUtils.lerp(
       current.rotation.z,
-      hovered ? -state.pointer.x * 0.16 : 0,
+      hovered ? -state.pointer.x * 0.2 : 0,
       easing,
     );
   });
@@ -107,52 +115,54 @@ function Sun() {
 export default function SunScene() {
   return (
     <Canvas
-      dpr={[1, 2]}
-      camera={{ position: [0, 0, 7], fov: 45 }}
+      dpr={[1, 2]} // High-DPI support for crisp rendering on retina/mobile screens
+      camera={{ position: [0, 0, 6.5], fov: 45 }}
       gl={{
         antialias: true,
         alpha: true,
         powerPreference: "high-performance",
         toneMapping: THREE.ACESFilmicToneMapping,
-        toneMappingExposure: 0.8,
+        toneMappingExposure: 1.2, // Increased brightness/exposure for vibrant solar textures
         outputColorSpace: THREE.SRGBColorSpace,
       }}
       onCreated={({ gl }) => {
         gl.toneMapping = THREE.ACESFilmicToneMapping;
-        gl.toneMappingExposure = 0.8;
+        gl.toneMappingExposure = 1.2;
         gl.outputColorSpace = THREE.SRGBColorSpace;
       }}
       onPointerMissed={() => {
         document.body.style.cursor = "";
       }}
     >
-      <ambientLight intensity={0.25} color="#ffeedd" />
+      <ambientLight intensity={0.4} color="#fff2e6" />
 
       <directionalLight
-        position={[4, 5, 5]}
-        intensity={0.8}
-        color="#ff9944"
+        position={[5, 5, 5]}
+        intensity={1.5}
+        color="#ffa500"
       />
 
+      {/* Rim light for a realistic solar corona atmospheric glow */}
       <pointLight
-        position={[-4, -1, 3]}
-        intensity={0.5}
-        color="#ff4411"
+        position={[0, 0, -2]}
+        intensity={2.5}
+        color="#ff3300"
+        distance={10}
       />
 
-      <Environment resolution={256}>
+      <Environment resolution={512}>
         <Lightformer
-          intensity={0.8}
-          color="#ff8833"
-          position={[0, 5, 0]}
-          scale={[10, 10, 1]}
+          intensity={1.5}
+          color="#ffaa44"
+          position={[0, 5, 2]}
+          scale={[12, 12, 1]}
         />
         <Lightformer
-          intensity={0.4}
-          color="#ff4400"
-          position={[-5, 1, -1]}
+          intensity={0.8}
+          color="#ff2200"
+          position={[-6, 1, -1]}
           rotation-y={Math.PI / 2}
-          scale={[20, 2, 1]}
+          scale={[20, 4, 1]}
         />
       </Environment>
 
