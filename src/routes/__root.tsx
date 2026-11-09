@@ -9,7 +9,6 @@ import {
 import { useLayoutEffect, useEffect, type ReactNode } from "react";
 import appCss from "../styles.css?url";
 import { Header, Footer, WhatsAppButton } from "@/components/site/SiteChrome";
-// Lazy-load the 3D Canvas component
 
 export const Route = createRootRouteWithContext<{
   queryClient: QueryClient;
@@ -54,6 +53,21 @@ export const Route = createRootRouteWithContext<{
         rel: "stylesheet",
         href: "https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&family=Sora:wght@400;500;600;700&display=swap",
       },
+      // Added instant preloads for high-priority first-visit assets
+      {
+        rel: "preload",
+        href: "/models/sun.glb",
+        as: "fetch",
+        type: "model/gltf-binary",
+        crossOrigin: "anonymous",
+      },
+      {
+        rel: "preload",
+        href: "/media/intro.mp4",
+        as: "video",
+        type: "video/mp4",
+        crossOrigin: "anonymous",
+      },
     ],
   }),
 
@@ -68,7 +82,7 @@ export const Route = createRootRouteWithContext<{
       </body>
     </html>
   ),
-
+  
   component: Root,
 
   notFoundComponent: () => (
