@@ -14,7 +14,7 @@ export const COMPANY = {
   whatsapp: "https://wa.me/917483651445",
   linkedin: "https://www.linkedin.com/company/mercury-energy-solutions/home/",
 
-  office: "#141, Yashada Windsong, Pune, Maharashtra - 412101, India",
+  office: "Office No. 529, 5th Floor, A-Wing, Gera's Imperium Gateway, Pune, Maharashtra - 411034, India.",
 
   registered: "1st Floor, Ghanshyam Complex, Gulbarga, Karnataka - 585103, India",
 
