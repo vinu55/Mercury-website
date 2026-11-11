@@ -138,11 +138,7 @@ function Home() {
           Your browser does not support the video tag.
         </video>
 
-        {/* Darkening overlay gradient for instant text legibility before video decodes */}
-        <div 
-          aria-hidden="true" 
-          className="absolute inset-0 bg-black/30 pointer-events-none z-10" 
-        />
+        
 
         {/* Hero content */}
         <div className="absolute inset-x-0 bottom-8 z-20 mx-auto max-w-[1440px] px-5 sm:bottom-14 sm:px-10 lg:bottom-16 lg:px-16">
