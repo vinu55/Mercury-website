@@ -1,10 +1,9 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useRef } from "react";
 import {
-  ArrowLeft,
+  ArrowRight,
   ChevronLeft,
   ChevronRight,
-  ArrowRight,
   Search,
   Wrench,
   Flame,
@@ -17,12 +16,10 @@ import {
   Package,
 } from "lucide-react";
 import { motion } from "motion/react";
-import { useMemo, useState, type PointerEvent as ReactPointerEvent } from "react";
+import { useMemo, useState } from "react";
 import marine from "@/assets/spare part banner.jpeg";
 import { EnquiryBand, PageHero } from "@/components/site/PageShell";
 import { Input } from "@/components/ui/input";
-
-import { AnimatePresence } from "motion/react";
 
 export const Route = createFileRoute("/services/spare-parts")({
   ssr: false,
@@ -236,6 +233,7 @@ const products = [
     image: "/media/s20.jpg",
   },
 ];
+
 function Page() {
   const categorySliderRef = useRef<HTMLDivElement>(null);
 
@@ -525,7 +523,7 @@ function Page() {
           <p className="mt-4 text-sm text-slate-500">{filteredProducts.length} components</p>
 
           <div className="mt-8">
-            <SparePartsAccordionList items={filteredProducts} />
+            <SparePartsCardGrid items={filteredProducts} />
           </div>
         </div>
       </section>
@@ -535,160 +533,67 @@ function Page() {
     </main>
   );
 }
-function SparePartsAccordionList({ items }: { items: typeof products }) {
-  const [openIndex, setOpenIndex] = useState<string | null>(null);
-  const [hoveredIndex, setHoveredIndex] = useState<string | null>(null);
-  const [pointer, setPointer] = useState({ x: 24, y: 24 });
 
-  const hoveredProduct =
-    hoveredIndex !== null ? items.find((item) => item.number === hoveredIndex) : undefined;
-
-  const handlePointerMove = (event: ReactPointerEvent<HTMLDivElement>) => {
-    if (event.pointerType !== "mouse" && event.pointerType !== "pen") {
-      return;
-    }
-
-    const previewWidth = Math.min(420, window.innerWidth - 32);
-    const previewHeight = 300;
-    const padding = 16;
-
-    let x = event.clientX + 28;
-    let y = event.clientY + 28;
-
-    if (x + previewWidth > window.innerWidth - padding) {
-      x = event.clientX - previewWidth - 28;
-    }
-
-    if (y + previewHeight > window.innerHeight - padding) {
-      y = window.innerHeight - previewHeight - padding;
-    }
-
-    setPointer({
-      x: Math.max(padding, x),
-      y: Math.max(padding, y),
-    });
-  };
-
+function SparePartsCardGrid({ items }: { items: typeof products }) {
   return (
-    <div className="relative w-full divide-y divide-slate-200 border-y border-slate-200">
-      {items.map((product) => {
-        const isOpen = openIndex === product.number;
-        const isHovered = hoveredIndex === product.number;
-        const showDescription = isHovered || isOpen;
+    <div className="w-full px-0 sm:px-0">
+      <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
+        {items.map((product) => {
+          return (
+            <motion.div
+              key={product.number}
+              whileHover={{ y: -6 }}
+              transition={{ duration: 0.25, ease: "easeOut" }}
+              className="group relative flex flex-col justify-between overflow-hidden rounded-2xl border border-slate-200 bg-white p-6 shadow-sm transition-all duration-300 hover:border-[#f58220] hover:bg-[#f58220] hover:text-white hover:shadow-xl hover:shadow-orange-500/15 sm:p-7 text-slate-900"
+            >
+              <div>
+                {/* Image Container with padding and object-contain so images fit fully */}
+                <div className="relative mb-6 flex h-48 w-full items-center justify-center overflow-hidden rounded-xl border border-slate-100 bg-[#f8fafc] bg-[radial-gradient(#cbd5e1_1px,transparent_1px)] [background-size:16px_16px] p-4 transition-colors duration-300 group-hover:border-white/20 group-hover:bg-white/10">
+                  <img
+                    src={product.image}
+                    alt={product.name}
+                    className="max-h-full max-w-full object-contain transition-transform duration-300 group-hover:scale-105"
+                    onError={(event) => {
+                      event.currentTarget.style.visibility = "hidden";
+                    }}
+                  />
+                </div>
 
-        return (
-          <div
-            key={product.number}
-            onPointerEnter={(event) => {
-              if (event.pointerType === "mouse" || event.pointerType === "pen") {
-                setHoveredIndex(product.number);
-              }
-            }}
-            onPointerLeave={(event) => {
-              if (event.pointerType === "mouse" || event.pointerType === "pen") {
-                setHoveredIndex(null);
-              }
-            }}
-            onPointerMove={handlePointerMove}
-            className={`group relative cursor-pointer px-4 py-6 transition-colors duration-300 focus-within:outline-none sm:px-6 sm:py-8 ${
-              showDescription ? "bg-orange-50/40" : "bg-white"
-            }`}
-          >
-            <div className="flex flex-col gap-3 sm:flex-row sm:items-start">
-              <span
-                className={`shrink-0 pt-1 text-sm font-semibold tracking-wider transition-colors duration-300 ${
-                  showDescription ? "text-[#f58220]" : "text-[#061a34]"
-                }`}
-              >
-                {product.number}
-              </span>
+                {/* Header with Number & Title */}
+                <div className="flex flex-col gap-1">
+                  <span className="text-sm font-bold tracking-wider text-[#f58220] transition-colors duration-300 group-hover:text-white/90">
+                    {product.number}
+                  </span>
+                  <h3 className="text-xl font-bold leading-snug tracking-tight text-[#061a34] transition-colors duration-300 group-hover:text-white">
+                    {product.name}
+                  </h3>
+                </div>
 
-              <div className="min-w-0 flex-1">
-                <button
-                  type="button"
-                  aria-expanded={isOpen}
-                  onClick={() => setOpenIndex(isOpen ? null : product.number)}
-                  onKeyDown={(event) => {
-                    if (event.key === "Escape") {
-                      setOpenIndex(null);
-                      setHoveredIndex(null);
-                    }
-                  }}
-                  className={`text-left text-xl font-semibold tracking-tight outline-none transition-colors duration-300 focus-visible:ring-2 focus-visible:ring-[#f58220] sm:text-2xl ${
-                    showDescription ? "text-[#f58220]" : "text-[#061a34]"
-                  }`}
-                >
-                  {product.name}
-                </button>
-
-                <motion.div
-                  initial={false}
-                  animate={{
-                    height: showDescription ? "auto" : 0,
-                    opacity: showDescription ? 1 : 0,
-                    y: showDescription ? 0 : -5,
-                  }}
-                  transition={{ duration: 0.25, ease: "easeOut" }}
-                  className="overflow-hidden"
-                  aria-hidden={!showDescription}
-                >
-                  <p className="max-w-3xl pt-3 text-sm leading-6 text-slate-600 sm:text-base">
-                    Contact our team to confirm availability, compatibility and sourcing options for
-                    this component.
-                  </p>
-
-                  {isOpen && (
-                    <a
-                      href={`/contact?service=${encodeURIComponent(
-                        `Spare part - ${product.name}`,
-                      )}`}
-                      onClick={(event) => event.stopPropagation()}
-                      className="mt-3 inline-flex items-center gap-2 text-sm font-semibold text-[#061a34] underline decoration-[#f58220] underline-offset-4 transition-colors hover:text-[#f58220]"
-                    >
-                      Enquire
-                      <ArrowRight size={16} aria-hidden="true" />
-                    </a>
-                  )}
-                </motion.div>
+                {/* Description */}
+                <p className="mt-3 text-sm leading-relaxed text-slate-600 transition-colors duration-300 group-hover:text-white/90 sm:text-base">
+                  Contact our team to confirm availability, compatibility and sourcing options for this component.
+                </p>
               </div>
-            </div>
-          </div>
-        );
-      })}
+
+              {/* Footer Action Link - Right Aligned */}
+              <div className="mt-6 flex justify-end pt-2">
+                <a
+                  href={`/contact?service=${encodeURIComponent(`Spare part - ${product.name}`)}`}
+                  className="inline-flex items-center gap-1.5 text-sm font-semibold text-[#061a34] underline decoration-[#f58220] underline-offset-4 transition-colors hover:text-[#f58220] group-hover:text-white group-hover:decoration-white group-hover:hover:text-slate-100"
+                >
+                  Enquire
+                </a>
+              </div>
+            </motion.div>
+          );
+        })}
+      </div>
 
       {items.length === 0 && (
         <p className="py-16 text-center text-slate-500">
           No matching components found. Try another search.
         </p>
       )}
-
-      <AnimatePresence>
-        {hoveredProduct && (
-          <motion.div
-            key={hoveredProduct.number}
-            initial={{ opacity: 0, scale: 0.92 }}
-            animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: 0.94 }}
-            transition={{ duration: 0.18, ease: "easeOut" }}
-            className="pointer-events-none fixed z-[100] hidden overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-2xl md:block"
-            style={{
-              left: pointer.x,
-              top: pointer.y,
-              width: "min(420px, calc(100vw - 32px))",
-              height: 300,
-            }}
-          >
-            <img
-              src={hoveredProduct.image}
-              alt={hoveredProduct.name}
-              className="h-full w-full object-contain p-2"
-              onError={(event) => {
-                event.currentTarget.style.visibility = "hidden";
-              }}
-            />
-          </motion.div>
-        )}
-      </AnimatePresence>
     </div>
   );
 }

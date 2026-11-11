@@ -2,6 +2,9 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useRef, useState } from "react";
 import type { PointerEvent as ReactPointerEvent } from "react";
 import { AnimatePresence, motion } from "motion/react";
+import React, { useEffect } from "react";
+
+
 import {
   ArrowRight,
   Activity,
@@ -167,6 +170,7 @@ const MARINE_SERVICES = [
   },
 ];
 
+
 function MarineBoilerPage() {
   const capabilitiesSliderRef = useRef<HTMLDivElement>(null);
 
@@ -318,7 +322,7 @@ function MarineBoilerPage() {
             </h2>
           </div>
 
-          <MarineServiceAccordionList items={MARINE_SERVICES} />
+          <MarineServiceCardGrid items={MARINE_SERVICES} />
         </div>
       </section>
 
@@ -477,144 +481,99 @@ function MarineInteractiveCard({
   );
 }
 
-function MarineServiceAccordionList({ items }: { items: typeof MARINE_SERVICES }) {
-  const [openIndex, setOpenIndex] = useState<number | null>(null);
-  const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
-  const [pointer, setPointer] = useState({ x: 24, y: 24 });
 
-  const hoveredService = hoveredIndex !== null ? items[hoveredIndex] : undefined;
 
-  const handlePointerMove = (event: ReactPointerEvent<HTMLDivElement>) => {
-    if (event.pointerType !== "mouse" && event.pointerType !== "pen") return;
+export function MarineServiceCardGrid({ items }: { items: typeof MARINE_SERVICES }) {
+  const [activeCard, setActiveCard] = useState<number | null>(null);
+  const [isMounted, setIsMounted] = useState(false);
 
-    const previewWidth = Math.min(420, window.innerWidth - 32);
-    const previewHeight = 300;
-    const padding = 16;
-
-    let x = event.clientX + 28;
-    let y = event.clientY + 28;
-
-    if (x + previewWidth > window.innerWidth - padding) {
-      x = event.clientX - previewWidth - 28;
-    }
-
-    if (y + previewHeight > window.innerHeight - padding) {
-      y = window.innerHeight - previewHeight - padding;
-    }
-
-    setPointer({
-      x: Math.max(padding, x),
-      y: Math.max(padding, y),
-    });
-  };
+  // Prevent SSR hydration mismatch by ensuring hover state only runs client-side
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
 
   return (
-    <div className="w-full divide-y divide-slate-200 border-y border-slate-200">
-      {items.map((service, index) => {
-        const isOpen = openIndex === index;
-        const isHovered = hoveredIndex === index;
-        const showDescription = isHovered || isOpen;
+    <div className="w-full px-4 py-8 sm:px-6 lg:px-8">
+      <div className="mx-auto max-w-7xl">
+        <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
+          {items.map((service, index) => {
+            const isHovered = isMounted && activeCard === index;
 
-        return (
-          <div
-            key={service.number}
-            onPointerEnter={(event) => {
-              if (event.pointerType === "mouse" || event.pointerType === "pen") {
-                setHoveredIndex(index);
-              }
-            }}
-            onPointerLeave={(event) => {
-              if (event.pointerType === "mouse" || event.pointerType === "pen") {
-                setHoveredIndex(null);
-              }
-            }}
-            onPointerMove={handlePointerMove}
-            onClick={() => setOpenIndex(isOpen ? null : index)}
-            onKeyDown={(event) => {
-              if (event.key === "Enter" || event.key === " ") {
-                event.preventDefault();
-                setOpenIndex(isOpen ? null : index);
-              }
-              if (event.key === "Escape") setOpenIndex(null);
-            }}
-            role="button"
-            tabIndex={0}
-            aria-expanded={isOpen}
-            className="group relative cursor-pointer bg-white px-4 py-6 transition-colors duration-300 hover:bg-orange-50/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[#f58220] sm:px-6 sm:py-8"
-          >
-            <div className="flex flex-col gap-3 md:flex-row md:items-start">
-              <span
-                className={`shrink-0 pt-1 text-sm font-semibold tracking-wider transition-colors duration-300 ${
-                  isHovered ? "text-[#f58220]" : "text-[#061a34]"
+            return (
+              <motion.div
+                key={service.number}
+                onMouseEnter={() => isMounted && setActiveCard(index)}
+                onMouseLeave={() => setActiveCard(null)}
+                whileHover={{ y: -6 }}
+                transition={{ duration: 0.25, ease: "easeOut" }}
+                className={`group relative flex flex-col justify-between overflow-hidden rounded-2xl border p-6 shadow-sm transition-all duration-300 sm:p-7 ${
+                  isHovered
+                    ? "border-[#f58220] bg-[#f58220] text-white shadow-xl shadow-orange-500/15"
+                    : "border-slate-200 bg-white text-slate-900 hover:border-slate-300"
                 }`}
               >
-                {service.number}
-              </span>
+                <div>
+                  {/* Blueprint Illustration Container */}
+                  <div
+                    className={`relative mb-6 flex h-48 w-full items-center justify-center overflow-hidden rounded-xl border p-2 transition-colors duration-300 ${
+                      isHovered
+                        ? "border-white/20 bg-white/10"
+                        : "border-slate-100 bg-[#f8fafc] bg-[radial-gradient(#cbd5e1_1px,transparent_1px)] [background-size:16px_16px]"
+                    }`}
+                  >
+                    <img
+                      src={service.image}
+                      alt={service.title}
+                      className="h-full w-full rounded-lg object-cover transition-transform duration-300 group-hover:scale-105"
+                    />
+                  </div>
 
-              <div className="min-w-0 flex-1">
-                <h3
-                  className={`text-xl font-semibold tracking-tight transition-colors duration-300 sm:text-2xl ${
-                    isHovered ? "text-[#f58220]" : "text-[#061a34]"
-                  }`}
-                >
-                  {service.title}
-                </h3>
+                  {/* Header with Number & Title */}
+                  <div className="flex flex-col gap-1">
+                    <span
+                      className={`text-sm font-bold tracking-wider transition-colors duration-300 ${
+                        isHovered ? "text-white/90" : "text-[#f58220]"
+                      }`}
+                    >
+                      {service.number}
+                    </span>
+                    <h3
+                      className={`text-xl font-bold leading-snug tracking-tight transition-colors duration-300 ${
+                        isHovered ? "text-white" : "text-[#061a34]"
+                      }`}
+                    >
+                      {service.title}
+                    </h3>
+                  </div>
 
-                <motion.div
-                  initial={false}
-                  animate={{
-                    height: showDescription ? "auto" : 0,
-                    opacity: showDescription ? 1 : 0,
-                    y: showDescription ? 0 : -5,
-                  }}
-                  transition={{ duration: 0.25, ease: "easeOut" }}
-                  className="overflow-hidden"
-                  aria-hidden={!showDescription}
-                >
-                  <p className="max-w-3xl pt-3 text-sm leading-6 text-slate-600 sm:text-base">
+                  {/* Description */}
+                  <p
+                    className={`mt-3 text-sm leading-relaxed transition-colors duration-300 sm:text-base ${
+                      isHovered ? "text-white/90" : "text-slate-600"
+                    }`}
+                  >
                     {service.description}
                   </p>
+                </div>
 
-                  {isOpen && (
-                    <a
-                      href="/contact"
-                      onClick={(event) => event.stopPropagation()}
-                      className="mt-3 inline-block text-sm font-semibold text-[#061a34] underline decoration-[#f58220] underline-offset-4 transition-colors hover:text-[#f58220]"
-                    >
-                      Enquire
-                    </a>
-                  )}
-                </motion.div>
-              </div>
-            </div>
-          </div>
-        );
-      })}
-
-      <AnimatePresence>
-        {hoveredService && (
-          <motion.div
-            key={hoveredService.number}
-            initial={{ opacity: 0, scale: 0.92 }}
-            animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: 0.94 }}
-            transition={{ duration: 0.18, ease: "easeOut" }}
-            className="pointer-events-none fixed z-[100] hidden overflow-hidden rounded-2xl border border-white/80 bg-[#061a34] shadow-2xl md:block"
-            style={{
-              left: pointer.x,
-              top: pointer.y,
-              width: "min(420px, calc(100vw - 32px))",
-              height: 300,
-            }}
-          >
-            <img
-              src={hoveredService.image}
-              alt={hoveredService.title}
-              className="h-full w-full object-cover"
-            />
-          </motion.div>
-        )}
-      </AnimatePresence>
+                {/* Footer Action Link - Right Aligned */}
+                <div className="mt-6 flex justify-end pt-2">
+                  <a
+                    href="/contact"
+                    className={`inline-flex items-center gap-1.5 text-sm font-semibold underline underline-offset-4 transition-colors ${
+                      isHovered
+                        ? "text-white decoration-white hover:text-slate-100"
+                        : "text-[#061a34] decoration-[#f58220] hover:text-[#f58220]"
+                    }`}
+                  >
+                    Enquire
+                  </a>
+                </div>
+              </motion.div>
+            );
+          })}
+        </div>
+      </div>
     </div>
   );
 }
