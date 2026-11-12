@@ -19,6 +19,7 @@ import {
   Factory,
   Layers,
   Sparkles,
+  Leaf, // <-- Add Leaf (or Sprout)
 } from "lucide-react";
 import { Bell, FileText, BriefcaseBusiness } from "lucide-react";
 import { useRef, useState } from "react";
@@ -37,6 +38,7 @@ function getServiceIcon(title: string) {
   if (name.includes("marine")) return Ship;
   if (name.includes("solar") || name.includes("renewable")) return Sun;
   if (name.includes("spare")) return Wrench;
+  if (name.includes("bioenergy") || name.includes("bio-energy")) return Leaf;
   if (name.includes("biomass")) return Factory;
   if (name.includes("land") || name.includes("boiler")) return Building2;
 
