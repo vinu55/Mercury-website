@@ -13,13 +13,12 @@ import { useEffect, type ReactNode } from "react";
 import appCss from "../styles.css?url";
 import { Header, Footer, WhatsAppButton } from "@/components/site/SiteChrome";
 
-// Google Analytics 4
-const GA_MEASUREMENT_ID = "G-0S8Z10SLVX";
+// Google Tag Manager
+const GTM_ID = "GTM-NL33L4XD";
 
 declare global {
   interface Window {
-    dataLayer: unknown[];
-    gtag: (...args: any[]) => void;
+    dataLayer: Record<string, unknown>[];
   }
 }
 
@@ -69,26 +68,26 @@ export const Route = createRootRouteWithContext<{
       },
     ],
 
+    // Google Tag Manager installation
     scripts: [
       {
-        src: `https://www.googletagmanager.com/gtag/js?id=${GA_MEASUREMENT_ID}`,
-        async: true,
-      },
-      {
         children: `
-          window.dataLayer = window.dataLayer || [];
+          (function(w,d,s,l,i){
+            w[l]=w[l]||[];
+            w[l].push({
+              'gtm.start': new Date().getTime(),
+              event:'gtm.js'
+            });
 
-          function gtag() {
-            window.dataLayer.push(arguments);
-          }
+            var f=d.getElementsByTagName(s)[0],
+                j=d.createElement(s),
+                dl=l!='dataLayer'?'&l='+l:'';
 
-          window.gtag = gtag;
+            j.async=true;
+            j.src='https://www.googletagmanager.com/gtm.js?id='+i+dl;
 
-          gtag('js', new Date());
-
-          gtag('config', '${GA_MEASUREMENT_ID}', {
-            send_page_view: false
-          });
+            f.parentNode.insertBefore(j,f);
+          })(window,document,'script','dataLayer','${GTM_ID}');
         `,
       },
     ],
@@ -101,6 +100,17 @@ export const Route = createRootRouteWithContext<{
       </head>
 
       <body>
+        {/* Google Tag Manager - NoScript */}
+        <noscript>
+          <iframe
+            src={`https://www.googletagmanager.com/ns.html?id=${GTM_ID}`}
+            height="0"
+            width="0"
+            style={{ display: "none", visibility: "hidden" }}
+            title="Google Tag Manager"
+          />
+        </noscript>
+
         {children}
         <Scripts />
       </body>
@@ -136,9 +146,10 @@ function Root() {
   });
 
   useEffect(() => {
-    if (typeof window === "undefined" || !window.gtag) return;
+    window.dataLayer = window.dataLayer || [];
 
-    window.gtag("event", "page_view", {
+    window.dataLayer.push({
+      event: "virtual_page_view",
       page_path: currentUrl,
       page_location: window.location.href,
       page_title: document.title,
