@@ -1,24 +1,13 @@
 import { Suspense, useMemo, useRef, useState, useEffect } from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
 import {
-  Html,
   OrbitControls,
   useGLTF,
-  useProgress,
 } from "@react-three/drei";
 import { SkeletonUtils } from "three-stdlib";
 import * as THREE from "three";
 
-// Silence Three.js Clock deprecation warning in vendor chunks
-if (typeof window !== "undefined") {
-  const originalWarn = console.warn;
-  console.warn = (...args: unknown[]) => {
-    if (typeof args[0] === "string" && args[0].includes("THREE.Clock")) {
-      return;
-    }
-    originalWarn(...args);
-  };
-}
+
 
 const GLOBE_PATH = "/models/earth_globe-optimized.glb";
 const GLOBE_RADIUS = 0.675;
@@ -88,6 +77,67 @@ type GlobeModelProps = {
   focusRequest: number;
 };
 
+function CountryLabel({ location }: { location: PartnerLocation }) {
+  const [texture, setTexture] = useState<THREE.CanvasTexture | null>(null);
+
+  useEffect(() => {
+    const canvas = document.createElement("canvas");
+    canvas.width = 380;
+    canvas.height = 128;
+
+    const context = canvas.getContext("2d");
+    if (!context) return;
+
+    // Rounded background
+    context.beginPath();
+    context.roundRect(3, 3, 374, 122, 24);
+    context.fillStyle = "#061A34";
+    context.fill();
+
+    // Country-colored border
+    context.strokeStyle = location.color;
+    context.lineWidth = 5;
+    context.stroke();
+
+    // Flag before country name
+    context.font = '64px "Apple Color Emoji", "Segoe UI Emoji", sans-serif';
+    context.textBaseline = "middle";
+    context.fillText(location.flag, 28, 65);
+
+    // Country name
+    context.font = "bold 46px Arial, sans-serif";
+    context.fillStyle = "#FFFFFF";
+    context.fillText(location.name, 135, 67);
+
+    const labelTexture = new THREE.CanvasTexture(canvas);
+    labelTexture.colorSpace = THREE.SRGBColorSpace;
+    labelTexture.needsUpdate = true;
+
+    setTexture(labelTexture);
+
+    return () => labelTexture.dispose();
+  }, [location]);
+
+  if (!texture) return null;
+
+  return (
+    <sprite
+      position={[0, 0.13, 0]}
+      scale={[0.36, 0.12, 1]}
+      renderOrder={100}
+      raycast={() => null}
+    >
+      <spriteMaterial
+        map={texture}
+        transparent
+        depthTest={false}
+        depthWrite={false}
+        toneMapped={false}
+      />
+    </sprite>
+  );
+}
+
 function GlobeModel({
   selected,
   labelCountry,
@@ -96,6 +146,8 @@ function GlobeModel({
   focusRequest,
 }: GlobeModelProps) {
   const { scene } = useGLTF(GLOBE_PATH);
+  
+  
 
   const baseQuaternion = useMemo(
     () =>
@@ -114,6 +166,7 @@ function GlobeModel({
     () => getIndiaTargetQuaternion(baseQuaternion),
     [baseQuaternion],
   );
+  const startQuaternion = useRef(indiaDefaultQuaternion.clone());
 
   const targetQuaternion = useRef(indiaDefaultQuaternion.clone());
   const focusProgress = useRef(1);
@@ -197,11 +250,13 @@ function GlobeModel({
           new THREE.Vector3(0, 0, 1),
         );
 
-        targetQuaternion.current
-          .copy(targetRotation)
-          .multiply(baseQuaternion);
+        startQuaternion.current.copy(group.quaternion);
 
-        focusProgress.current = 0;
+targetQuaternion.current
+  .copy(targetRotation)
+  .multiply(baseQuaternion);
+
+focusProgress.current = 0;
       }
     }
 
@@ -219,7 +274,11 @@ function GlobeModel({
         focusProgress.current *
         (3 - 2 * focusProgress.current);
 
-      group.quaternion.slerp(targetQuaternion.current, eased);
+      group.quaternion.slerpQuaternions(
+  startQuaternion.current,
+  targetQuaternion.current,
+  eased,
+);
     }
     // Auto-rotation disabled so India stays focused
   });
@@ -293,26 +352,7 @@ function GlobeModel({
               />
             </mesh>
 
-            {showLabel && (
-              <Html
-                center
-                distanceFactor={2.4}
-                position={[0, 0.09, 0]}
-                zIndexRange={[30, 0]}
-                style={{ pointerEvents: "none" }}
-              >
-                <div
-                  className="whitespace-nowrap rounded-md border px-2.5 py-1 text-xs font-semibold text-white shadow-lg"
-                  style={{
-                    backgroundColor: "#061A34",
-                    borderColor: `${location.color}99`,
-                    boxShadow: `0 0 16px ${location.color}70`,
-                  }}
-                >
-                  {location.flag} {location.name}
-                </div>
-              </Html>
-            )}
+            {showLabel && <CountryLabel location={location} />}
           </group>
         );
       })}
@@ -321,19 +361,11 @@ function GlobeModel({
 }
 
 function LoadingGlobe() {
-  const { progress, errors } = useProgress();
-
   return (
-    <Html center>
-      <div className="flex flex-col items-center gap-3 whitespace-nowrap">
-        <div className="size-9 animate-spin rounded-full border-2 border-slate-300 border-t-[#F58220]" />
-        <p className="text-xs font-medium text-[#061A34]">
-          {errors.length > 0
-            ? "Unable to load Earth"
-            : `Loading Earth… ${Math.round(progress)}%`}
-        </p>
-      </div>
-    </Html>
+    <mesh>
+      <sphereGeometry args={[0.08, 16, 16]} />
+      <meshBasicMaterial color="#F58220" wireframe />
+    </mesh>
   );
 }
 
