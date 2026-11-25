@@ -1,26 +1,15 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import { Environment, Lightformer, useGLTF } from "@react-three/drei";
-import { SkeletonUtils, KTX2Loader } from "three-stdlib";
+import { SkeletonUtils } from "three-stdlib";
 import * as THREE from "three";
-
-const ktx2Loader = new KTX2Loader().setTranscoderPath(
-  "https://jsdelivr.net",
-);
 
 function Sun() {
   const group = useRef<THREE.Group>(null);
   const { gl } = useThree();
   const [hovered, setHovered] = useState(false);
 
-  // Detect GPU support for KTX2/Basis textures before loading sun.glb
-  useMemo(() => {
-    ktx2Loader.detectSupport(gl);
-  }, [gl]);
-
-  const { scene } = useGLTF("/models/sun.glb", true, true, (loader) => {
-    loader.setKTX2Loader(ktx2Loader);
-  });
+  const { scene } = useGLTF("/models/sun.glb");
 
   // Auto-center and normalize scale so the Sun is always visible on localhost & live
   const normalizedSun = useMemo(() => {
