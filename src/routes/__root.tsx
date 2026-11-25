@@ -1,3 +1,4 @@
+
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import {
   Outlet,
@@ -5,10 +6,22 @@ import {
   createRootRouteWithContext,
   HeadContent,
   Scripts,
+  useRouterState,
 } from "@tanstack/react-router";
-import type { ReactNode } from "react";
+import { useEffect, type ReactNode } from "react";
+
 import appCss from "../styles.css?url";
 import { Header, Footer, WhatsAppButton } from "@/components/site/SiteChrome";
+
+// Google Analytics 4
+const GA_MEASUREMENT_ID = "G-0S8Z10SLVX";
+
+declare global {
+  interface Window {
+    dataLayer: unknown[];
+    gtag: (...args: any[]) => void;
+  }
+}
 
 export const Route = createRootRouteWithContext<{
   queryClient: QueryClient;
@@ -33,6 +46,7 @@ export const Route = createRootRouteWithContext<{
           "media-src 'self' data: blob: https:;",
       },
     ],
+
     links: [
       { rel: "stylesheet", href: appCss },
       {
@@ -54,17 +68,27 @@ export const Route = createRootRouteWithContext<{
         href: "https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&family=Sora:wght@400;500;600;700&display=swap",
       },
     ],
+
     scripts: [
       {
-        src: "https://googletagmanager.com",
+        src: `https://www.googletagmanager.com/gtag/js?id=${GA_MEASUREMENT_ID}`,
         async: true,
       },
       {
         children: `
           window.dataLayer = window.dataLayer || [];
-          function gtag(){dataLayer.push(arguments);}
+
+          function gtag() {
+            window.dataLayer.push(arguments);
+          }
+
+          window.gtag = gtag;
+
           gtag('js', new Date());
-          gtag('config', 'G-634PT1VCFL');
+
+          gtag('config', '${GA_MEASUREMENT_ID}', {
+            send_page_view: false
+          });
         `,
       },
     ],
@@ -75,6 +99,7 @@ export const Route = createRootRouteWithContext<{
       <head>
         <HeadContent />
       </head>
+
       <body>
         {children}
         <Scripts />
@@ -88,8 +113,15 @@ export const Route = createRootRouteWithContext<{
     <main className="grid min-h-screen place-items-center px-5 text-center">
       <div>
         <p className="eyebrow text-accent">404</p>
-        <h1 className="mt-4 text-5xl font-semibold">Page not found</h1>
-        <Link to="/" className="mt-6 inline-block text-primary underline">
+
+        <h1 className="mt-4 text-5xl font-semibold">
+          Page not found
+        </h1>
+
+        <Link
+          to="/"
+          className="mt-6 inline-block text-primary underline"
+        >
           Return home
         </Link>
       </div>
@@ -98,16 +130,44 @@ export const Route = createRootRouteWithContext<{
 });
 
 function Root() {
+  // Track TanStack Router navigation
+  const currentUrl = useRouterState({
+    select: (state) => state.location.href,
+  });
+
+  useEffect(() => {
+    if (typeof window === "undefined" || !window.gtag) return;
+
+    window.gtag("event", "page_view", {
+      page_path: currentUrl,
+      page_location: window.location.href,
+      page_title: document.title,
+    });
+  }, [currentUrl]);
+
+  // Existing console warning filter
   if (typeof console !== "undefined") {
-    const g = globalThis as typeof globalThis & { __clockWarnFiltered?: boolean };
+    const g = globalThis as typeof globalThis & {
+      __clockWarnFiltered?: boolean;
+    };
+
     if (!g.__clockWarnFiltered) {
       g.__clockWarnFiltered = true;
+
       const originalWarn = console.warn.bind(console);
+
       console.warn = (...args: unknown[]) => {
-        const msg = typeof args[0] === "string" ? args[0] : "";
-        if (msg.includes("THREE.Clock: This module has been deprecated")) {
+        const msg =
+          typeof args[0] === "string" ? args[0] : "";
+
+        if (
+          msg.includes(
+            "THREE.Clock: This module has been deprecated"
+          )
+        ) {
           return;
         }
+
         originalWarn(...args);
       };
     }
