@@ -6,7 +6,7 @@ import * as THREE from "three";
 
 function Sun() {
   const group = useRef<THREE.Group>(null);
-  
+
   // Load model safely
   const { scene } = useGLTF("/models/sun.glb");
   const clone = useMemo(() => SkeletonUtils.clone(scene), [scene]);
@@ -21,7 +21,6 @@ function Sun() {
   );
 
   useEffect(() => {
-    // Enable max anisotropy so textures don't blur out at oblique angles on laptops/phones
     const maxAnisotropy = gl.capabilities.getMaxAnisotropy();
 
     clone.traverse((object) => {
@@ -36,15 +35,32 @@ function Sun() {
 
       materials.forEach((material) => {
         if (!material) return;
-        
 
-        // Force sRGB color space & enhance texture filtering for clarity
         const configureTexture = (tex: THREE.Texture | null) => {
           if (!tex) return;
+          tex.colorSpace = THREE.SRGBColorSpace;
           tex.anisotropy = maxAnisotropy;
-      };
-       configureTexture(material.map);
-        configureTexture(material.emissiveMap);
+          tex.needsUpdate = true;
+        };
+
+        if ("map" in material) {
+          configureTexture(material.map);
+        }
+        if ("emissiveMap" in material) {
+          configureTexture(material.emissiveMap);
+        }
+
+        // Fallback solar glow if embedded GLB texture fails to decode
+        if (
+          material instanceof THREE.MeshStandardMaterial &&
+          (!material.map || !material.map.image)
+        ) {
+          material.color = new THREE.Color("#f58220");
+          material.emissive = new THREE.Color("#ff4500");
+          material.emissiveIntensity = 0.85;
+          material.roughness = 0.4;
+          material.needsUpdate = true;
+        }
       });
     });
   }, [clone, gl]);
@@ -70,6 +86,7 @@ function Sun() {
       easing,
     );
   });
+
   useEffect(() => {
     return () => {
       document.body.style.cursor = "";
@@ -99,14 +116,14 @@ function Sun() {
 export default function SunScene() {
   return (
     <Canvas
-      dpr={[1, 2]} // High-DPI support for crisp rendering on retina/mobile screens
+      dpr={[1, 2]}
       camera={{ position: [0, 0, 6.5], fov: 45 }}
       gl={{
         antialias: true,
         alpha: true,
         powerPreference: "high-performance",
         toneMapping: THREE.ACESFilmicToneMapping,
-        toneMappingExposure: 1.2, // Increased brightness/exposure for vibrant solar textures
+        toneMappingExposure: 1.2,
         outputColorSpace: THREE.SRGBColorSpace,
       }}
       onCreated={({ gl }) => {
@@ -126,7 +143,6 @@ export default function SunScene() {
         color="#ffa500"
       />
 
-      {/* Rim light for a realistic solar corona atmospheric glow */}
       <pointLight
         position={[0, 0, -2]}
         intensity={2.5}
@@ -154,5 +170,3 @@ export default function SunScene() {
     </Canvas>
   );
 }
-
-useGLTF.preload("/models/sun.glb");

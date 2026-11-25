@@ -6,7 +6,7 @@ import {
   HeadContent,
   Scripts,
 } from "@tanstack/react-router";
-import { useLayoutEffect, useEffect, type ReactNode } from "react";
+import type { ReactNode } from "react";
 import appCss from "../styles.css?url";
 import { Header, Footer, WhatsAppButton } from "@/components/site/SiteChrome";
 
@@ -53,7 +53,8 @@ export const Route = createRootRouteWithContext<{
         rel: "stylesheet",
         href: "https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&family=Sora:wght@400;500;600;700&display=swap",
       },
-    ],    scripts: [
+    ],
+    scripts: [
       {
         src: "https://googletagmanager.com",
         async: true,
@@ -67,7 +68,6 @@ export const Route = createRootRouteWithContext<{
         `,
       },
     ],
-
   }),
 
   shellComponent: ({ children }: { children: ReactNode }) => (
@@ -81,7 +81,7 @@ export const Route = createRootRouteWithContext<{
       </body>
     </html>
   ),
-  
+
   component: Root,
 
   notFoundComponent: () => (
@@ -98,7 +98,7 @@ export const Route = createRootRouteWithContext<{
 });
 
 function Root() {
-  if (import.meta.env.DEV && typeof console !== "undefined") {
+  if (typeof console !== "undefined") {
     const g = globalThis as typeof globalThis & { __clockWarnFiltered?: boolean };
     if (!g.__clockWarnFiltered) {
       g.__clockWarnFiltered = true;
