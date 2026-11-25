@@ -15,7 +15,7 @@ export const Route = createFileRoute("/manufacturing")({
       },
       {
         name: "robots",
-        content: "noindex, nofollow",
+        content: "index, follow",
       },
     ],
   }),
