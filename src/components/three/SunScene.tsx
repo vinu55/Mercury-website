@@ -1,28 +1,39 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import { Environment, Lightformer, useGLTF } from "@react-three/drei";
-import { SkeletonUtils } from "three-stdlib";
+import { SkeletonUtils, KTX2Loader } from "three-stdlib";
 import * as THREE from "three";
+
+const ktx2Loader = new KTX2Loader().setTranscoderPath(
+  "https://jsdelivr.net",
+);
 
 function Sun() {
   const group = useRef<THREE.Group>(null);
-
-  // Load model safely
-  const { scene } = useGLTF("/models/sun.glb");
-  const clone = useMemo(() => SkeletonUtils.clone(scene), [scene]);
+  const { gl } = useThree();
   const [hovered, setHovered] = useState(false);
 
-  const { gl, size } = useThree();
+  // Detect GPU support for KTX2/Basis textures before loading sun.glb
+  useMemo(() => {
+    ktx2Loader.detectSupport(gl);
+  }, [gl]);
 
-  const responsiveScale = THREE.MathUtils.clamp(
-    size.width * 0.0003,
-    0.045,
-    0.3,
-  );
+  const { scene } = useGLTF("/models/sun.glb", true, true, (loader) => {
+    loader.setKTX2Loader(ktx2Loader);
+  });
 
-  useEffect(() => {
+  // Auto-center and normalize scale so the Sun is always visible on localhost & live
+  const normalizedSun = useMemo(() => {
+    const clone = SkeletonUtils.clone(scene);
+    const box = new THREE.Box3().setFromObject(clone);
+    const center = box.getCenter(new THREE.Vector3());
+    const size = box.getSize(new THREE.Vector3());
+    const maxDim = Math.max(size.x, size.y, size.z) || 1;
+
+    clone.position.sub(center);
+    clone.scale.setScalar(3.4 / maxDim);
+
     const maxAnisotropy = gl.capabilities.getMaxAnisotropy();
-
     clone.traverse((object) => {
       if (!(object instanceof THREE.Mesh)) return;
 
@@ -35,35 +46,17 @@ function Sun() {
 
       materials.forEach((material) => {
         if (!material) return;
-
-        const configureTexture = (tex: THREE.Texture | null) => {
-          if (!tex) return;
-          tex.colorSpace = THREE.SRGBColorSpace;
-          tex.anisotropy = maxAnisotropy;
-          tex.needsUpdate = true;
-        };
-
-        if ("map" in material) {
-          configureTexture(material.map);
+        if ("map" in material && material.map) {
+          material.map.anisotropy = maxAnisotropy;
         }
-        if ("emissiveMap" in material) {
-          configureTexture(material.emissiveMap);
-        }
-
-        // Fallback solar glow if embedded GLB texture fails to decode
-        if (
-          material instanceof THREE.MeshStandardMaterial &&
-          (!material.map || !material.map.image)
-        ) {
-          material.color = new THREE.Color("#f58220");
-          material.emissive = new THREE.Color("#ff4500");
-          material.emissiveIntensity = 0.85;
-          material.roughness = 0.4;
-          material.needsUpdate = true;
+        if ("emissiveMap" in material && material.emissiveMap) {
+          material.emissiveMap.anisotropy = maxAnisotropy;
         }
       });
     });
-  }, [clone, gl]);
+
+    return clone;
+  }, [scene, gl]);
 
   useFrame((state, delta) => {
     const current = group.current;
@@ -96,7 +89,6 @@ function Sun() {
   return (
     <group
       ref={group}
-      scale={responsiveScale}
       position={[0, 0, 0]}
       onPointerEnter={(event) => {
         event.stopPropagation();
@@ -108,7 +100,7 @@ function Sun() {
         document.body.style.cursor = "";
       }}
     >
-      <primitive object={clone} />
+      <primitive object={normalizedSun} />
     </group>
   );
 }

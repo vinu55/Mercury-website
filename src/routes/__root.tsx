@@ -27,7 +27,7 @@ export const Route = createRootRouteWithContext<{
       {
         httpEquiv: "Content-Security-Policy",
         content:
-          "default-src 'self' https: data: blob: 'unsafe-inline' 'unsafe-eval'; " +
+          "default-src 'self' https: data: blob: 'unsafe-inline' 'unsafe-eval' 'wasm-unsafe-eval'; " +
           "img-src 'self' data: blob: https:; " +
           "worker-src 'self' blob:; " +
           "media-src 'self' data: blob: https:;",
