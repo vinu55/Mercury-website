@@ -14,6 +14,7 @@ import { Route as AboutRouteImport } from './routes/about'
 import { Route as CareersRouteImport } from './routes/careers'
 import { Route as CaseStudyRouteImport } from './routes/case-study'
 import { Route as ContactRouteImport } from './routes/contact'
+import { Route as ManufacturingRouteImport } from './routes/manufacturing'
 import { Route as UpdatesRouteImport } from './routes/updates'
 import { Route as ServicesBiomassFuelRouteImport } from './routes/services.biomass-fuel'
 import { Route as ServicesLandBoilerRouteImport } from './routes/services.land-boiler'
@@ -44,6 +45,11 @@ const CaseStudyRoute = CaseStudyRouteImport.update({
 const ContactRoute = ContactRouteImport.update({
   id: '/contact',
   path: '/contact',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ManufacturingRoute = ManufacturingRouteImport.update({
+  id: '/manufacturing',
+  path: '/manufacturing',
   getParentRoute: () => rootRouteImport,
 } as any)
 const UpdatesRoute = UpdatesRouteImport.update({
@@ -83,6 +89,7 @@ export interface FileRoutesByFullPath {
   '/careers': typeof CareersRoute
   '/case-study': typeof CaseStudyRoute
   '/contact': typeof ContactRoute
+  '/manufacturing': typeof ManufacturingRoute
   '/updates': typeof UpdatesRoute
   '/services/biomass-fuel': typeof ServicesBiomassFuelRoute
   '/services/land-boiler': typeof ServicesLandBoilerRoute
@@ -96,6 +103,7 @@ export interface FileRoutesByTo {
   '/careers': typeof CareersRoute
   '/case-study': typeof CaseStudyRoute
   '/contact': typeof ContactRoute
+  '/manufacturing': typeof ManufacturingRoute
   '/updates': typeof UpdatesRoute
   '/services/biomass-fuel': typeof ServicesBiomassFuelRoute
   '/services/land-boiler': typeof ServicesLandBoilerRoute
@@ -110,6 +118,7 @@ export interface FileRoutesById {
   '/careers': typeof CareersRoute
   '/case-study': typeof CaseStudyRoute
   '/contact': typeof ContactRoute
+  '/manufacturing': typeof ManufacturingRoute
   '/updates': typeof UpdatesRoute
   '/services/biomass-fuel': typeof ServicesBiomassFuelRoute
   '/services/land-boiler': typeof ServicesLandBoilerRoute
@@ -125,6 +134,7 @@ export interface FileRouteTypes {
     | '/careers'
     | '/case-study'
     | '/contact'
+    | '/manufacturing'
     | '/updates'
     | '/services/biomass-fuel'
     | '/services/land-boiler'
@@ -138,6 +148,7 @@ export interface FileRouteTypes {
     | '/careers'
     | '/case-study'
     | '/contact'
+    | '/manufacturing'
     | '/updates'
     | '/services/biomass-fuel'
     | '/services/land-boiler'
@@ -151,6 +162,7 @@ export interface FileRouteTypes {
     | '/careers'
     | '/case-study'
     | '/contact'
+    | '/manufacturing'
     | '/updates'
     | '/services/biomass-fuel'
     | '/services/land-boiler'
@@ -165,6 +177,7 @@ export interface RootRouteChildren {
   CareersRoute: typeof CareersRoute
   CaseStudyRoute: typeof CaseStudyRoute
   ContactRoute: typeof ContactRoute
+  ManufacturingRoute: typeof ManufacturingRoute
   UpdatesRoute: typeof UpdatesRoute
   ServicesBiomassFuelRoute: typeof ServicesBiomassFuelRoute
   ServicesLandBoilerRoute: typeof ServicesLandBoilerRoute
@@ -208,6 +221,13 @@ declare module '@tanstack/react-router' {
       path: '/contact'
       fullPath: '/contact'
       preLoaderRoute: typeof ContactRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/manufacturing': {
+      id: '/manufacturing'
+      path: '/manufacturing'
+      fullPath: '/manufacturing'
+      preLoaderRoute: typeof ManufacturingRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/updates': {
@@ -261,6 +281,7 @@ const rootRouteChildren: RootRouteChildren = {
   CareersRoute: CareersRoute,
   CaseStudyRoute: CaseStudyRoute,
   ContactRoute: ContactRoute,
+  ManufacturingRoute: ManufacturingRoute,
   UpdatesRoute: UpdatesRoute,
   ServicesBiomassFuelRoute: ServicesBiomassFuelRoute,
   ServicesLandBoilerRoute: ServicesLandBoilerRoute,

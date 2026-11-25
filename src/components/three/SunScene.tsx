@@ -91,6 +91,11 @@ function Sun() {
       easing,
     );
   });
+  useEffect(() => {
+    return () => {
+      document.body.style.cursor = "";
+    };
+  }, []);
 
   return (
     <group

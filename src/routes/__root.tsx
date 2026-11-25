@@ -53,15 +53,21 @@ export const Route = createRootRouteWithContext<{
         rel: "stylesheet",
         href: "https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&family=Sora:wght@400;500;600;700&display=swap",
       },
-      // Single optimized preloads
+    ],    scripts: [
       {
-        rel: "preload",
-        href: "/media/intro.mp4",
-        as: "video",
-        type: "video/mp4",
-        crossOrigin: "anonymous",
+        src: "https://googletagmanager.com",
+        async: true,
+      },
+      {
+        children: `
+          window.dataLayer = window.dataLayer || [];
+          function gtag(){dataLayer.push(arguments);}
+          gtag('js', new Date());
+          gtag('config', 'G-634PT1VCFL');
+        `,
       },
     ],
+
   }),
 
   shellComponent: ({ children }: { children: ReactNode }) => (
@@ -92,38 +98,22 @@ export const Route = createRootRouteWithContext<{
 });
 
 function Root() {
-  const { queryClient } = Route.useRouteContext();
-
-  useEffect(() => {
-    const cleanupReveal = () => {
-      document.querySelectorAll("[data-page-reveal]").forEach((element) => {
-        if (element.parentNode) {
-          try {
-            element.parentNode.removeChild(element);
-          } catch {
-            // Ignore if already unmounted
-          }
+  if (import.meta.env.DEV && typeof console !== "undefined") {
+    const g = globalThis as typeof globalThis & { __clockWarnFiltered?: boolean };
+    if (!g.__clockWarnFiltered) {
+      g.__clockWarnFiltered = true;
+      const originalWarn = console.warn.bind(console);
+      console.warn = (...args: unknown[]) => {
+        const msg = typeof args[0] === "string" ? args[0] : "";
+        if (msg.includes("THREE.Clock: This module has been deprecated")) {
+          return;
         }
-      });
-    };
+        originalWarn(...args);
+      };
+    }
+  }
 
-    window.addEventListener("pageshow", cleanupReveal);
-    window.addEventListener("popstate", cleanupReveal);
-    window.addEventListener("pagehide", cleanupReveal);
-
-    cleanupReveal();
-
-    return () => {
-      window.removeEventListener("pageshow", cleanupReveal);
-      window.removeEventListener("popstate", cleanupReveal);
-      window.removeEventListener("pagehide", cleanupReveal);
-    };
-  }, []);
-
-  useLayoutEffect(() => {
-    window.history.scrollRestoration = "manual";
-    window.scrollTo(0, 0);
-  }, []);
+  const { queryClient } = Route.useRouteContext();
 
   return (
     <QueryClientProvider client={queryClient}>

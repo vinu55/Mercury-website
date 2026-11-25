@@ -104,7 +104,7 @@ function About() {
       {/* HERO — MUTED BACKGROUND VIDEO */}
       <section className="relative isolate flex min-h-[440px] items-end overflow-hidden bg-[#061A34] sm:min-h-[520px] lg:min-h-[600px]">
         <video
-          src="/media/about.mp4"
+          src="/media/intro.mp4"
           autoPlay
           muted
           loop

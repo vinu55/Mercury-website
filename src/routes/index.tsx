@@ -3,14 +3,12 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import {
   lazy,
   Suspense,
-  useEffect,
   useLayoutEffect,
   useRef,
-  useState,
   type PointerEvent,
 } from "react";
-import { ArrowDown, ArrowRight } from "lucide-react";
-import { useInView } from "react-intersection-observer";
+import { ArrowRight } from "lucide-react";
+
 import { motion, useMotionValue, useScroll, useSpring, useTransform } from "motion/react";
 
 import biomass from "@/assets/biomass.png";
@@ -78,16 +76,7 @@ function Home() {
     window.history.scrollRestoration = "manual";
     window.scrollTo(0, 0);
   }, []);
-  /* =========================================================
-     HERO SCROLL
-  ========================================================= */
-
-  const { scrollYProgress: heroScrollProgress } = useScroll({
-    target: heroRef,
-    offset: ["start start", "end start"],
-  });
-
-  const heroY = useTransform(heroScrollProgress, [0, 1], [0, 160]);
+ 
 
   /* =========================================================
      ABOUT SCROLL
@@ -106,10 +95,7 @@ function Home() {
           HERO VIDEO
       ========================================================= */}
 
-      {/* CINEMATIC HERO */}
-      {/* =========================================================
-    CINEMATIC HERO — TYPEWRITER ANIMATION
-========================================================= */}
+      {/* CINEMATIC HERO — STATIC HEADING */}
 
      <section
         ref={heroRef}
@@ -122,10 +108,8 @@ function Home() {
           muted
           loop
           playsInline
-          webkit-playsinline="true"
           preload="auto"
           {...{ fetchPriority: "high" }}
-          poster="/media/intro-poster.jpg"
           className="absolute inset-0 h-full w-full object-cover bg-[#061a34]"
           style={{ objectFit: "cover", backgroundColor: "#061a34" }}
           onLoadedData={() => {
@@ -158,17 +142,12 @@ function Home() {
             </motion.p>
 
             <h1
-              aria-label="Complete Solutions for Marine and Land-Based Boilers and Thermal Equipment."
-              className="mt-3 max-w-3xl text-3xl font-semibold leading-[1.08] tracking-tight text-white sm:text-4xl md:text-4xl lg:text-5xl xl:text-5xl"
-            >
-              <TypewriterText
-                text="Complete Solutions for Marine, Land-Based Boilers & Thermal Equipment"
-                delay={500}
-                className="inline"
-              />
-              <span className="text-[#f58220]">.</span>
-            </h1>
-
+  aria-label="Complete Solutions for Marine, Land-Based Boilers and Thermal Equipment."
+  className="mt-3 max-w-3xl text-3xl font-semibold leading-[1.08] tracking-tight text-white sm:text-4xl md:text-4xl lg:text-5xl xl:text-5xl"
+>
+  Complete Solutions for Marine, Land-Based Boilers & Thermal Equipment
+  <span className="text-[#f58220]">.</span>
+</h1>
             <motion.button
               type="button"
               initial="rest"
@@ -322,13 +301,7 @@ const serviceImages = [
   spareparts,
 ];
 
-const descriptions = [
-  "Reliable marine boiler systems engineered for demanding vessel operations and long-term performance.",
-  "Efficient industrial boiler solutions built for dependable performance and demanding applications.",
-  "Sustainable biomass systems designed to deliver efficient and reliable thermal energy.",
-  "Practical solar solutions supporting energy efficiency and more sustainable operations.",
-  "Quality spare parts and dependable support to keep your equipment running smoothly.",
-];
+
 
 
 
@@ -472,381 +445,188 @@ function ServiceScrollCard({
 ============================================================= */
 
 
+
 function ServicesParallax() {
-  const [activeService, setActiveService] = useState(0);
-  const [isVisible, setIsVisible] = useState(false);
-  const sectionRef = useRef<HTMLElement>(null);
-
-  useEffect(() => {
-    const section = sectionRef.current;
-    if (!section) return;
-
-    let frame = 0;
-
-    const updateNavigation = () => {
-      cancelAnimationFrame(frame);
-
-      frame = requestAnimationFrame(() => {
-        const sectionRect = section.getBoundingClientRect();
-
-        setIsVisible(
-          sectionRect.top < window.innerHeight &&
-          sectionRect.bottom > 0
-        );
-
-        const cards = SERVICES.map((_, index) =>
-          document.getElementById(`service-${index}`)
-        ).filter(Boolean) as HTMLElement[];
-
-        const viewportCenter = window.innerHeight / 2;
-        let nearestIndex = 0;
-        let nearestDistance = Infinity;
-
-        cards.forEach((card, index) => {
-          const rect = card.getBoundingClientRect();
-          const cardCenter = rect.top + rect.height / 2;
-          const distance = Math.abs(cardCenter - viewportCenter);
-
-          if (distance < nearestDistance) {
-            nearestDistance = distance;
-            nearestIndex = index;
-          }
-        });
-
-        setActiveService(nearestIndex);
-      });
-    };
-
-    updateNavigation();
-
-    window.addEventListener("scroll", updateNavigation, {
-      passive: true,
-    });
-    window.addEventListener("resize", updateNavigation);
-
-    return () => {
-      cancelAnimationFrame(frame);
-      window.removeEventListener("scroll", updateNavigation);
-      window.removeEventListener("resize", updateNavigation);
-    };
-  }, []);
-
   return (
-    <>
-      <section
-  id="solutions"
-  className="
-    relative w-full min-w-0 overflow-x-clip
-    bg-[#061a34] px-3 py-10 text-white
-    sm:px-6 sm:py-14
-    lg:px-12 lg:py-20
-  "
->
-        <div className="mx-auto max-w-7xl">
-          {/* Section heading */}
-          <div className="mb-8 sm:mb-12">
-            <p className="eyebrow text-accent !text-base font-semibold uppercase tracking-[0.2em] sm:!text-base lg:!text-lg sm:tracking-[0.25em]">
-              Our Solutions
-            </p>
-          </div>
-
-          {/* Service cards */}
-          <div className="flex min-w-0 flex-col gap-8 sm:gap-12 lg:gap-16">
-  {SERVICES.map((service, index) => (
-    <div
-      key={service.href}
-      id={`service-${index}`}
-      className="w-full min-w-0 scroll-mt-24"
+    <section
+      id="solutions"
+      className="
+        relative w-full min-w-0 overflow-x-clip
+        bg-[#061a34] px-3 py-10 text-white
+        sm:px-6 sm:py-14
+        lg:px-12 lg:py-20
+      "
     >
-      <ServiceScrollCard
-        service={service}
-        index={index}
-      />
-    </div>
-  ))}
-</div>
+      <div className="mx-auto max-w-7xl">
+        {/* Section heading */}
+        <div className="mb-8 sm:mb-12">
+          <p className="eyebrow text-accent !text-base font-semibold uppercase tracking-[0.2em] sm:!text-base lg:!text-lg sm:tracking-[0.25em]">
+            Our Solutions
+          </p>
         </div>
-      </section>
 
-      {/* Dots-only navigation */}
-      
-    </>
+        {/* Service cards */}
+        <div className="flex min-w-0 flex-col gap-8 sm:gap-12 lg:gap-16">
+          {SERVICES.map((service, index) => (
+            <div
+              key={service.href}
+              id={`service-${index}`}
+              className="w-full min-w-0 scroll-mt-24"
+            >
+              <ServiceScrollCard
+                service={service}
+                index={index}
+              />
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
   );
 }
 
 
-/* =========================================================
-   TYPEWRITER TEXT
-========================================================= */
 
-function TypewriterText({
-  text,
-  delay = 0,
-  className = "",
-}: {
-  text: string;
-  delay?: number;
-  className?: string;
-}) {
-  const [visibleText, setVisibleText] = useState("");
 
-  useEffect(() => {
-    let intervalId: ReturnType<typeof setInterval> | undefined;
-    let index = 0;
-
-    setVisibleText("");
-
-    const timeoutId = setTimeout(() => {
-      intervalId = setInterval(() => {
-        index += 1;
-        setVisibleText(text.slice(0, index));
-
-        if (index >= text.length && intervalId) {
-          clearInterval(intervalId);
-        }
-      }, 55);
-    }, delay);
-
-    return () => {
-      clearTimeout(timeoutId);
-
-      if (intervalId) {
-        clearInterval(intervalId);
-      }
-    };
-  }, [text, delay]);
-
-  return (
-    <span className={className}>
-      {visibleText}
-      {visibleText.length < text.length && (
-        <span
-          aria-hidden="true"
-          className="ml-1 inline-block h-[0.78em] w-[2px] translate-y-[0.04em] animate-pulse bg-[#f58220]"
-        />
-      )}
-    </span>
-  );
-}
 
 /* =============================================================
    ABOUT TEXT
 ============================================================= */
+
 
 function AboutText({
   scrollProgress,
 }: {
   scrollProgress: ReturnType<typeof useScroll>["scrollYProgress"];
 }) {
-  const { ref: inViewRef, inView: isInView } = useInView({
-    threshold: 0.3,
-    triggerOnce: true,
-  });
-
-  const headlineText = "One Partner, Multiple Solutions";
   const descriptionText =
     "Mercury Energy Solutions delivers integrated engineering services, marine and industrial boiler solutions, bioenergy, solar energy systems, and specialist spare parts — all under one roof.";
 
-  const [headline, setHeadline] = useState("");
-  const [description, setDescription] = useState("");
-  const [hasAnimated, setHasAnimated] = useState(false);
+  // Keep the existing scroll-based entrance animation
+  const x = useTransform(
+    scrollProgress,
+    [0, 0.35, 0.75, 1],
+    [-40, -20, -5, 0]
+  );
 
-  useEffect(() => {
-    if (!isInView || hasAnimated) return;
+  const opacity = useTransform(
+    scrollProgress,
+    [0, 0.25, 0.65, 1],
+    [0, 0.35, 0.85, 1]
+  );
 
-    let headlineIndex = 0;
-    let descriptionIndex = 0;
-    let headlineTimer: ReturnType<typeof setTimeout>;
-    let descriptionTimer: ReturnType<typeof setTimeout>;
-
-    const typeDescription = () => {
-      descriptionIndex += 1;
-      setDescription(descriptionText.slice(0, descriptionIndex));
-
-      if (descriptionIndex < descriptionText.length) {
-        descriptionTimer = setTimeout(typeDescription, 18);
-      } else {
-        setHasAnimated(true);
-      }
-    };
-
-    const typeHeadline = () => {
-      headlineIndex += 1;
-      setHeadline(headlineText.slice(0, headlineIndex));
-
-      if (headlineIndex < headlineText.length) {
-        headlineTimer = setTimeout(typeHeadline, 55);
-      } else {
-        descriptionTimer = setTimeout(typeDescription, 350);
-      }
-    };
-
-    headlineTimer = setTimeout(typeHeadline, 250);
-
-    return () => {
-      clearTimeout(headlineTimer);
-      clearTimeout(descriptionTimer);
-    };
-  }, [isInView, hasAnimated]);
-
-  const x = useTransform(scrollProgress, [0, 0.35, 0.75, 1], [-40, -20, -5, 0]);
-
-  const opacity = useTransform(scrollProgress, [0, 0.25, 0.65, 1], [0, 0.35, 0.85, 1]);
-
-  
-return (
-  <motion.div
-    ref={inViewRef}
-    style={{ x, opacity }}
-    className="relative z-20 w-full max-w-2xl lg:max-w-none lg:pr-8 lg:translate-x-4"
-  >
-    <p className="eyebrow text-accent !text-base font-semibold uppercase tracking-[0.2em] sm:!text-base lg:!text-lg sm:tracking-[0.25em]">
-      About Mercury
-    </p>
-
-    <h2
-      className="
-        mt-3 max-w-3xl text-3xl font-semibold leading-[1.08] tracking-tight text-white sm:text-4xl md:text-4xl lg:text-5xl xl:text-5xl
-      "
-      
-      aria-label={`${headlineText}.`}
+  return (
+    <motion.div
+      style={{ x, opacity }}
+      className="relative z-20 w-full max-w-2xl lg:max-w-none lg:pr-8 lg:translate-x-4"
     >
-      <span>{hasAnimated ? headlineText : headline}</span>
-      {(hasAnimated || headline === headlineText) && (
+      <p className="eyebrow text-accent !text-base font-semibold uppercase tracking-[0.2em] sm:!text-base lg:!text-lg sm:tracking-[0.25em]">
+        About Mercury
+      </p>
+
+      <h2 className="mt-3 max-w-3xl text-3xl font-semibold leading-[1.08] tracking-tight text-white sm:text-4xl md:text-4xl lg:text-5xl xl:text-5xl">
+        One Partner, Multiple Solutions
         <span className="text-[#f58220]">.</span>
-      )}
+      </h2>
 
-      {!hasAnimated && isInView && headline !== headlineText && (
-        <span
-          aria-hidden="true"
-          className="ml-1 inline-block h-[0.8em] w-[2px] animate-pulse bg-[#f58220] align-baseline"
-        />
-      )}
-    </h2>
+      <p
+        className="
+          mt-2
+          landscape:mt-2
+          sm:mt-4
+          min-h-0
+          landscape:min-h-0
+          sm:min-h-[10rem]
+          lg:min-h-[12rem]
+          max-w-xl
+          text-xs
+          landscape:text-xs
+          sm:text-lg
+          lg:text-xl
+          leading-5
+          landscape:leading-5
+          sm:leading-8
+          lg:leading-9
+          text-white/70
+        "
+      >
+        {descriptionText}
+      </p>
 
-    <p
-      className="
-        mt-2
-        landscape:mt-2
-        sm:mt-4
-        min-h-0
-        landscape:min-h-0
-        sm:min-h-[10rem]
-        lg:min-h-[12rem]
-        max-w-xl
-        text-xs
-        landscape:text-xs
-        sm:text-lg
-        lg:text-xl
-        leading-5
-        landscape:leading-5
-        sm:leading-8
-        lg:leading-9
-        text-white/70
-      "
-      aria-label={descriptionText}
-    >
-      {hasAnimated ? descriptionText : description}
+      <Link
+        to="/about"
+        onClick={(e) => {
+          e.preventDefault();
 
-      {!hasAnimated &&
-        headline === headlineText &&
-        isInView &&
-        description !== descriptionText && (
-          <span
-            aria-hidden="true"
-            className="ml-1 inline-block h-[0.8em] w-[2px] animate-pulse bg-[#f58220] align-baseline"
-          />
-        )}
-    </p>
+          if (document.getElementById("page-transition-overlay")) return;
 
-    <Link
-      to="/about"
-      onClick={(e) => {
-        e.preventDefault();
+          const button = e.currentTarget;
+          const rect = button.getBoundingClientRect();
+          const x = rect.left + rect.width / 2;
+          const y = rect.top + rect.height / 2;
 
-        if (document.getElementById("page-transition-overlay")) return;
+          const overlay = document.createElement("div");
+          overlay.id = "page-transition-overlay";
 
-        const button = e.currentTarget;
-        const rect = button.getBoundingClientRect();
-        const x = rect.left + rect.width / 2;
-        const y = rect.top + rect.height / 2;
-
-        const overlay = document.createElement("div");
-        overlay.id = "page-transition-overlay";
-
-        Object.assign(overlay.style, {
-          position: "fixed",
-          inset: "0",
-          background: "#f58220",
-          zIndex: "99999",
-          clipPath: `circle(0px at ${x}px ${y}px)`,
-          transition: "clip-path 850ms cubic-bezier(0.76, 0, 0.24, 1)",
-          pointerEvents: "none",
-        });
-
-        document.body.appendChild(overlay);
-
-        const radius = Math.hypot(
-          Math.max(x, window.innerWidth - x),
-          Math.max(y, window.innerHeight - y)
-        );
-
-        requestAnimationFrame(() => {
-          requestAnimationFrame(() => {
-            overlay.style.clipPath = `circle(${radius}px at ${x}px ${y}px)`;
+          Object.assign(overlay.style, {
+            position: "fixed",
+            inset: "0",
+            background: "#f58220",
+            zIndex: "99999",
+            clipPath: `circle(0px at ${x}px ${y}px)`,
+            transition: "clip-path 850ms cubic-bezier(0.76, 0, 0.24, 1)",
+            pointerEvents: "none",
           });
-        });
 
-        setTimeout(() => {
-          overlay.remove();
-          window.location.assign("/about");
-        }, 850);
-      }}
-      aria-label="Discover our approach"
-      className="
-        mt-4
-        landscape:mt-3
-        sm:mt-8
-        inline-flex
-        h-10
-        w-10
-        landscape:h-10
-        landscape:w-10
-        sm:h-12
-        sm:w-12
-        items-center
-        justify-center
-        rounded-full
-        bg-[#f58220]
-        text-white
-        transition-transform
-        duration-300
-        hover:scale-110
-        active:scale-95
-      "
-    >
-      <ArrowRight className="size-4 sm:size-5 transition-transform duration-300 group-hover:translate-x-1" />
-    </Link>
-  </motion.div>
-);
+          document.body.appendChild(overlay);
 
+          const radius = Math.hypot(
+            Math.max(x, window.innerWidth - x),
+            Math.max(y, window.innerHeight - y)
+          );
+
+          requestAnimationFrame(() => {
+            requestAnimationFrame(() => {
+              overlay.style.clipPath = `circle(${radius}px at ${x}px ${y}px)`;
+            });
+          });
+
+          setTimeout(() => {
+            overlay.remove();
+            window.location.assign("/about");
+          }, 850);
+        }}
+        aria-label="Discover our approach"
+        className="
+          mt-4
+          landscape:mt-3
+          sm:mt-8
+          inline-flex
+          h-10
+          w-10
+          landscape:h-10
+          landscape:w-10
+          sm:h-12
+          sm:w-12
+          items-center
+          justify-center
+          rounded-full
+          bg-[#f58220]
+          text-white
+          transition-transform
+          duration-300
+          hover:scale-110
+          active:scale-95
+        "
+      >
+        <ArrowRight className="size-4 sm:size-5 transition-transform duration-300 group-hover:translate-x-1" />
+      </Link>
+    </motion.div>
+  );
 }
 
-/* =============================================================
-   INTERACTIVE 3D SUN
 
-   Scroll:
-   - Starts slightly right and smaller
-   - Smoothly moves into position
-   - Smoothly grows
 
-   Cursor:
-   - Sun follows cursor subtly
-   - Sun tilts toward cursor
-
-   Actual 3D rotation/grabbing:
-   - Handled inside SunScene.tsx
-============================================================= */
 function InteractiveSun({
   scrollProgress,
 }: {

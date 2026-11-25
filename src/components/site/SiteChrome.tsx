@@ -190,6 +190,7 @@ export function Header() {
     About
   </Link>
 
+  
   {/* Services dropdown — keep only once */}
   <div
     className="relative"
@@ -238,6 +239,10 @@ export function Header() {
       )}
     </AnimatePresence>
   </div>
+
+  <Link to="/manufacturing" className={navClass}>
+  Manufacturing
+  </Link>
 
   <Link to="/case-study" className={navClass}>
     Case Study
@@ -414,24 +419,25 @@ export function Header() {
               </AnimatePresence>
             </div>
 
-            {/* Case Study, Career, Updates */}
-            {[
+            {/* Manufacturing, Case Study, Career, Updates */}
+{[
+  { label: "Manufacturing", to: "/manufacturing", Icon: Factory },
   { label: "Case Study", to: "/case-study", Icon: FileText },
   { label: "Career", to: "/careers", Icon: BriefcaseBusiness },
   { label: "Updates", to: "/updates", Icon: Bell },
 ].map((item) => (
-              <SheetClose asChild key={item.to}>
-                <Link
-                  to={item.to}
-                  onClick={closeMobileMenu}
-                  className="group flex min-h-[60px] items-center gap-4 border-b border-white/10 py-4 text-xl font-medium transition-colors hover:text-[#f58220]"
-                >
-                  <item.Icon className="size-5 text-white/45 transition-colors group-hover:text-[#f58220]" />
-                  <span>{item.label}</span>
-                  <ArrowDownRight className="ml-auto size-5 text-white/30 transition-transform group-hover:translate-x-1 group-hover:text-[#f58220]" />
-                </Link>
-              </SheetClose>
-            ))}
+  <SheetClose asChild key={item.to}>
+    <Link
+      to={item.to}
+      onClick={closeMobileMenu}
+      className="group flex min-h-[60px] items-center gap-4 border-b border-white/10 py-4 text-xl font-medium transition-colors hover:text-[#f58220]"
+    >
+      <item.Icon className="size-5 text-white/45 transition-colors group-hover:text-[#f58220]" />
+      <span>{item.label}</span>
+      <ArrowDownRight className="ml-auto size-5 text-white/30 transition-transform group-hover:translate-x-1 group-hover:text-[#f58220]" />
+    </Link>
+  </SheetClose>
+))}
           </nav>
 
           {/* Contact CTA */}
@@ -478,6 +484,7 @@ export function Footer() {
   const quickLinks = [
     { label: "Home", to: "/", Icon: House },
     { label: "About", to: "/about", Icon: Info },
+    { label: "Manufacturing", to: "/manufacturing", Icon: Factory },
     { label: "Case Study", to: "/case-study", Icon: FileText },
     { label: "Careers", to: "/careers", Icon: BriefcaseBusiness },
     { label: "Updates", to: "/updates", Icon: Bell },
