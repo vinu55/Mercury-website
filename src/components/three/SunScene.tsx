@@ -36,36 +36,15 @@ function Sun() {
 
       materials.forEach((material) => {
         if (!material) return;
-        material.side = THREE.DoubleSide;
+        
 
         // Force sRGB color space & enhance texture filtering for clarity
         const configureTexture = (tex: THREE.Texture | null) => {
           if (!tex) return;
-          tex.colorSpace = THREE.SRGBColorSpace;
-          tex.generateMipmaps = true;
-          tex.minFilter = THREE.LinearMipmapLinearFilter;
-          tex.magFilter = THREE.LinearFilter;
           tex.anisotropy = maxAnisotropy;
-          tex.needsUpdate = true;
-        };
-
-        configureTexture(material.map);
+      };
+       configureTexture(material.map);
         configureTexture(material.emissiveMap);
-
-        if (
-          material instanceof THREE.MeshStandardMaterial ||
-          material instanceof THREE.MeshPhysicalMaterial
-        ) {
-          // Allow full surface detail without aggressive blur/roughness clamping
-          material.roughness = Math.min(material.roughness, 0.35);
-          material.envMapIntensity = 1.0; // Boost reflections
-
-          if (material.emissiveIntensity !== undefined) {
-            material.emissiveIntensity = Math.max(material.emissiveIntensity, 1.4);
-          }
-        }
-
-        material.needsUpdate = true;
       });
     });
   }, [clone, gl]);
