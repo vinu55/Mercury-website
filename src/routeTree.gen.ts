@@ -58,8 +58,8 @@ const UpdatesRoute = UpdatesRouteImport.update({
   getParentRoute: () => rootRouteImport,
 } as any)
 const ServicesBiomassFuelRoute = ServicesBiomassFuelRouteImport.update({
-  id: '/services/biomass-fuel',
-  path: '/services/biomass-fuel',
+  id: '/services/bioenergy',
+  path: '/services/bioenergy',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ServicesLandBoilerRoute = ServicesLandBoilerRouteImport.update({
@@ -91,7 +91,7 @@ export interface FileRoutesByFullPath {
   '/contact': typeof ContactRoute
   '/manufacturing': typeof ManufacturingRoute
   '/updates': typeof UpdatesRoute
-  '/services/biomass-fuel': typeof ServicesBiomassFuelRoute
+  '/services/bioenergy': typeof ServicesBiomassFuelRoute
   '/services/land-boiler': typeof ServicesLandBoilerRoute
   '/services/marine-boiler': typeof ServicesMarineBoilerRoute
   '/services/solar-energy': typeof ServicesSolarEnergyRoute
@@ -105,7 +105,7 @@ export interface FileRoutesByTo {
   '/contact': typeof ContactRoute
   '/manufacturing': typeof ManufacturingRoute
   '/updates': typeof UpdatesRoute
-  '/services/biomass-fuel': typeof ServicesBiomassFuelRoute
+  '/services/bioenergy': typeof ServicesBiomassFuelRoute
   '/services/land-boiler': typeof ServicesLandBoilerRoute
   '/services/marine-boiler': typeof ServicesMarineBoilerRoute
   '/services/solar-energy': typeof ServicesSolarEnergyRoute
@@ -120,7 +120,7 @@ export interface FileRoutesById {
   '/contact': typeof ContactRoute
   '/manufacturing': typeof ManufacturingRoute
   '/updates': typeof UpdatesRoute
-  '/services/biomass-fuel': typeof ServicesBiomassFuelRoute
+  '/services/bioenergy': typeof ServicesBiomassFuelRoute
   '/services/land-boiler': typeof ServicesLandBoilerRoute
   '/services/marine-boiler': typeof ServicesMarineBoilerRoute
   '/services/solar-energy': typeof ServicesSolarEnergyRoute
@@ -136,7 +136,7 @@ export interface FileRouteTypes {
     | '/contact'
     | '/manufacturing'
     | '/updates'
-    | '/services/biomass-fuel'
+    | '/services/bioenergy'
     | '/services/land-boiler'
     | '/services/marine-boiler'
     | '/services/solar-energy'
@@ -150,7 +150,7 @@ export interface FileRouteTypes {
     | '/contact'
     | '/manufacturing'
     | '/updates'
-    | '/services/biomass-fuel'
+    | '/services/bioenergy'
     | '/services/land-boiler'
     | '/services/marine-boiler'
     | '/services/solar-energy'
@@ -164,7 +164,7 @@ export interface FileRouteTypes {
     | '/contact'
     | '/manufacturing'
     | '/updates'
-    | '/services/biomass-fuel'
+    | '/services/bioenergy'
     | '/services/land-boiler'
     | '/services/marine-boiler'
     | '/services/solar-energy'
@@ -237,10 +237,10 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof UpdatesRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/services/biomass-fuel': {
-      id: '/services/biomass-fuel'
-      path: '/services/biomass-fuel'
-      fullPath: '/services/biomass-fuel'
+    '/services/bioenergy': {
+      id: '/services/bioenergy'
+      path: '/services/bioenergy'
+      fullPath: '/services/bioenergy'
       preLoaderRoute: typeof ServicesBiomassFuelRouteImport
       parentRoute: typeof rootRouteImport
     }

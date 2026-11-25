@@ -109,7 +109,7 @@ const advantages = [
   "Cost-Effective Industrial Energy",
 ];
 
-export const Route = createFileRoute("/services/biomass-fuel")({
+export const Route = createFileRoute("/services/bioenergy")({
   head: () => ({
     meta: [
       {

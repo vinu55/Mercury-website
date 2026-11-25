@@ -81,7 +81,7 @@ const markets = [
 const services = [
   { label: "Marine", href: "/services/marine-boiler" },
   { label: "Industry", href: "/services/land-boiler" },
-  { label: "Bioenergy", href: "/services/biomass-fuel" },
+  { label: "Bioenergy", href: "/services/bioenergy" },
   { label: "Solar", href: "/services/solar-energy" },
   { label: "Spare parts", href: "/services/spare-parts" },
 ];

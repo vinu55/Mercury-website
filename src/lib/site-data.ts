@@ -45,7 +45,7 @@ export const SERVICES = [
   {
     title: "Bioenergy Solutions",
     short: "Biomass",
-    href: "/services/biomass-fuel",
+    href: "/services/bioenergy",
     icon: Flame,
     description: "Fuel conversion support and dependable biomass and bagasse supply.",
   },
