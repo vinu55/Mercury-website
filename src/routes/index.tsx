@@ -90,6 +90,8 @@ function Home() {
   return (
     <main>
       <IntroLoader />
+      {/* HERO + ABOUT SCROLL TRANSITION */}
+    <div className="relative isolate">
 
       {/* =========================================================
           HERO VIDEO
@@ -99,7 +101,7 @@ function Home() {
 
      <section
         ref={heroRef}
-        className="relative isolate h-[100svh] min-h-[600px] w-full overflow-hidden bg-[#061a34] text-white"
+        className="sticky top-0 z-0 isolate h-[100svh] min-h-[600px] w-full overflow-hidden bg-[#061a34] text-white"
       >
         {/* Full-screen responsive video optimized for instant loading */}
         <video
@@ -185,34 +187,36 @@ function Home() {
           </motion.div>
         </div>
       </section>
-
+    
       {/* =========================================================
           ABOUT + INTERACTIVE 3D SUN
       ========================================================= */}
 <section
   ref={aboutRef}
-  className="relative overflow-hidden bg-[#061a34] text-primary-foreground"
+  className="
+  relative z-10 -mt-px
+  h-auto min-h-0
+  overflow-hidden
+  rounded-t-[24px] sm:rounded-t-[32px]
+  bg-[#061a34]
+  text-primary-foreground
+"
 >
   <div
     className="
-      mx-auto
-      grid
-      grid-cols-1
-      landscape:grid-cols-[1.1fr_0.9fr]
-      landscape:items-center
-      landscape:min-h-[380px]
-      min-h-0
-      max-w-[1440px]
-      items-center
-      px-5
-      pt-4
-      pb-6
-      lg:min-h-[680px]
-      lg:grid-cols-[1.15fr_0.85fr]
-      lg:px-10
-      lg:py-24
-    "
-  >
+  mx-auto grid
+  h-auto min-h-0
+  max-w-[1440px]
+  grid-cols-1
+  items-center
+  gap-4
+  px-5 py-8
+  landscape:grid-cols-[1.1fr_0.9fr]
+  sm:px-8 sm:py-10
+  lg:grid-cols-[1.15fr_0.85fr]
+  lg:px-10 lg:py-12
+"
+>
     {/* LEFT — ABOUT TEXT */}
     <AboutText scrollProgress={aboutScrollProgress} />
 
@@ -220,6 +224,7 @@ function Home() {
     <InteractiveSun scrollProgress={aboutScrollProgress} />
   </div>
 </section>
+</div>
       {/* =========================================================
           MOVING ENGINEERING SERVICES TEXT
       ========================================================= */}
@@ -273,7 +278,7 @@ function Home() {
       </section>
 
       {/* =========================================================
-          OUR SOLUTIONS — HORIZONTAL SCROLL
+          OUR SOLUTIONS —  SCROLL
       ========================================================= */}
 
       <ServicesParallax />
@@ -489,6 +494,7 @@ function ServicesParallax() {
 
 
 
+
 /* =============================================================
    ABOUT TEXT
 ============================================================= */
@@ -536,8 +542,6 @@ function AboutText({
           sm:mt-4
           min-h-0
           landscape:min-h-0
-          sm:min-h-[10rem]
-          lg:min-h-[12rem]
           max-w-xl
           text-xs
           landscape:text-xs
